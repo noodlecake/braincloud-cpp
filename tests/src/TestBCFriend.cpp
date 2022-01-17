@@ -26,7 +26,7 @@ TEST_F(TestBCFriend, GetProfileInfoForExternalAuthId)
 {
 	TestResult tr;
 	m_bc->getFriendService()->getProfileInfoForExternalAuthId(GetUser(UserA)->m_id, "failType", &tr);
-	tr.runExpectFail(m_bc, 400, INVALID_EXT_AUTH_TYPE);
+	tr.runExpectFail(m_bc, 300, INVALID_EXT_AUTH_TYPE);
 }
 
 TEST_F(TestBCFriend, GetExternalIdForProfileId)
@@ -75,7 +75,7 @@ TEST_F(TestBCFriend, GetSummaryDataForProfileId)
 {
 	TestResult tr;
 	m_bc->getFriendService()->getSummaryDataForProfileId(GetUser(UserA)->m_profileId, &tr);
-	tr.run(m_bc);
+	tr.runExpectFail(m_bc, 300, INVALID_EXT_AUTH_TYPE);
 }
 
 TEST_F(TestBCFriend, AddFriendsFromPlatform)
