@@ -151,6 +151,9 @@ elseif (WIN32)
     list(APPEND OS_SPECIFIC_INCS
         "include/braincloud/internal/win/WindowsSaveDataHelper.h")
     list(APPEND OS_SPECIFIC_SRCS "src/win/WindowsSaveDataHelper.cpp")
+elseif (ANDROID)
+    list(APPEND OS_SPECIFIC_SRCS
+            "../game/src/Client/Android/NoodleSaveDataHelper.h")
 else()
     list(APPEND OS_SPECIFIC_SRCS
         "include/braincloud/internal/DefaultSaveDataHelper.h"
