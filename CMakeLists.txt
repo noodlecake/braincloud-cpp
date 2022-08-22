@@ -53,8 +53,7 @@ if (SSL_ALLOW_SELFSIGNED)
 endif()
 
 # lets use libwebsockets by default
-# turned off for Android until library link issues resolved (note: RTT features are also disabled)
-if (NOT UWP AND NOT ANDROID)
+if (NOT UWP)
     set(USE_LIBWEBSOCKETS 1)
 else()
     add_definitions(-DLIBWEBSOCKETS_OFF)
