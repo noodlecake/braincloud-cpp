@@ -233,6 +233,14 @@ namespace BrainCloud
                     }
                     break;
                 }
+                case RTTCallbackType::Disconnect:
+                {
+                    if (_connectCallback)
+                    {
+                        _connectCallback->rttDisconnect(callback._message);
+                    }
+                    break;
+                }
                 case RTTCallbackType::Event:
                 {
                     std::string serviceName = callback._json["service"].asString();
@@ -652,6 +660,10 @@ namespace BrainCloud
 
 			    _msg["reasonCode"] = _disconnectReasonCode;
 			    _msg["reason"] = _disconnectReasonMessage;
+
+                _eventQueueMutex.lock();
+                _callbackEventQueue.push_back(RTTCallback(RTTCallbackType::Disconnect));
+                _eventQueueMutex.unlock();
             }
         }
         else
