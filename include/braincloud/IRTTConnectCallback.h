@@ -34,7 +34,7 @@ namespace BrainCloud {
          *
          * @param jsonData - Text message describing the error.
          */
-        virtual void rttDisconnect(const std::string& jsonData) = 0;
+        virtual void rttDisconnect(const int& disconnectCode) = 0;
     };
     
 };

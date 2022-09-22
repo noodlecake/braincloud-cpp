@@ -237,7 +237,8 @@ namespace BrainCloud
                 {
                     if (_connectCallback)
                     {
-                        _connectCallback->rttDisconnect(callback._message);
+                        _connectCallback->rttDisconnect(_disconnectReasonCode);
+ //                       _connectCallback->rttDisconnect(callback._message);
                     }
                     break;
                 }
