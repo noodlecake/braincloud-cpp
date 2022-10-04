@@ -125,7 +125,7 @@ namespace BrainCloud {
          * @param in_callback The method to be invoked when the server response is received
          *
          */
-        void authenticateAnonymous(IServerCallback * in_callback = NULL);
+        void authenticateAnonymous(IServerCallback * in_callback = NULL, bool forceCreate = true);
 
         /*
          * Authenticate the user with a custom Email and Password.  Note that the client app
@@ -848,6 +848,7 @@ namespace BrainCloud {
         std::string m_lastGameId;
         std::string m_lastGameVersion;
         std::string m_wrapperName;
+        std::map<std::string, std::string> m_secretMap;
 
         bool m_alwaysAllowProfileSwitch;
 

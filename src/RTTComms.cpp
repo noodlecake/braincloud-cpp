@@ -135,7 +135,7 @@ namespace BrainCloud
             {
                 Json::FastWriter myWriter;
                 std::string output ="\n" + myWriter.write(_msg); 
-                printf(output.c_str());
+                printf("%s",output.c_str());
             } 
         }
     }
@@ -230,6 +230,15 @@ namespace BrainCloud
                     if (_connectCallback)
                     {
                         _connectCallback->rttConnectFailure(callback._message);
+                    }
+                    break;
+                }
+                case RTTCallbackType::Disconnect:
+                {
+                    if (_connectCallback)
+                    {
+                        _connectCallback->rttDisconnect(_disconnectReasonCode);
+ //                       _connectCallback->rttDisconnect(callback._message);
                     }
                     break;
                 }
@@ -431,15 +440,19 @@ namespace BrainCloud
                                 host += key + "=" + value;
                             }
                         }
-
+                        #ifndef LIBWEBSOCKETS_OFF
+                        // only creates this object if the required files are linked in
+                        // could arise if libwebsockets are OFF in the makefile but ON in the app
+                        // in this case, there WILL be a connection error called after enableRTT()
                         _socket = IWebSocket::create(host, port, headers);
+                        #endif
                     }
                     else
                     {
                         _socket = ITCPSocket::create(host, port);
                     }
                 }
-                if (!_socket->isValid())
+                if (!_socket || !_socket->isValid())
                 {
                     closeSocket();
                     failedToConnect();
@@ -648,6 +661,10 @@ namespace BrainCloud
 
 			    _msg["reasonCode"] = _disconnectReasonCode;
 			    _msg["reason"] = _disconnectReasonMessage;
+
+                _eventQueueMutex.lock();
+                _callbackEventQueue.push_back(RTTCallback(RTTCallbackType::Disconnect));
+                _eventQueueMutex.unlock();
             }
         }
         else
