@@ -233,6 +233,15 @@ namespace BrainCloud
                     }
                     break;
                 }
+                case RTTCallbackType::Disconnect:
+                {
+                    if (_connectCallback)
+                    {
+                        _connectCallback->rttDisconnect(_disconnectReasonCode);
+ //                       _connectCallback->rttDisconnect(callback._message);
+                    }
+                    break;
+                }
                 case RTTCallbackType::Event:
                 {
                     std::string serviceName = callback._json["service"].asString();
@@ -431,20 +440,19 @@ namespace BrainCloud
                                 host += key + "=" + value;
                             }
                         }
-                        // ############################
-                        // temporary fix for Android
-                        // this will cause a seg fault (nullptr access) in Android if RTT is enabled
-                    #if defined(USE_LIBWEBSOCKETS) or not defined(__ANDROID__)
+                        #ifndef LIBWEBSOCKETS_OFF
+                        // only creates this object if the required files are linked in
+                        // could arise if libwebsockets are OFF in the makefile but ON in the app
+                        // in this case, there WILL be a connection error called after enableRTT()
                         _socket = IWebSocket::create(host, port, headers);
-                    #endif
-                        // ############################
+                        #endif
                     }
                     else
                     {
                         _socket = ITCPSocket::create(host, port);
                     }
                 }
-                if (!_socket->isValid())
+                if (!_socket || !_socket->isValid())
                 {
                     closeSocket();
                     failedToConnect();
@@ -653,6 +661,10 @@ namespace BrainCloud
 
 			    _msg["reasonCode"] = _disconnectReasonCode;
 			    _msg["reason"] = _disconnectReasonMessage;
+
+                _eventQueueMutex.lock();
+                _callbackEventQueue.push_back(RTTCallback(RTTCallbackType::Disconnect));
+                _eventQueueMutex.unlock();
             }
         }
         else
