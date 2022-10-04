@@ -29,8 +29,10 @@ endif()
 #=============================================================================
 option(BUILD_TESTS "brainCloud Unit Tests" OFF)
 option(USE_CURL "Force use libCurl on Win32" OFF)
-if (NOT DEFINED(${SSL_ALLOW_SELFSIGNED}))
-    option(SSL_ALLOW_SELFSIGNED "Will define BC_SSL_ALLOW_SELFSIGNED" OFF)
+if(DEFINED SSL_ALLOW_SELFSIGNED)
+    set(SSL_ALLOW_SELFSIGNED 1)
+else()
+    set(SSL_ALLOW_SELFSIGNED 0)
 endif()
 #=============================================================================
 # Definitions
@@ -396,33 +398,31 @@ elseif (LINUX)
 elseif (ANDROID)
     list(APPEND includes PUBLIC "${BC_DIR}/lib/android/include/")
 
-    #find_package(OpenSSL)
-    #message (STATUS "OPENSSL_ROOT_DIR is $ENV{OPENSSL_ROOT_DIR}")
+    if(USE_LIBWEBSOCKETS)
+	#include web sockets library first for linking
+        add_library(websockets STATIC IMPORTED)
+        set_target_properties(websockets PROPERTIES IMPORTED_LOCATION ${BC_DIR}/lib/android/libs/${ANDROID_ABI}/libwebsockets.a)
+        list(APPEND libs websockets)
+    endif()
 
     add_library(libz STATIC IMPORTED)
     set_target_properties(libz PROPERTIES IMPORTED_LOCATION ${BC_DIR}/lib/android/libs/${ANDROID_ABI}/libz.a)
     add_library(curl STATIC IMPORTED)
     set_target_properties(curl PROPERTIES IMPORTED_LOCATION ${BC_DIR}/lib/android/libs/${ANDROID_ABI}/libcurl.a)
-    #add_library(ssl STATIC IMPORTED)
-    #set_target_properties(ssl PROPERTIES IMPORTED_LOCATION ${BC_DIR}/lib/android/libs/${ANDROID_ABI}/libssl.a)
-    #add_library(crypto STATIC IMPORTED)
-    #set_target_properties(crypto PROPERTIES IMPORTED_LOCATION ${BC_DIR}/lib/android/libs/${ANDROID_ABI}/libcrypto.a)
+    add_library(ssl STATIC IMPORTED)
+    set_target_properties(ssl PROPERTIES IMPORTED_LOCATION ${BC_DIR}/lib/android/libs/${ANDROID_ABI}/libssl.a)
+    add_library(crypto STATIC IMPORTED)
+    set_target_properties(crypto PROPERTIES IMPORTED_LOCATION ${BC_DIR}/lib/android/libs/${ANDROID_ABI}/libcrypto.a)
     add_library(uv_a STATIC IMPORTED)
     set_target_properties(uv_a PROPERTIES IMPORTED_LOCATION ${BC_DIR}/lib/android/libs/${ANDROID_ABI}/libuv_a.a)
 
     list(APPEND libs
             curl
-            #ssl
-            #Scrypto
+            ssl
+            crypto
             uv_a
             libz
             )
-
-    if(USE_LIBWEBSOCKETS)
-        add_library(websockets STATIC IMPORTED)
-        set_target_properties(websockets PROPERTIES IMPORTED_LOCATION ${BC_DIR}/lib/android/libs/${ANDROID_ABI}/libwebsockets.a)
-        list(APPEND libs websockets)
-    endif()
 
 elseif (WIN32)
     if (USE_CURL)
@@ -450,36 +450,61 @@ elseif (WIN32)
     endif()
 endif()
 
+# android uses openssl instead of tls (pre-built libwebsockets.a is linked above)
 if (USE_LIBWEBSOCKETS AND NOT ANDROID)
     # TLS
     option(ENABLE_TESTING "" OFF)
     option(ENABLE_PROGRAMS "" OFF)
-    add_subdirectory(./lib/mbedtls/)
-    list(APPEND libs PUBLIC mbedtls mbedx509 mbedcrypto)
-    list(APPEND includes
-            PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/lib/mbedtls/include/)
-    option(LWS_WITH_MBEDTLS "" ON)
-    set(LWS_MBEDTLS_INCLUDE_DIRS
-            "${CMAKE_CURRENT_BINARY_DIR}/lib/mbedtls/include/")
-    if (UNIX AND NOT CMAKE_GENERATOR STREQUAL Xcode)
-        # when building at commandline on unix os (or mac)
-        set(LWS_MBEDTLS_LIBRARIES
-                "${CMAKE_CURRENT_BINARY_DIR}/lib/mbedtls/library/libmbedtls.a"
-                "${CMAKE_CURRENT_BINARY_DIR}/lib/mbedtls/library/libmbedcrypto.a"
-                "${CMAKE_CURRENT_BINARY_DIR}/lib/mbedtls/library/libmbedx509.a")
-    else()
-        # when generator is Xcode or Visual Studio
-        # causes a 'dropped file links to directory' warning
-        # but allows project to load and compile in IDE
-        set(LWS_MBEDTLS_LIBRARIES "${CMAKE_CURRENT_BINARY_DIR}/lib/mbedtls/library/")
-    endif()
+	if (BC_USE_OPENSSL)
+		set(OPENSSL_USE_STATIC_LIBS TRUE)
+		find_package(OpenSSL REQUIRED)
+		set(OPENSSL_FOUND 1)
+		set(OPENSSL_INCLUDE_DIRS "${OPENSSL_INCLUDE_DIR}")
+		set(BC_OPENSSL_INCLUDE_DIRS "${OPENSSL_INCLUDE_DIR}")
+		message("BC OpenSSL include dir: ${BC_OPENSSL_INCLUDE_DIRS}")
+		option(LWS_WITH_SSL "" ON)
+        option(LWS_WITH_MBEDTLS "" OFF)
+        include_directories("${BC_OPENSSL_INCLUDE_DIRS}")
+	else()
+		# TLS
+		option(ENABLE_TESTING "" OFF)
+		option(ENABLE_PROGRAMS "" OFF)
 
-    # Latest xcode broke lws. lws did a fix in their latest, but this broke
-    # their mbedtls impl... So we are using different lws version on
-    # apple (latest) vs our usual one v4.1.6 on all other platforms...
-    if (APPLE OR (CMAKE_GENERATOR STREQUAL Xcode))
-       set(LWS_DIR lib/libwebsockets)
+		# git checkout mbedtls-v2.13.1 (SHA1 is 53546ea)
+		add_subdirectory(lib/mbedtls/)
+
+		list(APPEND libs PUBLIC mbedtls mbedx509 mbedcrypto)
+		list(APPEND includes
+				PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/lib/mbedtls/include/)
+		option(LWS_WITH_MBEDTLS "" ON)
+		set(LWS_MBEDTLS_INCLUDE_DIRS
+				"${CMAKE_CURRENT_BINARY_DIR}/lib/mbedtls/include/")
+		if (CMAKE_GENERATOR STREQUAL Xcode)
+			# setting this blank causes no warnings in cmake, links in xcode
+			set(LWS_MBEDTLS_LIBRARIES "")
+		elseif(NOT UNIX)
+			# when generator is Visual Studio
+			# causes a 'dropped file links to directory' warning
+			# but allows project to load and compile in IDE
+			set(LWS_MBEDTLS_LIBRARIES "${CMAKE_CURRENT_BINARY_DIR}/lib/mbedtls/library/")
+		else()
+		# regular commandline build on linux, mac, windows
+			set(LWS_MBEDTLS_LIBRARIES
+					"${CMAKE_CURRENT_BINARY_DIR}/lib/mbedtls/library/libmbedtls.a"
+					"${CMAKE_CURRENT_BINARY_DIR}/lib/mbedtls/library/libmbedcrypto.a"
+					"${CMAKE_CURRENT_BINARY_DIR}/lib/mbedtls/library/libmbedx509.a")
+		endif()
+	endif()
+	# APPLE OR ANDROID OR LINUX
+    if(UNIX)
+        # 4.1.6 works well for Mac
+        # git checkout v4.1.6 (SHA1 is 736f0739)
+        set(LWS_DIR lib/libwebsockets)
     else()
+        # 4.3.2 has build errors with mbedtls
+        # 4.2.0 compiles but causes segmentation fault crash after connect
+        # 4.1.6 gives error on connect
+        # 3.0 (forked) works well on Windows (SHA1 is eaa935a8)
         set(LWS_DIR lib/lwsv3/libwebsockets)
     endif()
 

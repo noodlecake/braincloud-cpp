@@ -1,4 +1,4 @@
-#if (TARGET_OS_WATCH != 1)
+#if (!defined(TARGET_OS_WATCH) || TARGET_OS_WATCH == 0)
 
 #ifndef _DEFAULTWEBSOCKER_H_
 #define _DEFAULTWEBSOCKER_H_
