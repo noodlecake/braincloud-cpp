@@ -53,6 +53,7 @@ namespace BrainCloud
         {
             ConnectSuccess,
             ConnectFailure,
+            Disconnect,
             Event
         };
 
@@ -81,6 +82,7 @@ namespace BrainCloud
 
         void connect();
         void failedToConnect();
+        void disconnect();
         void onSocketConnected();
         void startReceiving();
         void startHeartbeat();
