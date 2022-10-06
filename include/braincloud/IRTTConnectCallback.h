@@ -28,13 +28,6 @@ namespace BrainCloud {
          * @param errorMessage - Text message describing the error.
          */
         virtual void rttConnectFailure(const std::string& errorMessage) = 0;
-
-        /**
-         * Method called when connection to RTT disconnected
-         *
-         * @param jsonData - Text message describing the error.
-         */
-        virtual void rttDisconnect(const int& disconnectCode) = 0;
     };
     
 };
