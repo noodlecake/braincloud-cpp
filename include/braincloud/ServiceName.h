@@ -64,8 +64,6 @@ namespace BrainCloud {
 		static const ServiceName Presence;
 
 
-        static const ServiceName Blockchain;
-        
         std::string getValue() const { return _value; }
 
         bool operator== (const ServiceName& s) const;

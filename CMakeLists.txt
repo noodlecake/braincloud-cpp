@@ -30,7 +30,6 @@ endif()
 #=============================================================================
 option(BUILD_TESTS "brainCloud Unit Tests" OFF)
 option(USE_CURL_WIN "Force use libCurl on Win32" OFF)
-
 if(DEFINED SSL_ALLOW_SELFSIGNED)
     set(SSL_ALLOW_SELFSIGNED 1)
 else()
@@ -53,12 +52,8 @@ if (UWP)
                 ON)
     endif()
 endif()
-
 if (SSL_ALLOW_SELFSIGNED)
-    message(status "Skipping certificate verification in RTT")
     add_definitions(-DBC_SSL_ALLOW_SELFSIGNED)
-    else()
-    message(status "Building with certificates for RTT")
 endif()
 
 # lets use libwebsockets by default
@@ -69,10 +64,10 @@ else()
 endif()
 
 if(BC_USE_OPENSSL)
-    message(status "Building with OpenSSL TLS")
+    message(status "Building with OpenSSl")
     add_definitions(-DBC_MBEDTLS_OFF)
 else()
-    message(status "Building with MbedTLS TLS")
+    message(status "Building with MbedTLS")
 endif()
 
 #=============================================================================
@@ -225,7 +220,6 @@ add_library(brainCloud STATIC
         include/braincloud/BrainCloudAsyncMatch.h
         include/braincloud/BrainCloudAuthentication.h
         include/braincloud/BrainCloudClient.h
-        include/braincloud/BrainCloudBlockchain.h
         include/braincloud/BrainCloudDataStream.h
         include/braincloud/BrainCloudEntity.h
         include/braincloud/BrainCloudEvent.h
@@ -310,7 +304,6 @@ add_library(brainCloud STATIC
         src/BrainCloudAppStore.cpp
         src/BrainCloudAsyncMatch.cpp
         src/BrainCloudAuthentication.cpp
-        src/BrainCloudBlockchain.cpp
         src/BrainCloudChat.cpp
         src/BrainCloudClient.cpp
         src/BrainCloudDataStream.cpp

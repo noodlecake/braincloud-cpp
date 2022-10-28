@@ -46,7 +46,6 @@
 #include "braincloud/BrainCloudCustomEntity.h"
 #include "braincloud/BrainCloudItemCatalog.h"
 #include "braincloud/BrainCloudUserItems.h"
-#include "braincloud/BrainCloudBlockchain.h"
 #include "braincloud/BrainCloudAuthentication.h"
 #include "braincloud/BrainCloudPushNotification.h"
 #include "braincloud/BrainCloudPlayerStatisticsEvent.h"
@@ -367,7 +366,6 @@ namespace BrainCloud
 		BrainCloudItemCatalog* getItemCatalogService() { return _itemCatalogService; }
 		BrainCloudUserItems* getUserItemsService() { return _userItemsService; }
 		BrainCloudAuthentication * getAuthenticationService() { return _authenticationService; }
-        BrainCloudBlockchain * getBlockchainService() { return _blockchainService; }
 		BrainCloudPushNotification * getPushNotificationService() { return _pushNotificationService; }
 		BrainCloudPlayerStatisticsEvent * getPlayerStatisticsEventService() { return _playerStatisticsEventService; }
 		BrainCloudGlobalApp * getGlobalAppService() { return _globalAppService; }
@@ -639,7 +637,6 @@ namespace BrainCloud
 		BrainCloudItemCatalog * _itemCatalogService;
 		BrainCloudUserItems * _userItemsService;
 		BrainCloudAuthentication * _authenticationService;
-        BrainCloudBlockchain * _blockchainService;
 		BrainCloudPushNotification * _pushNotificationService;
 		BrainCloudPlayerStatisticsEvent * _playerStatisticsEventService;
 		BrainCloudGlobalApp * _globalAppService;
