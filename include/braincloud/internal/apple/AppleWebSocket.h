@@ -1,7 +1,11 @@
-#if (!defined(TARGET_OS_WATCH) || TARGET_OS_WATCH == 0)
+#pragma once
 
-#ifndef _APPLEWEBSOCKET_H_
-#define _APPLEWEBSOCKET_H_
+#if __APPLE__
+    // for deployment TARGET_OS definitions
+    #include "TargetConditionals.h"
+#endif
+
+#if (!defined(TARGET_OS_WATCH) || TARGET_OS_WATCH == 0)
 
 #include "braincloud/internal/IWebSocket.h"
 
@@ -81,7 +85,5 @@ namespace BrainCloud
         std::map<std::string, std::string> _authHeaders;
     };
 };
-
-#endif /* _APPLEWEBSOCKET_H_ */
 
 #endif

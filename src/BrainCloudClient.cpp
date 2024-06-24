@@ -27,7 +27,7 @@ namespace BrainCloud
             "Singleton usage is disabled. If called by mistake, use your own variable that holds an instance of the bcWrapper/bcClient.";
 
     BrainCloudClient * BrainCloudClient::_instance = NULL;
-    std::string BrainCloudClient::s_brainCloudClientVersion = "4.12.3";
+    std::string BrainCloudClient::s_brainCloudClientVersion = "5.3.0";
     const char* BC_SERVER_URL = "https://api.braincloudservers.com/dispatcherv2"; 
 
     /**
@@ -51,6 +51,7 @@ namespace BrainCloud
         _globalEntityService(new BrainCloudGlobalEntity(this)),
         _globalStatisticsService(new BrainCloudGlobalStatistics(this)),
         _groupService(new BrainCloudGroup(this)),
+        _groupFileService(new BrainCloudGroupFile(this)),
         _identityService(new BrainCloudIdentity(this)),
         _lobbyService(new BrainCloudLobby(this)),
         _mailService(new BrainCloudMail(this)),

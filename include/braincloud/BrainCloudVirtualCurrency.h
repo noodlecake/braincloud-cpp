@@ -1,7 +1,11 @@
 // Copyright 2018 bitHeads, Inc. All Rights Reserved.
 
-#ifndef _BRAINCLOUDVIRTUALCURRENCY_H_
-#define _BRAINCLOUDVIRTUALCURRENCY_H_
+#pragma once
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
+
 
 #include <string>
 #include "braincloud/BrainCloudTypes.h"
@@ -78,4 +82,6 @@ namespace BrainCloud
     };
 }
 
+#if defined(__clang__)
+#pragma clang diagnostic pop
 #endif

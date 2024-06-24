@@ -4,9 +4,7 @@
 //
 
 
-#ifndef _URLRESPONSE_H_
-#define _URLRESPONSE_H_
-
+#pragma once
 
 #include <string>
 #include <vector>
@@ -43,6 +41,3 @@ private:
     unsigned short                  _statusCode;
 
 };  // end class
-
-
-#endif  // _URLRESPONSE_H_

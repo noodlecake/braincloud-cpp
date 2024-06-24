@@ -6,8 +6,12 @@
 //
 //
 
-#ifndef _INETWORKERRORCALLBACK_H_
-#define _INETWORKERRORCALLBACK_H_
+#pragma once
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
+
 
 namespace BrainCloud {
     
@@ -29,4 +33,6 @@ namespace BrainCloud {
     };
     
 };
-#endif /* _INETWORKERRORCALLBACK_H_ */
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif

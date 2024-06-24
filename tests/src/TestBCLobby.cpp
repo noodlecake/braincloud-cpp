@@ -119,8 +119,7 @@ TEST_F(TestBCLobbyNoAuth, CreateAndJoinLobby)
 		}
 
 		// TearDown
-		bc->getPlayerStateService()->logout(&tr);
-		tr.run(bc);
+		Logout();
 		delete wrapper;
 	});
 
@@ -189,8 +188,7 @@ TEST_F(TestBCLobbyNoAuth, CreateAndJoinLobby)
 		}
 
 		// TearDown
-		bc->getPlayerStateService()->logout(&tr);
-		tr.run(bc);
+		Logout();
 	});
 
 	// Join threads
@@ -373,9 +371,15 @@ TEST_F(TestBCLobby, GetLobbyInstancesWithPingData)
     // Fetch pings
     m_bc->getLobbyService()->getRegionsForLobbies({ "MATCH_UNRANKED" }, & tr);
     tr.run(m_bc);
-	
+
     m_bc->getLobbyService()->pingRegions(&tr);
     tr.run(m_bc);
+
+    if(!tr.m_result){
+        // ping error
+        GTEST_FATAL_FAILURE_("test failure with pingRegions - bailing out before completion\n");
+        return;
+    }
 
     m_bc->getLobbyService()->getLobbyInstancesWithPingData("MATCH_UNRANKED", "{\"rating\":{\"min\":1,\"max\":1000},\"ping\":{\"max\":100}}", &tr);
     tr.run(m_bc);

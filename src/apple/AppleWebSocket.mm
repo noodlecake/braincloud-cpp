@@ -1,6 +1,5 @@
-#if (!defined(TARGET_OS_WATCH) || TARGET_OS_WATCH == 0)
-
 #include "braincloud/internal/apple/AppleWebSocket.h"
+#if (!defined(TARGET_OS_WATCH) || TARGET_OS_WATCH == 0)
 
 #include <algorithm>
 
@@ -42,7 +41,7 @@
 
 - (void)send:(const std::string&)message
 {
-    [_webSocket send:[NSString stringWithUTF8String:message.c_str()]];
+    [_webSocket sendString:[NSString stringWithUTF8String:message.c_str()] error:NULL];
 }
 
 - (void)close

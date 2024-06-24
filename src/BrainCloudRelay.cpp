@@ -23,6 +23,11 @@ namespace BrainCloud
         m_commsLayer->disconnect();
     }
 
+    void BrainCloudRelay::endMatch(const std::string& jsonPayload)
+    {
+        m_commsLayer->endMatch(JsonUtil::jsonStringToValue(jsonPayload));
+    }
+
     bool BrainCloudRelay::isConnected() const
     {
         return m_commsLayer->isConnected();

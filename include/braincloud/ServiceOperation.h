@@ -206,6 +206,7 @@ namespace BrainCloud {
 		static const ServiceOperation DeleteMatch;
 		static const ServiceOperation CompleteMatchWithSummaryData;
 		static const ServiceOperation AbandonMatchWithSummaryData;
+        static const ServiceOperation UpdateMatchStateCurrentTurn;
 
 		static const ServiceOperation LastUploadStatus;
 
@@ -265,6 +266,15 @@ namespace BrainCloud {
 		static const ServiceOperation IncrementSharedUserEntityData;
 		static const ServiceOperation IncrementGlobalEntityData;
 		static const ServiceOperation GetRandomEntitiesMatching;
+
+        // group file
+        static const ServiceOperation CheckFilenameExists;
+        static const ServiceOperation CheckFullpathFilenameExists;
+        static const ServiceOperation GroupCopyFile;
+        static const ServiceOperation GroupDeleteFile;
+        static const ServiceOperation GroupMoveFile;
+        static const ServiceOperation MoveUserToGroupFile;
+        static const ServiceOperation UpdateFileInfo;
 
 		//GlobalFileV3
 		static const ServiceOperation GetFileInfo;
@@ -332,7 +342,8 @@ namespace BrainCloud {
 		static const ServiceOperation CreateGroupEntity;
 		static const ServiceOperation DeleteGroup;
 		static const ServiceOperation DeleteGroupEntity;
-		static const ServiceOperation DeleteGroupMemeber;
+		static const ServiceOperation DeleteGroupMember;
+        static const ServiceOperation DeleteGroupJoinRequest;
 		static const ServiceOperation GetMyGroups;
 		static const ServiceOperation IncrementGroupData;
 		static const ServiceOperation IncrementGroupEntityData;
@@ -349,7 +360,7 @@ namespace BrainCloud {
 		static const ServiceOperation ReadGroupEntity;
 		static const ServiceOperation ReadGroupMembers;
 		static const ServiceOperation RejectGroupInvitation;
-		static const ServiceOperation RejectGroupJoinRequest;
+        static const ServiceOperation RejectGroupJoinRequest;
 		static const ServiceOperation RemoveGroupMember;
 		static const ServiceOperation UpdateGroupData;
 		static const ServiceOperation UpdateGroupEntity;

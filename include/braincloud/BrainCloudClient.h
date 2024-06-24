@@ -3,6 +3,11 @@
 //  Copyright 2016 bitHeads, Inc. All Rights Reserved.
 
 #pragma once
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
+
 
 #ifdef WIN32
 #include <WinSock2.h>
@@ -57,6 +62,7 @@
 #include "braincloud/BrainCloudFile.h"
 #include "braincloud/BrainCloudGlobalFile.h"
 #include "braincloud/BrainCloudGroup.h"
+#include "braincloud/BrainCloudGroupFile.h"
 #include "braincloud/BrainCloudMail.h"
 #include "braincloud/BrainCloudRelay.h"
 #include "braincloud/BrainCloudRTT.h"
@@ -375,7 +381,8 @@ namespace BrainCloud
 		BrainCloudProfanity * getProfanityService() { return _profanityService; }
 		BrainCloudFile* getFileService() { return _fileService; }
 		BrainCloudGlobalFile* getGlobalFileService() { return _globalFileService; }
-		BrainCloudGroup * getGroupService() { return _groupService; }
+        BrainCloudGroup * getGroupService() { return _groupService; }
+		BrainCloudGroupFile * getGroupFileService() { return _groupFileService; }
 		BrainCloudMail * getMailService() { return _mailService; }
 		BrainCloudRelay * getRelayService() { return _relayService; }
 		BrainCloudRTT * getRTTService() { return _rttService; }
@@ -646,7 +653,8 @@ namespace BrainCloud
 		BrainCloudProfanity * _profanityService;
 		BrainCloudFile * _fileService;
 		BrainCloudGlobalFile* _globalFileService;
-		BrainCloudGroup * _groupService;
+        BrainCloudGroup * _groupService;
+		BrainCloudGroupFile * _groupFileService;
 		BrainCloudMail * _mailService;
 		BrainCloudRelay * _relayService;
 		BrainCloudRTT * _rttService;
@@ -668,3 +676,6 @@ namespace BrainCloud
 		void setupOSLocaleData();
 	};  // end class
 }  // end namespace
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif

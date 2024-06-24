@@ -1,5 +1,4 @@
 // Copyright 2020 bitHeads, Inc. All Rights Reserved.
-
 #include "braincloud/BrainCloudClient.h"
 #include "braincloud/IRelayConnectCallback.h"
 #include "braincloud/IRelayCallback.h"
@@ -21,6 +20,11 @@
 
 #define VERBOSE_LOG 0
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+
 static const int CONTROL_BYTES_SIZE = 1;
 static const int MAX_PACKET_ID_HISTORY = 60 * 10; // So we last 10 seconds at 60 fps
 
@@ -34,6 +38,7 @@ static const int CL2RS_RELAY = 2;
 static const int CL2RS_ACK = 3;
 static const int CL2RS_PING = 4;
 static const int CL2RS_RSMG_ACK = 5;
+static const int CL2RS_ENDMATCH = 6;
 
 // Messages sent from Relay-Server to Client
 static const int RS2CL_RSMG = 0;
@@ -70,6 +75,9 @@ static std::string extractProfileIdFromCxId(const std::string &cxId)
 
     return cxId.substr(first + 1, last - first - 1);
 }
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 namespace BrainCloud
 {
@@ -87,7 +95,7 @@ namespace BrainCloud
 
     RelayComms::~RelayComms()
     {
-        disconnect();
+        socketCleanup();
     }
 
     void RelayComms::initialize()
@@ -108,7 +116,7 @@ namespace BrainCloud
 
     void RelayComms::resetCommunication()
     {
-        disconnect();
+        socketCleanup();
     }
 
     void RelayComms::enableLogging(bool shouldEnable)
@@ -120,7 +128,7 @@ namespace BrainCloud
     {
         if (m_isSocketConnected)
         {
-            disconnect();
+            socketCleanup();
         }
 
         m_connectionType = in_connectionType;
@@ -129,6 +137,7 @@ namespace BrainCloud
         m_connectOptions.passcode = passcode;
         m_connectOptions.lobbyId = lobbyId;
         m_pRelayConnectCallback = in_callback;
+        m_endMatchRequested = false;
         m_ping = 999;
         m_netId = -1;
         m_ownerProfileId.clear();
@@ -144,6 +153,8 @@ namespace BrainCloud
         m_eventPool.reclaim();
         m_packetPool.reclaim();
         m_rsmgHistory.clear();
+        m_trackedPacketIds.clear();
+        m_trackedPacketIds.resize(4);
 
         switch (m_connectionType)
         {
@@ -160,19 +171,33 @@ namespace BrainCloud
             }
             default:
             {
-                disconnect();
+                socketCleanup();
                 queueErrorEvent("Protocol Unimplemented");
                 break;
             }
         }
     }
 
+    void RelayComms::endMatch(const Json::Value& in_jsonPayload)
+    {
+        if (!m_isSocketConnected) return;
+
+        send(CL2RS_ENDMATCH, in_jsonPayload);
+    }
+
     void RelayComms::disconnect()
+    {
+        if (!m_isSocketConnected) return;
+
+        send(CL2RS_DISCONNECT, std::string(""));
+    }
+
+    void RelayComms::socketCleanup()
     {
         m_isConnected = false;
         m_isSocketConnected = false;
         m_resendConnectRequest = false;
-
+        
         // Close socket
         delete m_pSocket;
         m_pSocket = nullptr;
@@ -286,7 +311,7 @@ namespace BrainCloud
         if (!isConnected()) return;
         if (in_size > 1024)
         {
-            disconnect();
+            socketCleanup();
             queueErrorEvent("Relay Error: Packet is too big " + std::to_string(in_size) + " > max 1024");
             return;
         }
@@ -356,9 +381,18 @@ namespace BrainCloud
             pPacket->resendInterval = RELIABLE_RESEND_INTERVALS[(int)in_channel];
             uint64_t ackId = *(uint64_t*)(pPacket->data.data() + 3);
             m_reliables[ackId] = pPacket;
+            if (m_loggingEnabled && m_loggingPackets)
+            {
+                std::cout<<"<<< send on "<<static_cast<int>(in_channel)<<" netId: "<<m_netId<<" packet: "<<packetId<<" "<<ackId<<std::endl;
+            }
         }
         else
         {
+            if (m_loggingEnabled && m_loggingPackets)
+            {
+                uint64_t ackId = *(uint64_t*)(pPacket->data.data() + 3);
+                std::cout<<"<<< send on "<<static_cast<int>(in_channel)<<" netId: "<<m_netId<<" packet: "<<packetId<<" "<<ackId<<std::endl;
+            }
             m_packetPool.free(pPacket);
         }
     }
@@ -412,7 +446,7 @@ namespace BrainCloud
 
         if (in_size < 3)
         {
-            disconnect();
+            socketCleanup();
             queueErrorEvent("Relay Recv Error: packet cannot be smaller than 3 bytes");
             return;
         }
@@ -422,7 +456,7 @@ namespace BrainCloud
 
         if (size < in_size)
         {
-            disconnect();
+            socketCleanup();
             queueErrorEvent("Relay Recv Error: Packet is smaller than header's size");
             return;
         }
@@ -431,7 +465,7 @@ namespace BrainCloud
         {
             if (size < 5)
             {
-                disconnect();
+                socketCleanup();
                 queueErrorEvent("Relay Recv Error: RSMG cannot be smaller than 5 bytes");
                 return;
             }
@@ -439,7 +473,7 @@ namespace BrainCloud
         }
         else if (controlByte == RS2CL_DISCONNECT)
         {
-            disconnect();
+            socketCleanup();
             queueErrorEvent("Relay: Disconnected by server");
         }
         else if (controlByte == RS2CL_PONG)
@@ -450,7 +484,7 @@ namespace BrainCloud
         {
             if (size < 11)
             {
-                disconnect();
+                socketCleanup();
                 queueErrorEvent("Relay Recv Error: ack packet cannot be smaller than 5 bytes");
                 return;
             }
@@ -463,7 +497,7 @@ namespace BrainCloud
         {
             if (size < 11)
             {
-                disconnect();
+                socketCleanup();
                 queueErrorEvent("Relay Recv Error: relay packet cannot be smaller than 5 bytes");
                 return;
             }
@@ -471,7 +505,7 @@ namespace BrainCloud
         }
         else
         {
-            disconnect();
+            socketCleanup();
             queueErrorEvent("Relay Recv Error: Unknown control byte: " + std::to_string(controlByte));
         }
     }
@@ -572,6 +606,22 @@ namespace BrainCloud
             auto cxId = json["cxId"].asString();
             auto profileId = extractProfileIdFromCxId(cxId);
 
+            Json::Value PacketIdsArray = json["orderedPacketIds"];
+            
+            // Loop through the array to get the index and value of each packet id
+            for (int channelId = 0; channelId < static_cast<int>(PacketIdsArray.size()); channelId++)
+            {
+                int PacketId = PacketIdsArray[channelId].asInt();
+                if (PacketId != 0) {
+                    
+                    m_trackedPacketIds[channelId].insert({netId, PacketId});
+                    if (m_loggingEnabled)
+                    {
+                        std::cout << "Added tracked packetId "<< PacketId <<" for netId "<< netId <<" at channel " << channelId << std::endl;
+                    }
+                }
+            }
+            
             m_netIdToCxId[netId] = cxId;
             m_cxIdToNetId[cxId] = netId;
             m_netIdToProfileId[netId] = profileId;
@@ -589,10 +639,15 @@ namespace BrainCloud
             if (m_cxId == cxId)
             {
                 // We are the one that got disconnected!
-                disconnect();
-                queueErrorEvent("Disconnected by server");
+                socketCleanup();
+                queueErrorEvent("Relay: Disconnected by server");
                 return;
             }
+        }
+        else if (op == "END_MATCH")
+        {
+            m_endMatchRequested = true;
+            socketCleanup();
         }
 
         queueSystemEvent(jsonString);
@@ -622,11 +677,16 @@ namespace BrainCloud
             {
                 auto rh = (int)ntohs(*(u_short*)in_data);
                 auto packetId = rh & 0xFFF;
-                std::cout << "Acked packet id: " << packetId << std::endl;
+                //std::cout << "Acked packet id: " << packetId << std::endl;
             }
 #endif
+            if (m_loggingEnabled && m_loggingPackets)
+            {
+                std::cout<<"-*- ack recvd netId: "<<m_netId<<" packet: "<<pPacket->id<<" "<<ackId<<std::endl;
+            }
             m_packetPool.free(pPacket);
             m_reliables.erase(it);
+            
         }
     }
 
@@ -643,6 +703,10 @@ namespace BrainCloud
         return a <= b;
     }
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
     void RelayComms::onRelay(const uint8_t* in_data, int in_size)
     {
         auto rh = (int)ntohs(*(u_short*)in_data);
@@ -661,6 +725,11 @@ namespace BrainCloud
         auto packetId = rh & 0xFFF;
         auto netId = (uint8_t)(playerMask2 & 0x00FF);
 
+        if (m_loggingEnabled && m_loggingPackets)
+        {
+            std::cout<<">>> recv on "<<static_cast<int>(channel)<<" netId: "<<static_cast<int>(netId)<<" packet: "<<packetId<<" "<<ackId<<std::endl;
+        }
+
         // Reconstruct ack id without packet id
         if (m_connectionType == eRelayConnectionType::UDP)
         {
@@ -677,6 +746,23 @@ namespace BrainCloud
                 if (it != m_recvPacketId.end())
                 {
                     prevPacketId = it->second;
+                }
+                
+                //look for a tracked packetId in channel for netId
+                if (m_trackedPacketIds.size() > 0){
+                    std::map<uint8_t, int>::iterator it;
+                    it = m_trackedPacketIds[channel].find(netId);
+                    if(it != m_trackedPacketIds[channel].end()){
+                        // use the tracked packet id rather than
+                        prevPacketId = m_trackedPacketIds[channel][netId];
+                        m_trackedPacketIds[channel].erase(it);
+                        if (m_loggingEnabled)
+                        {
+                            std::cout << "Found tracked packetId for channel: "
+                            <<channel<<" netId: "<<static_cast<int>(netId)<<" which was "<<prevPacketId
+                            << std::endl;
+                        }
+                    }
                 }
 
                 if (reliable)
@@ -700,7 +786,7 @@ namespace BrainCloud
                     {
                         if ((int)orderedReliablePackets.size() > MAX_PACKET_ID_HISTORY)
                         {
-                            disconnect();
+                            socketCleanup();
                             queueErrorEvent("Relay disconnected, too many queued out of order packets.");
                             return;
                         }
@@ -776,6 +862,9 @@ namespace BrainCloud
 
         queueRelayEvent(netId, in_data + 8, in_size - 8);
     }
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
     void RelayComms::runCallbacks()
     {
@@ -818,7 +907,7 @@ namespace BrainCloud
                         auto pPacket = it->second;
                         if (pPacket->timeSinceFirstSend - now > std::chrono::seconds(10))
                         {
-                            disconnect();
+                            socketCleanup();
                             queueErrorEvent("Relay disconnected, too many packet lost");
                             break;
                         }
@@ -830,7 +919,7 @@ namespace BrainCloud
 #if VERBOSE_LOG
                             if (m_loggingEnabled)
                             {
-                                std::cout << "Resend reliable (" << pPacket->id << ", " << std::chrono::duration_cast<std::chrono::milliseconds>(pPacket->timeSinceFirstSend - now).count() << "ms)" << std::endl;
+                               // std::cout << "Resend reliable (" << pPacket->id << ", " << std::chrono::duration_cast<std::chrono::milliseconds>(pPacket->timeSinceFirstSend - now).count() << "ms)" << std::endl;
                             }
 #endif
                         }
@@ -842,13 +931,13 @@ namespace BrainCloud
                     m_pSocket && 
                     now - m_lastRecvTime > std::chrono::seconds(TIMEOUT_SECONDS))
                 {
-                    disconnect();
+                    socketCleanup();
                     queueErrorEvent("Relay Socket Timeout");
                 }
             }
             else if (!m_pSocket->isValid())
             {
-                disconnect();
+                socketCleanup();
                 queueErrorEvent("Relay Socket Error: failed to connect");
             }
             else
@@ -859,7 +948,7 @@ namespace BrainCloud
                     m_isSocketConnected = true;
                     if (m_loggingEnabled)
                     {
-                        std::cout << "Relay Socket Connected" << std::endl;
+                        std::cout << "RelayComms: Relay Socket Connected" << std::endl;
                     }
                     send(CL2RS_CONNECT, buildConnectionRequest());
                     if (m_connectionType == eRelayConnectionType::UDP)
@@ -886,7 +975,7 @@ namespace BrainCloud
                         }
                         break;
                     case EventType::ConnectFailure:
-                        if (m_pRelayConnectCallback)
+                        if (m_pRelayConnectCallback && !m_endMatchRequested)
                         {
                             if (m_loggingEnabled)
                             {

@@ -6,8 +6,12 @@
 //
 //
 
-#ifndef _IFILEUPLOADCALLBACK_H_
-#define _IFILEUPLOADCALLBACK_H_
+#pragma once
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
+
 
 #include <string>
 
@@ -64,4 +68,6 @@ namespace BrainCloud {
     };
 }
 
-#endif /* _IFILEUPLOADCALLBACK_H_ */
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif

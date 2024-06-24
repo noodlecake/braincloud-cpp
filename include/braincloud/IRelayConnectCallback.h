@@ -5,8 +5,12 @@
 //  Created by David St-Louis on 2020-02-12.
 //
 
-#ifndef _IRELAYCONNECTCALLBACK_H_
-#define _IRELAYCONNECTCALLBACK_H_
+#pragma once
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
+
 
 #include <string>
 
@@ -34,4 +38,6 @@ namespace BrainCloud {
 
 };
 
-#endif /* _IRELAYCONNECTCALLBACK_H_ */
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif

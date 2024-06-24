@@ -1,10 +1,15 @@
 #pragma once
 
+#if __APPLE__
+    // for deployment TARGET_OS definitions
+    #include "TargetConditionals.h"
+#endif
+
 #include "braincloud/IServerCallback.h"
 #include "braincloud/ServiceName.h"
 #include "braincloud/BrainCloudRTT.h"
 
-#include <json/json.h>
+#include "json/json.h"
 
 #include <atomic>
 #include <map>

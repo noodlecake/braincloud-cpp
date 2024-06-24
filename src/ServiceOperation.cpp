@@ -188,6 +188,7 @@ namespace BrainCloud
 	const ServiceOperation ServiceOperation::FindPlayersUsingFilter = ServiceOperation("FIND_PLAYERS_USING_FILTER");
 
 	const ServiceOperation ServiceOperation::SubmitTurn = ServiceOperation("SUBMIT_TURN");
+	const ServiceOperation ServiceOperation::UpdateMatchStateCurrentTurn = ServiceOperation("UPDATE_MATCH_STATE_CURRENT_TURN");
 	const ServiceOperation ServiceOperation::UpdateMatchSummary = ServiceOperation("UPDATE_SUMMARY");
 	const ServiceOperation ServiceOperation::Abandon = ServiceOperation("ABANDON");
 	const ServiceOperation ServiceOperation::Complete = ServiceOperation("COMPLETE");
@@ -256,6 +257,13 @@ namespace BrainCloud
 	const ServiceOperation ServiceOperation::IncrementGlobalEntityData = ServiceOperation("INCREMENT_GLOBAL_ENTITY_DATA");
 	const ServiceOperation ServiceOperation::GetRandomEntitiesMatching = ServiceOperation("GET_RANDOM_ENTITIES_MATCHING");
 
+    const ServiceOperation ServiceOperation::CheckFilenameExists = ServiceOperation("CHECK_FILENAME_EXISTS");
+    const ServiceOperation ServiceOperation::CheckFullpathFilenameExists = ServiceOperation("CHECK_FULLPATH_FILENAME_EXISTS");
+    const ServiceOperation ServiceOperation::GroupCopyFile = ServiceOperation("COPY_FILE");
+    const ServiceOperation ServiceOperation::GroupDeleteFile = ServiceOperation("DELETE_FILE");
+    const ServiceOperation ServiceOperation::GroupMoveFile = ServiceOperation("MOVE_FILE");
+    const ServiceOperation ServiceOperation::MoveUserToGroupFile = ServiceOperation("MOVE_USER_TO_GROUP_FILE");
+    const ServiceOperation ServiceOperation::UpdateFileInfo = ServiceOperation("UPDATE_FILE_INFO");
 	const ServiceOperation ServiceOperation::GetFileInfo = ServiceOperation("GET_FILE_INFO");
 	const ServiceOperation ServiceOperation::GetFileInfoSimple = ServiceOperation("GET_FILE_INFO_SIMPLE");
 	const ServiceOperation ServiceOperation::GetGlobalCDNUrl = ServiceOperation("GET_GLOBAL_CDN_URL");
@@ -313,7 +321,8 @@ namespace BrainCloud
 	const ServiceOperation ServiceOperation::CreateGroupEntity = ServiceOperation("CREATE_GROUP_ENTITY");
 	const ServiceOperation ServiceOperation::DeleteGroup = ServiceOperation("DELETE_GROUP");
 	const ServiceOperation ServiceOperation::DeleteGroupEntity = ServiceOperation("DELETE_GROUP_ENTITY");
-	const ServiceOperation ServiceOperation::DeleteGroupMemeber = ServiceOperation("DELETE_MEMBER_FROM_GROUP");
+    const ServiceOperation ServiceOperation::DeleteGroupJoinRequest = ServiceOperation("DELETE_GROUP_JOIN_REQUEST");
+	const ServiceOperation ServiceOperation::DeleteGroupMember = ServiceOperation("DELETE_MEMBER_FROM_GROUP");
 	const ServiceOperation ServiceOperation::GetMyGroups = ServiceOperation("GET_MY_GROUPS");
 	const ServiceOperation ServiceOperation::IncrementGroupData = ServiceOperation("INCREMENT_GROUP_DATA");
 	const ServiceOperation ServiceOperation::IncrementGroupEntityData = ServiceOperation("INCREMENT_GROUP_ENTITY_DATA");

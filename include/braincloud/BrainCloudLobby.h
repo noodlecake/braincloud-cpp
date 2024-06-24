@@ -1,7 +1,11 @@
 // Copyright 2018 bitHeads, Inc. All Rights Reserved.
 
-#ifndef _BRAINCLOUDLOBBY_H_
-#define _BRAINCLOUDLOBBY_H_
+#pragma once
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
+
 
 #include "braincloud/BrainCloudTypes.h"
 #include "braincloud/IServerCallback.h"
@@ -359,4 +363,6 @@ namespace BrainCloud
 	};
 };
 
-#endif /* _BRAINCLOUDLOBBY_H_ */
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif

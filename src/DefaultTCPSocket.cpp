@@ -7,6 +7,9 @@ namespace BrainCloud
 		return new DefaultTCPSocket(address, port);
 	}
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-variable"
+
 	DefaultTCPSocket::DefaultTCPSocket(const std::string& address, int port)
 		: _socket(-1)
 		, _isValid(true)
@@ -44,6 +47,9 @@ namespace BrainCloud
 			return;
 		}
 	}
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 	DefaultTCPSocket::~DefaultTCPSocket()
 	{
@@ -71,7 +77,7 @@ namespace BrainCloud
 		memcpy(pData, &len, 4);
 		memcpy(pData + 4, &message[0], msgSize);
 
-		int ret = 0;
+		size_t ret = 0;
 		while (ret >= 0 && ret < (int)size)
 		{
 			ret = ::send(_socket, pData, size, 0);

@@ -1,4 +1,9 @@
 #pragma once
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
+
 
 #include <map>
 #include <string>
@@ -751,7 +756,13 @@ namespace BrainCloud {
 		 */
 		void resetUniversalIdPasswordAdvancedWithExpiry(const char * in_emailAddress, std::string in_serviceParams, int in_tokenTtlInMinutes , IServerCallback * in_callback = NULL);
 
-		/**
+        /**
+         * Returns true IF both Profile ID and Anonymous ID are stored - meaning reconnect possible
+         * @return true if reconnect possible
+         */
+        bool canReconnect();
+
+        /**
 		* Re-authenticates the user with brainCloud
 		*
 		* @param in_callback The method to be invoked when the server response is received
@@ -770,7 +781,19 @@ namespace BrainCloud {
          *
 		 * @deprecated Use of the *singleton* has been deprecated. We recommend that you create your own *variable* to hold an instance of the brainCloudWrapper. Explanation here: http://getbraincloud.com/apidocs/wrappers-clients-and-inconvenient-singletons/
 		 */
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#else
+#pragma warning( push )
+#pragma warning (disable : 4996)
+#endif
         DEPRECATED static BrainCloud::BrainCloudClient* getBC() { return getInstance()->getBCClient(); }
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#else
+#pragma warning( pop )
+#endif
 
         /**
          * Returns a singleton instance of the BrainCloudClient.
@@ -780,6 +803,14 @@ namespace BrainCloud {
             return client;
         }
 
+
+        /**
+         * Clears Profile Id and Anonymous Id and deletes data entry on device
+         * Use Logout
+         * NOTE: If this is called when AnonymousAuthentication is used, the portal user cannot be reconnected or recovered!
+         */
+        void clearIds();
+        
         /**
          * Returns the stored profile id
          * @return The stored profile id
@@ -814,6 +845,7 @@ namespace BrainCloud {
          */
         void resetStoredAnonymousId();
 
+
         /**
          * For non-anonymous authentication methods, a profile id will be passed in
          * when this value is set to false. This will generate an error on the server
@@ -830,6 +862,14 @@ namespace BrainCloud {
          * @return Whether to always allow profile switches
          */
         bool getAlwaysAllowProfileSwitch();
+
+        /**
+         * Logs user out of playerState and optionally clears the profile id (eg. shared computer)
+         * NOTE: if forgetUser is true for an AuthenticateAnonymous THEN the user data will be in-accessible and non-recoverable
+         * @param forgetUser true if user profile should be deleted from device on logout, false to allow reconnect
+         * @param in_callback
+         */
+        void logout(bool forgetUser, IServerCallback * in_callback);
 
         virtual void serverCallback(BrainCloud::ServiceName serviceName, BrainCloud::ServiceOperation serviceOperation, std::string const & jsonData);
         virtual void serverError(BrainCloud::ServiceName serviceName,
@@ -863,3 +903,6 @@ namespace BrainCloud {
         void resetStoredAuthenticationType();
     };
 }
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif

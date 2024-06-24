@@ -1,13 +1,19 @@
 // Copyright 2020 bitHeads, Inc. All Rights Reserved.
 
-#ifndef _BRAINCLOUDRELAY_H_
-#define _BRAINCLOUDRELAY_H_
+#pragma once
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
+
 
 #include "braincloud/BrainCloudTypes.h"
 #include "braincloud/RelayChannel.h"
 #include "braincloud/RelayConnectionType.h"
+#include "braincloud/internal/JsonUtil.h"
 
 #include <string>
+
 
 namespace BrainCloud
 {
@@ -44,6 +50,11 @@ namespace BrainCloud
          * Disconnects from the relay server
          */
         void disconnect();
+
+        /**
+         * Requests to end the current match on the relay server
+         */
+        void endMatch(const std::string&  jsonPayload);
 
         /**
          * Returns whether or not we have a successful connection with
@@ -191,4 +202,6 @@ namespace BrainCloud
 	};
 };
 
-#endif /* _BRAINCLOUDCHAT_H_ */
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
