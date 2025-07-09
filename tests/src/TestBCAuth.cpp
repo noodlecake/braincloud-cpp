@@ -21,6 +21,7 @@ TEST_F(TestBCAuth, AaaRunFirst)
 TEST_F(TestBCAuth, AuthenticateEmailPassword)
 {
     TestResult tr;
+
     m_bc->getAuthenticationService()->authenticateEmailPassword(GetUser(UserA)->m_email, GetUser(UserA)->m_password, true, &tr);
     tr.run(m_bc);
     Logout();
@@ -98,6 +99,13 @@ TEST_F(TestBCAuth, AuthenticateUniversal)
     tr.run(m_bc);
 
     Logout();
+}
+
+TEST_F(TestBCAuth, GetServerVersion)
+{
+    TestResult tr;
+    m_bc->getAuthenticationService()->getServerVersion(&tr);
+    tr.run(m_bc);
 }
 
 TEST_F(TestBCAuth, AuthenticateParse)

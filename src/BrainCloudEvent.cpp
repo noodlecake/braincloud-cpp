@@ -37,6 +37,16 @@ namespace BrainCloud
 		m_client->getBrainCloudComms()->addToQueue(sc);
 	}
 
+	void BrainCloudEvent::updateIncomingEventDataIfExists(const char * in_evId, const std::string& in_jsonEventData, IServerCallback * in_callback)
+	{
+		Json::Value message;
+		message[OperationParam::EvId.getValue()] = in_evId;
+		message[OperationParam::EventServiceUpdateEventDataData.getValue()] = JsonUtil::jsonStringToValue(in_jsonEventData);
+
+		ServerCall * sc = new ServerCall(ServiceName::Event, ServiceOperation::UpdateEventDataIfExists, message, in_callback);
+		m_client->getBrainCloudComms()->addToQueue(sc);
+	}
+
 	void BrainCloudEvent::deleteIncomingEvent(const char * in_evId, IServerCallback * in_callback)
 	{
 		Json::Value message;
@@ -95,6 +105,19 @@ namespace BrainCloud
 		message[OperationParam::EventServiceSendRecordLocally.getValue()] = in_recordLocally;
 
 		ServerCall * sc = new ServerCall(ServiceName::Event, ServiceOperation::Send, message, in_callback);
+		m_client->getBrainCloudComms()->addToQueue(sc);
+	}
+
+	void BrainCloudEvent::sendEventToProfiles(const std::vector<std::string> &in_toIds, const char *in_eventType, const std::string &in_eventData, IServerCallback *in_callback)
+	{
+		Json::Value data;
+		Json::Value toIds = JsonUtil::stringVectorToJson(in_toIds);
+		data[OperationParam::EventServiceToIds.getValue()] = toIds;
+		data[OperationParam::EventServiceSendEventType.getValue()] = in_eventType;
+		data[OperationParam::EventServiceSendEventData.getValue()] = JsonUtil::jsonStringToValue(in_eventData);
+
+		ServerCall *sc = new ServerCall(ServiceName::Event, ServiceOperation::SendEventToProfiles, data, in_callback);
+
 		m_client->getBrainCloudComms()->addToQueue(sc);
 	}
 

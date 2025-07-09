@@ -141,6 +141,11 @@ namespace BrainCloud
 		void authenticateUniversal(const char * in_userId, const char * in_password, bool in_forceCreate, IServerCallback * in_callback = NULL);
 
 		/*
+		 * Get server version.
+		 */
+		void getServerVersion(IServerCallback *in_callback = NULL);
+
+		/*
 		 * Authenticate the user using a steam userid and session ticket (without any validation on the userid).
 		 *
 		 * Service Name - Authenticate
@@ -413,6 +418,8 @@ namespace BrainCloud
 
 		const std::string & getAnonymousId() const { return _anonymousId; }
 		const std::string & getProfileId() const { return _profileId; }
+
+		bool compressResponses = false;
 
 		void setAnonymousId(const char * anonymousId) { _anonymousId = anonymousId; }
 		void setProfileId(const char * profileId) { _profileId = profileId; }
