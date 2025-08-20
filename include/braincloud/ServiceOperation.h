@@ -513,6 +513,7 @@ namespace BrainCloud {
 		static const ServiceOperation VirtualCurrencyResetCurrency;
 
         //appstore
+		static const ServiceOperation AppStoreCachePurchaseContext;
         static const ServiceOperation AppStoreVerifyPurchase;
         static const ServiceOperation AppStoreGetEligiblePromotions;
         static const ServiceOperation AppStoreGetSalesInventory;
