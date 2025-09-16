@@ -59,13 +59,28 @@ namespace BrainCloud
         , _isConnecting(true)
         , _authHeaders(headers)
     {
+
+#if defined(LWS_OPENSSL_SUPPORT)
+#if defined(LWS_WITH_MBEDTLS)
+        printf("Using MbedTLS\n");
+#else
+        printf("Using OpenSSL\n");
+#endif
+#endif
+
+
+#if !defined(BC_SSL_ALLOW_SELFSIGNED)
+        InitializeSSLCertificates();
+        std::cout<<"Certs initialized for RTT."<<std::endl;
+#else
+        std::cout<<"RTT skipping certs."<<std::endl;
+#endif
+        std::string uriCopy = uri;
         lws_set_log_level(
             //LLL_DEBUG, NULL);
             LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE, NULL);
 
         InitializeSSLCertificates();
-
-        std::string uriCopy = uri;
         
         // Split address into host/addr/origin/protocol
         std::string protocol = uriCopy.substr(0, std::min<size_t>(uriCopy.size(), uriCopy.find_first_of(':')));
@@ -108,10 +123,17 @@ namespace BrainCloud
             //info.extensions = exts;
             info.options = LWS_SERVER_OPTION_VALIDATE_UTF8;
             info.options |= LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;
+            #if(LWS_LIBRARY_VERSION_MAJOR >= 4) && !defined(BC_SSL_ALLOW_SELFSIGNED) && defined(LWS_WITH_MBEDTLS)
+                //info.options |= LWS_SERVER_OPTION_DISABLE_OS_CA_CERTS;
+                //info.client_ssl_ca_mem = full_certs.front().c_str();
+                //info.client_ssl_ca_mem_len = static_cast<unsigned int>(full_certs.front().length());
+                info.client_ssl_ca_filepath = CACERTS_FILE_PATH;
+            #endif
             #if(LWS_LIBRARY_VERSION_MAJOR >= 4)
                 info.options |= LWS_SERVER_OPTION_DISABLE_OS_CA_CERTS;
                 info.client_ssl_ca_mem = full_certs.front().c_str();
                 info.client_ssl_ca_mem_len = static_cast<unsigned int>(full_certs.front().length());
+
             #endif
             std::unique_lock<std::mutex> lock(lwsContextMutex);
             _pLwsContext = lws_create_context(&info);
