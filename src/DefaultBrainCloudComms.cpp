@@ -1,3 +1,4 @@
+// Copyright 2025 bitHeads, Inc. All Rights Reserved.
 #include <stdio.h>
 #include <iostream>
 #include <algorithm>

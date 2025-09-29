@@ -1,3 +1,4 @@
+// Copyright 2025 bitHeads, Inc. All Rights Reserved.
 #include "braincloud/internal/IFileUploader.h"
 
 #include <iostream>

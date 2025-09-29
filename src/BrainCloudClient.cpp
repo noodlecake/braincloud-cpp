@@ -1,6 +1,6 @@
 // BrainCloudClient.cpp
 // BrainCloudLib
-// Copyright 2016 bitHeads, Inc. All Rights Reserved.
+// Copyright 2025 bitHeads, Inc. All Rights Reserved.
 
 #include <cstring>
 #include <iomanip>
