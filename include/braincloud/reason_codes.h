@@ -1,3 +1,4 @@
+// Copyright 2025 bitHeads, Inc. All Rights Reserved.
 #ifndef _REASONCODES_H_
 #define _REASONCODES_H_
 
