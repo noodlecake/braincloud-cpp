@@ -1,4 +1,4 @@
-// Copyright 2020 bitHeads, Inc. All Rights Reserved.
+// Copyright 2025 bitHeads, Inc. All Rights Reserved.
 
 #include "braincloud/BrainCloudRelay.h"
 #include "braincloud/BrainCloudClient.h"

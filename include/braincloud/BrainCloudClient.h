@@ -1,6 +1,6 @@
 //  BrainCloudClient.h
 //  BrainCloudLib
-//  Copyright 2016 bitHeads, Inc. All Rights Reserved.
+//  Copyright 2025 bitHeads, Inc. All Rights Reserved.
 
 #pragma once
 #if defined(__clang__)
