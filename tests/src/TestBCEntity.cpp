@@ -7,6 +7,7 @@
 #include "TestBCEntity.h"
 #include "braincloud/reason_codes.h"
 #include "braincloud/http_codes.h"
+#include "brainCloud/ServiceOperation.h"
 
 
 using namespace BrainCloud;
@@ -18,6 +19,11 @@ TEST_F(TestBCEntity, Create)
 
 	Json::Value entityData;
 	entityData["address"] = "1309 Carling Ave";
+	//Testing to make sure we can grab each parameter without issue for the packet.
+	entityData[OperationParam::Content.getValue()] = "test test";
+	entityData[ServiceName::Entity.getValue()] = "test test";
+	entityData[ServiceOperation::CreateEntity.getValue()] = "test test";
+	
 
 	Json::FastWriter fw;
 	m_bc->getEntityService()->createEntity(m_entityType, fw.write(entityData), "", &tr);
