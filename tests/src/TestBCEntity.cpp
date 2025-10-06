@@ -7,7 +7,6 @@
 #include "TestBCEntity.h"
 #include "braincloud/reason_codes.h"
 #include "braincloud/http_codes.h"
-#include "brainCloud/ServiceOperation.h"
 
 
 using namespace BrainCloud;
