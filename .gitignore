@@ -88,3 +88,5 @@ build/
 
 .cache/
 cmake-**/
+
+*vcpkg_installed/*
