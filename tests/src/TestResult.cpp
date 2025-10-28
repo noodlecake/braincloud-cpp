@@ -38,7 +38,7 @@
 #include <execinfo.h>
 #include <cstdlib>
 #include <cxxabi.h>
-
+#include <cstdio>
 
 #endif
 
@@ -122,30 +122,21 @@ void TestResult::printStackTrace()
     const int maxFrames = 64;
     void* frames[maxFrames];
     int frameCount = backtrace(frames, maxFrames);
-    char** symbols = backtrace_symbols(frames, frameCount);
 
     std::cout << "Stack trace (" << frameCount << " frames):\n";
-
     for (int i = 0; i < frameCount; ++i)
     {
-        std::string symbol(symbols[i]);
+        std::ostringstream cmd;
+        cmd << "addr2line -e ./bctests -f -p " << frames[i];
+        FILE* fp = popen(cmd.str().c_str(), "r");
+        if (!fp) continue;
 
-        // Try to extract the mangled name between '(' and '+'
-        size_t begin = symbol.find('(');
-        size_t end = symbol.find('+', begin);
-        if (begin != std::string::npos && end != std::string::npos)
-        {
-            std::string mangled = symbol.substr(begin + 1, end - begin - 1);
-            std::string demangled = demangle(mangled.c_str());
+        char buffer[512];
+        if (fgets(buffer, sizeof(buffer), fp))
+            std::cout << buffer;
 
-            // Replace the mangled part with the demangled version
-            symbol.replace(begin + 1, end - begin - 1, demangled);
-        }
-
-        std::cout << symbol << "\n";
+        pclose(fp);
     }
-
-    free(symbols);
 #endif
 }
 
