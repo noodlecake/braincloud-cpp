@@ -46,7 +46,6 @@ public:
 
 private:
     void sleepAndUpdate(BrainCloudClient * in_bc);
-    void printStackTrace();
     int m_maxWaitMillis;
 };
 
