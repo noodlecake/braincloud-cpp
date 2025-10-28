@@ -5,17 +5,41 @@
 #include "braincloud/http_codes.h"
 
 
+#include <iostream>
+#include <string>
+#include <sstream>
+
 #if __cplusplus < 201103L
 
 #ifdef WIN32
 #include <WinBase.h>
+
 #else
 #include <unistd.h>
+
 #endif
 
 #else
+
 #include <chrono>
 #include <thread>
+
+#endif
+
+#ifdef WIN32
+
+#include <windows.h>
+#include <dbghelp.h>
+
+#pragma comment(lib, "dbghelp.lib")
+
+#else
+
+#include <execinfo.h>
+#include <cstdlib>
+#include <cxxabi.h>
+
+
 #endif
 
 #define MAX_WAIT_SECS 60
@@ -69,6 +93,75 @@ void TestResult::sleepAndUpdate(BrainCloudClient * in_bc)
     }
 }
 
+void TestResult::printStackTrace()
+{
+#ifdef WIN32
+    void* stack[64];
+    HANDLE process = GetCurrentProcess();
+
+    // Capture the stack
+    USHORT frames = CaptureStackBackTrace(0, 64, stack, nullptr);
+
+    // Initialize symbol handler
+    SymInitialize(process, nullptr, TRUE);
+
+    SYMBOL_INFO* symbol = (SYMBOL_INFO*)calloc(sizeof(SYMBOL_INFO) + 256 * sizeof(char), 1);
+    symbol->MaxNameLen = 255;
+    symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
+
+    std::cout << "Stack trace (" << frames << " frames):\n";
+
+    for (USHORT i = 0; i < frames; i++)
+    {
+        SymFromAddr(process, (DWORD64)(stack[i]), 0, symbol);
+        std::cout << i << ": " << symbol->Name << " - 0x" << std::hex << symbol->Address << std::dec << "\n";
+    }
+
+    free(symbol);
+#else
+    const int maxFrames = 64;
+    void* frames[maxFrames];
+    int frameCount = backtrace(frames, maxFrames);
+    char** symbols = backtrace_symbols(frames, frameCount);
+
+    std::cout << "Stack trace (" << frameCount << " frames):\n";
+
+    for (int i = 0; i < frameCount; ++i)
+    {
+        std::string symbol(symbols[i]);
+
+        // Try to extract the mangled name between '(' and '+'
+        size_t begin = symbol.find('(');
+        size_t end = symbol.find('+', begin);
+        if (begin != std::string::npos && end != std::string::npos)
+        {
+            std::string mangled = symbol.substr(begin + 1, end - begin - 1);
+            std::string demangled = demangle(mangled.c_str());
+
+            // Replace the mangled part with the demangled version
+            symbol.replace(begin + 1, end - begin - 1, demangled);
+        }
+
+        std::cout << symbol << "\n";
+    }
+
+    free(symbols);
+#endif
+}
+
+std::string TestResult::demangle(const char* name)
+{
+#ifdef WIN32
+    return std::string();
+#else
+    int status = 0;
+    char* demangled = abi::__cxa_demangle(name, nullptr, nullptr, &status);
+    std::string result = (status == 0 && demangled) ? demangled : name;
+    free(demangled);
+    return result;
+#endif
+}
+
 bool TestResult::run(BrainCloudClient * in_bc, bool in_noAssert)
 {
     return runExpectCount(in_bc, 1, in_noAssert);
@@ -90,6 +183,7 @@ bool TestResult::runExpectCount(BrainCloudClient * in_bc, int in_apiCountExpecte
         m_statusMessage = "TEST TIMEOUT EXCEEDED";
         long maxWaitMs = m_maxWaitMillis > 0 ? m_maxWaitMillis : MAX_WAIT_SECS * 1000;
         printf("\n [TIMEOUT EXCEEDED]: Timeout exceeded %d - expected count: %d  \n", maxWaitMs, in_apiCountExpected);
+        printStackTrace();
         if (!in_noAssert) EXPECT_TRUE(m_done);
     }
     else
