@@ -67,7 +67,7 @@ namespace BrainCloud
         virtual int64_t getUploadBytesTransferred(const char * in_fileUploadId);
 
         // returns true if packet requires a retry
-        bool handleResult( URLResponse const & );
+        bool handleResult( URLResponse const & response, URLRequest const request);
 
     protected:
         friend class IBrainCloudComms;
@@ -96,7 +96,7 @@ namespace BrainCloud
         int64_t _retryTimeMillis;
 
         void handleResponseBundle(Json::Value & root);
-        void handleError( URLResponse const & );
+        void handleError(URLResponse const& response, URLRequest const request);
         void triggerCommsError(int statusCode, int responseCode, const std::string & in_error, const std::string & in_severity);
         void processEvents( Json::Value *, bool = true );
         bool shouldRetryPacket();
