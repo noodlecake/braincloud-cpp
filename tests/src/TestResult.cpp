@@ -4,7 +4,6 @@
 #include "braincloud/reason_codes.h"
 #include "braincloud/http_codes.h"
 
-#include <windows.h>
 #include <dbghelp.h>
 #include <iostream>
 
