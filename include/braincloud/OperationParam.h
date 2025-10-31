@@ -8,8 +8,6 @@ namespace BrainCloud {
 	class OperationParam
 	{
 	public:
-		static const OperationParam Authenticate;
-
 		//Push Notification Service - Send Params
 		static const OperationParam PushNotificationSendParamToPlayerId;
 		static const OperationParam PushNotificationSendParamNotificationTemplateId;
