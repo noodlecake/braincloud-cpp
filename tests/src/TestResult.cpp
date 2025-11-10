@@ -260,6 +260,8 @@ void TestResult::serverCallback(ServiceName serviceName, ServiceOperation servic
     m_response.clear();
     reader.parse(jsonData, m_response);
 
+    printf("\n [From Request Service: %s Operation: %s] \n", serviceName.getValue(), serviceOperation.getValue());
+
     printf("\n [RESPONSE]: %s \n", jsonData.c_str());
 
     m_result = true;
