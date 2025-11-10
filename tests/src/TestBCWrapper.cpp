@@ -35,7 +35,7 @@ TEST_F(TestBCWrapper, AuthenticateAnonymous)
 
 TEST_F(TestBCWrapper, ManualRedirect) // Redirects to the same environement, different app id
 {
-    m_bcWrapper->initialize(m_serverUrl.c_str(), m_secret.c_str(), m_redirectAppId.c_str(), m_version.c_str(), "wrapper", "unittest");
+    m_bcWrapper->initialize(m_serverUrl.c_str(), m_secret.c_str(), m_redirectAppId.c_str(), m_version.c_str(), NULL, NULL);
 
     TestResult tr;
  	m_bcWrapper->authenticateAnonymous(&tr);
