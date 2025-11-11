@@ -6,7 +6,7 @@ namespace BrainCloud
     const Platform & Platform::AppleTVOS = Platform("APPLE_TV_OS");
     const Platform & Platform::BlackBerry = Platform("BB");
     const Platform & Platform::Facebook = Platform("FB");
-    const Platform & Platform::Oculus = Platform("Oculus");
+    const Platform & Platform::Oculus = Platform("OCULUS");
     const Platform & Platform::GooglePlayAndroid = Platform("ANG");
     const Platform & Platform::iOS = Platform("IOS");
     const Platform & Platform::Linux = Platform("LINUX");
