@@ -20,8 +20,8 @@ namespace BrainCloud
                     return Platform::GooglePlayAndroid.toString();
                 case S3E_OS_ID_QNX: // playbook
                     return Platform::BlackBerry.toString();
-                case S3E_OS_ID_ROKU: // TODO - add Roku platform!!!
-                    return Platform::GooglePlayAndroid.toString();
+                case S3E_OS_ID_ROKU:
+                    return Platform::Roku.toString();
                 case S3E_OS_ID_WP8:
                 case S3E_OS_ID_WP81:
                     return Platform::WindowsPhone.toString();
