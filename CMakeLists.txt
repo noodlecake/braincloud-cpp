@@ -442,8 +442,7 @@ if (APPLE)
             ${BC_SECURITY_LIB}
 			${BC_Z_LIB})
 elseif (LINUX)
-    find_package(CURL REQUIRED)
-    list(APPEND includes PUBLIC ${CURL_INCLUDE_DIRS})
+    find_package(CURL CONFIG REQUIRED)
 
     find_package(UUID REQUIRED)
     list(APPEND includes PUBLIC ${UUID_INCLUDE_DIRS})
@@ -454,7 +453,8 @@ elseif (LINUX)
     list(APPEND libs
             ${CURL_LIBRARIES}
             ${UUID_LIBRARIES}
-			${ZLIB_LIBRARIES})
+			${ZLIB_LIBRARIES}
+			CURL::libcurl)
 			
 elseif (ANDROID)
     list(APPEND includes PUBLIC "lib/android/include/")
