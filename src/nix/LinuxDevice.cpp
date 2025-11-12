@@ -67,6 +67,16 @@ namespace BrainCloud
 
 			if (out_timezoneOffset)
 				*out_timezoneOffset = hoursOffset;
+			
+			if (*out_countryCode == "419")
+            {
+                *out_countryCode = "_LA_";
+            }
+
+            if (*out_countryCode == "Hans" || *out_countryCode == "Hant")
+            {
+                *out_countryCode = "CN";
+            }
         }
     }
 }
