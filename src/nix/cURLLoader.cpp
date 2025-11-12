@@ -6,7 +6,10 @@
 
 
 #if ( defined(GAMECLIENT_DEBUGLEVEL)  &&  GAMECLIENT_DEBUGLEVEL > 0 )
-#   include <iostream>
+#include <iostream>
+#if defined(USE_PTHREAD)
+#include <gnu/libc-version.h>
+#endif
 #endif
 #include <cctype>
 
@@ -35,7 +38,7 @@ namespace BrainCloud
     }
 
     bool cURLLoader::_initialized = false;
-    long cURLLoader::_timeoutInterval = 0;
+    long cURLLoader::_timeoutInterval = 10000;
 
     /**
      * Constructor
@@ -56,6 +59,7 @@ namespace BrainCloud
         memset(&_threadId, 0, sizeof(pthread_t));
         memset(&_threadAttributes, 0, sizeof(_threadAttributes));
 #endif
+		printCurlVersion();
     }
 
     cURLLoader::~cURLLoader()
@@ -417,6 +421,7 @@ namespace BrainCloud
             {
                 curl_easy_setopt(curl, CURLOPT_NOSIGNAL, (long)1);
                 curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, _timeoutInterval);
+				curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, 5000);
             }
 
             // Determine the type of request being made.
@@ -514,6 +519,29 @@ namespace BrainCloud
         }
         loader->_threadRunning = false; // This is not even atomic !!!
     }
+	
+	void cURLLoader::printCurlVersion()
+	{
+		curl_version_info_data *info = curl_version_info(CURLVERSION_NOW);
+
+		std::cout << "libcurl version: " << info->version << std::endl;
+		std::cout << "SSL version: " << (info->ssl_version ? info->ssl_version : "none") << std::endl;
+		std::cout << "libz version: " << (info->libz_version ? info->libz_version : "none") << std::endl;
+
+		if (info->protocols)
+		{
+			std::cout << "Supported protocols: ";
+			for (const char *const *proto = info->protocols; *proto; ++proto)
+			{
+				std::cout << *proto << " ";
+			}
+			std::cout << std::endl;
+		}
+		
+#if defined(USE_PTHREAD)
+		std::cout << "glibc version: " << gnu_get_libc_version() << std::endl;
+#endif
+	}
 }
 
 #endif
