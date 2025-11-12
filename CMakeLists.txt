@@ -441,7 +441,7 @@ if (APPLE)
             ${BC_SECURITY_LIB}
 			${BC_Z_LIB})
 elseif (LINUX)
-    find_package(CURL CONFIG REQUIRED)
+    find_package(CURL REQUIRED)
 
     find_package(UUID REQUIRED)
     list(APPEND includes PUBLIC ${UUID_INCLUDE_DIRS})
