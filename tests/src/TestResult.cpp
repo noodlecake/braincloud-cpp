@@ -173,7 +173,7 @@ bool TestResult::runExpectCount(BrainCloudClient * in_bc, int in_apiCountExpecte
         m_reasonCode = 999;
         m_statusMessage = "TEST TIMEOUT EXCEEDED";
         long maxWaitMs = m_maxWaitMillis > 0 ? m_maxWaitMillis : MAX_WAIT_SECS * 1000;
-        printf("\n [TIMEOUT EXCEEDED]: Timeout exceeded %d - expected count: %d  \n", maxWaitMs, in_apiCountExpected);
+        printf("\n [TIMEOUT EXCEEDED]: Timeout exceeded %ld - expected count: %d  \n", maxWaitMs, in_apiCountExpected);
         printStackTrace();
         if (!in_noAssert) EXPECT_TRUE(m_done);
     }
