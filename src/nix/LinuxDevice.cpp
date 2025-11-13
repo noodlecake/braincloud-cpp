@@ -24,16 +24,12 @@ namespace BrainCloud
 			if (out_languageCode) *out_languageCode = "en";
 			if (out_countryCode) *out_countryCode = "US";
 			
-			//
-			// 1️⃣Get locale from environment (LANG, LC_ALL, etc.)
-			//
 			const char* langEnv = std::getenv("LC_ALL");
 			if (!langEnv || !*langEnv) langEnv = std::getenv("LANG");
 
 			if (langEnv && *langEnv)
 			{
 				std::string locale(langEnv);
-				// Example: "en_US.UTF-8"
 				size_t underscore = locale.find('_');
 				if (underscore != std::string::npos)
 				{
@@ -50,14 +46,9 @@ namespace BrainCloud
 				}
 				else if (out_languageCode)
 				{
-					// Fallback: only language part (e.g., "en")
 					*out_languageCode = locale;
 				}
 			}
-
-			//
-			// 2️⃣ Compute timezone offset (in hours)
-			//
 			std::time_t now = std::time(nullptr);
 			std::tm local_tm = *std::localtime(&now);
 			std::tm utc_tm   = *std::gmtime(&now);
