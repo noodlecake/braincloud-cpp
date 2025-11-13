@@ -784,16 +784,13 @@ namespace BrainCloud
 		return (int)_packetTimeouts.size();
 	}
 
-	void DefaultBrainCloudComms::handleError(URLResponse const& response, URLRequest const request)
+	void DefaultBrainCloudComms::handleError(URLResponse const& response, URLRequest const& request)
 	{
 #if ( defined(GAMECLIENT_DEBUGLEVEL)  )
-
 		std::cout << "DefaultBrainCloudComms::handleError() from request:" << request.getUrl() << " data: " << request.getData() << std::endl;
 
 		std::cout << "DefaultBrainCloudComms::handleError() status(" << response.getStatusCode()
 			<< ") reasonPhrase: " << response.getReasonPhrase() << " data: " << response.getData() << std::endl;
-
-		
 #endif
 
 		_retryCount++;
