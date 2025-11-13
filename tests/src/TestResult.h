@@ -46,6 +46,8 @@ public:
 
 private:
     void sleepAndUpdate(BrainCloudClient * in_bc);
+    void printStackTrace();
+    std::string demangle(const char* name);
     int m_maxWaitMillis;
 };
 

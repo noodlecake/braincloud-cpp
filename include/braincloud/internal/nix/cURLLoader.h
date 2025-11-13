@@ -89,6 +89,10 @@ namespace BrainCloud
         std::atomic<bool> _threadRunning;
 #endif
 
+#if ( defined(GAMECLIENT_DEBUGLEVEL)  &&  GAMECLIENT_DEBUGLEVEL > 0 )
+		void printCurlVersion();
+#endif
+
 #ifndef WIN32
         int             _socket;
 #else

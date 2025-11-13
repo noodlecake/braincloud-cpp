@@ -89,3 +89,5 @@ gen/
 
 .cache/
 cmake-**/
+
+*vcpkg_installed/*

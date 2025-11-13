@@ -5,17 +5,41 @@
 #include "braincloud/http_codes.h"
 
 
+#include <iostream>
+#include <string>
+#include <sstream>
+
 #if __cplusplus < 201103L
 
 #ifdef WIN32
 #include <WinBase.h>
+
 #else
 #include <unistd.h>
+
 #endif
 
 #else
+
 #include <chrono>
 #include <thread>
+
+#endif
+
+#ifdef WIN32
+
+#include <windows.h>
+#include <dbghelp.h>
+
+#pragma comment(lib, "dbghelp.lib")
+
+#else
+
+#include <execinfo.h>
+#include <cstdlib>
+#include <cxxabi.h>
+#include <cstdio>
+
 #endif
 
 #define MAX_WAIT_SECS 60
@@ -69,6 +93,66 @@ void TestResult::sleepAndUpdate(BrainCloudClient * in_bc)
     }
 }
 
+void TestResult::printStackTrace()
+{
+#ifdef WIN32
+    void* stack[64];
+    HANDLE process = GetCurrentProcess();
+
+    // Capture the stack
+    USHORT frames = CaptureStackBackTrace(0, 64, stack, nullptr);
+
+    // Initialize symbol handler
+    SymInitialize(process, nullptr, TRUE);
+
+    SYMBOL_INFO* symbol = (SYMBOL_INFO*)calloc(sizeof(SYMBOL_INFO) + 256 * sizeof(char), 1);
+    symbol->MaxNameLen = 255;
+    symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
+
+    std::cout << "Stack trace (" << frames << " frames):\n";
+
+    for (USHORT i = 0; i < frames; i++)
+    {
+        SymFromAddr(process, (DWORD64)(stack[i]), 0, symbol);
+        std::cout << i << ": " << symbol->Name << " - 0x" << std::hex << symbol->Address << std::dec << "\n";
+    }
+
+    free(symbol);
+#else
+    const int maxFrames = 64;
+    void* frames[maxFrames];
+    int frameCount = backtrace(frames, maxFrames);
+
+    std::cout << "Stack trace (" << frameCount << " frames):\n";
+    for (int i = 0; i < frameCount; ++i)
+    {
+        std::ostringstream cmd;
+        cmd << "addr2line -e ./bctests -f -p " << frames[i];
+        FILE* fp = popen(cmd.str().c_str(), "r");
+        if (!fp) continue;
+
+        char buffer[512];
+        if (fgets(buffer, sizeof(buffer), fp))
+            std::cout << buffer;
+
+        pclose(fp);
+    }
+#endif
+}
+
+std::string TestResult::demangle(const char* name)
+{
+#ifdef WIN32
+    return std::string();
+#else
+    int status = 0;
+    char* demangled = abi::__cxa_demangle(name, nullptr, nullptr, &status);
+    std::string result = (status == 0 && demangled) ? demangled : name;
+    free(demangled);
+    return result;
+#endif
+}
+
 bool TestResult::run(BrainCloudClient * in_bc, bool in_noAssert)
 {
     return runExpectCount(in_bc, 1, in_noAssert);
@@ -88,6 +172,9 @@ bool TestResult::runExpectCount(BrainCloudClient * in_bc, int in_apiCountExpecte
         m_statusCode = 999;
         m_reasonCode = 999;
         m_statusMessage = "TEST TIMEOUT EXCEEDED";
+        long maxWaitMs = m_maxWaitMillis > 0 ? m_maxWaitMillis : MAX_WAIT_SECS * 1000;
+        printf("\n [TIMEOUT EXCEEDED]: Timeout exceeded %d - expected count: %d  \n", maxWaitMs, in_apiCountExpected);
+        printStackTrace();
         if (!in_noAssert) EXPECT_TRUE(m_done);
     }
     else
@@ -173,6 +260,10 @@ void TestResult::serverCallback(ServiceName serviceName, ServiceOperation servic
     m_response.clear();
     reader.parse(jsonData, m_response);
 
+    printf("\n [From Request Service: %s Operation: %s] \n", serviceName.getValue().c_str(), serviceOperation.getValue().c_str());
+
+    printf("\n [RESPONSE]: %s \n", jsonData.c_str());
+
     m_result = true;
     --m_apiCountExpected;
     if (m_apiCountExpected <= 0)
@@ -186,6 +277,8 @@ void TestResult::serverError(ServiceName serviceName, ServiceOperation serviceOp
     m_statusCode = statusCode;
     m_reasonCode = reasonCode;
     m_statusMessage = statusMessage;
+
+    printf("\n [Server ERROR]: %s \n", statusMessage.c_str());
 
     m_result = false;
     --m_apiCountExpected;
