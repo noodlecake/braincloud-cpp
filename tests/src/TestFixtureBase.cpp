@@ -87,8 +87,7 @@ void TestFixtureBase::TearDown()
 
 	m_bc->deregisterEventCallback();
 	m_bc->deregisterRewardCallback();
-
-	m_bc->enableLogging(true);
+	m_bcWrapper->resetStoredAnonymousId();
 
 	delete m_bcWrapper;
 }
