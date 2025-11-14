@@ -42,7 +42,7 @@ void TestFixtureBase::SetUp()
 	std::map<std::string, std::string> secretMap;
 	secretMap[m_appId] = m_secret;
 	secretMap[m_childAppId] = m_childSecret;
-	m_bcWrapper->initializeWithApps(m_serverUrl.c_str(), m_appId.c_str(), secretMap, m_version.c_str(), "", "");
+	m_bcWrapper->initialize(m_serverUrl.c_str(), m_appId.c_str(), m_appId.c_str(), m_version.c_str(), "BCTests", "UnitTestMaster");
 
     static bool firstSetup = true;
     if(firstSetup) printf("\nClient version - %s\n", m_bcWrapper->getBCClient()->getBrainCloudClientVersion().c_str());
@@ -70,8 +70,6 @@ void TestFixtureBase::SetUp()
 		m_bcWrapper->authenticateUniversal(GetUser(UserA)->m_id, GetUser(UserA)->m_password, true, &tr);
 		tr.run(m_bc);
 	}
-
-	m_bc->enableLogging(true);
 }
 
 void TestFixtureBase::TearDown()

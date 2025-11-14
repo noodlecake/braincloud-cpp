@@ -13,7 +13,7 @@ using namespace BrainCloud;
 
 class TestFixtureBase : public testing::Test
 {
-#define ENABLE_SETUP_TEARDOWN_LOGGING false
+#define ENABLE_SETUP_TEARDOWN_LOGGING true
 
 public:
     TestFixtureBase() {}
