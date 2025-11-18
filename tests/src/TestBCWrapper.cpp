@@ -111,7 +111,7 @@ TEST_F(TestBCWrapper, ResetEmailPassword)
     const char* email = "braincloudunittest@gmail.com";
 
     TestResult tr;
-	m_bc->getAuthenticationService()->authenticateEmailPassword
+    m_bcWrapper->authenticateEmailPassword
     (
         email,
         email,
