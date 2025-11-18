@@ -38,7 +38,7 @@ namespace BrainCloud
     }
 
     bool cURLLoader::_initialized = false;
-    long cURLLoader::_timeoutInterval = 10000;
+    long cURLLoader::_timeoutInterval = 5000;
 
     /**
      * Constructor
@@ -414,7 +414,7 @@ namespace BrainCloud
             curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, (long)0);
 
             //curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, my_trace);
-            //curl_easy_setopt(curl, CURLOPT_VERBOSE, (long)1);
+            curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
             // Only set timeout if it's not 0.
             if (_timeoutInterval)
