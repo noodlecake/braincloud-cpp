@@ -42,7 +42,12 @@ TEST_F(TestBCFriend, GetProfileInfoForExternalAuthIdIfExists)
 {
 	TestResult tr;
 	m_bc->getFriendService()->getProfileInfoForExternalAuthIdIfExists(GetUser(UserA)->m_id, "testExternal", &tr);
-	tr.run(m_bc);
+	if (m_serverUrl.find("internal") != std::string::npos || (m_serverUrl.find("internala") != std::string::npos)) {
+		tr.run(m_bc);
+	}
+	else {
+		tr.runExpectFail(m_bc, 400, INVALID_EXT_AUTH_TYPE);
+	}
 }
 
 TEST_F(TestBCFriend, GetExternalIdForProfileId)
@@ -50,12 +55,7 @@ TEST_F(TestBCFriend, GetExternalIdForProfileId)
 	TestResult tr;
 	m_bc->getFriendService()->getExternalIdForProfileId(GetUser(UserA)->m_profileId, "Facebook", &tr);
 
-	if (m_serverUrl.find("internal") != std::string::npos || (m_serverUrl.find("internala") != std::string::npos)) {
-		tr.run(m_bc);
-	}
-	else {
-		tr.runExpectFail(m_bc, 400, INVALID_EXT_AUTH_TYPE);
-	}
+	tr.run(m_bc);
 }
 
 TEST_F(TestBCFriend, FindUsersByExactName)
