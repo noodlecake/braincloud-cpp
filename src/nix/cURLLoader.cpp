@@ -410,8 +410,8 @@ namespace BrainCloud
             curl_easy_setopt(curl, CURLOPT_WRITEHEADER, loader);
             curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, writeHeader);
 
-            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, (long)0);
-            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, (long)0);
+            //curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, (long)0);
+            //curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, (long)0);
 
             //curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, my_trace);
             curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
