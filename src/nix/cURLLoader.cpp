@@ -429,7 +429,7 @@ namespace BrainCloud
             {
                 curl_easy_setopt(curl, CURLOPT_NOSIGNAL, (long)1);
                 curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, _timeoutInterval);
-				curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, 5000);
+				curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, 10000);
             }
 
             // Determine the type of request being made.
