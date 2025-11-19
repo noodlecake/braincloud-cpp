@@ -415,6 +415,14 @@ namespace BrainCloud
 
             //curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, my_trace);
             curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+			
+			//Disable connection reuse
+			curl_easy_setopt(curl, CURLOPT_FORBID_REUSE, 1L);
+			
+			//Enable keep alive
+			curl_easy_setopt(curl, CURLOPT_TCP_KEEPALIVE, 1L);
+			curl_easy_setopt(curl, CURLOPT_TCP_KEEPIDLE, 30L);
+			curl_easy_setopt(curl, CURLOPT_TCP_KEEPINTVL, 30L);
 
             // Only set timeout if it's not 0.
             if (_timeoutInterval)
