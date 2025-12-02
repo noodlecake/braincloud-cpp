@@ -209,6 +209,22 @@ namespace BrainCloud
 	 */
 		void removeUserItemFromBlockchain(const std::string& in_itemId, int32_t in_version, IServerCallback * in_callback = NULL);
 
+
+		/// Summary: Allows item(s) to be awarded to a user without collecting the purchase amount. 
+		/// If includeDef is true, response includes associated itemDef with language fields limited to the current or default language.
+		///	
+		/// ServiceName: userItems
+		/// ServiceOperation: AWARD_USER_ITEM_WITH_OPTIONS
+		///
+		/// @param in_defId - The unique id of the item definition to award.
+		/// @param in_quantity - The quantity of the item to award.
+		/// @param in_includeDef - If true, the associated item definition will be included in the response.
+		/// @param in_optionsJson - Optional support for specifying 'blockIfExceedItemMaxStackable' indicating how to process the award 
+		/// if the defId is for a stackable item with a max stackable quantity and the specified quantity to award is too high. If true and 
+		/// the quantity is too high, the call is blocked and an error is returned. If false (default) and quantity is too high, the quantity 
+		/// is adjusted to the allowed maximum and the quantity not awarded is reported in response key 'itemsNotAwarded' - unless the adjusted 
+		/// quantity would be 0, in which case the call is blocked and an error is returned.
+		void awardUserItemWithOptions(const std::string& in_defId, int32_t in_quantity, bool in_includeDef, const std::string& in_optionsJson, IServerCallback* in_callback = NULL);
     private:
         BrainCloudClient * m_client;
     };

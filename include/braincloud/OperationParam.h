@@ -521,6 +521,7 @@ namespace BrainCloud {
 		static const OperationParam UserItemsServiceProfileId;
 		static const OperationParam UserItemsServiceShopId;
 		static const OperationParam UserItemsServiceNewItemData;
+		static const OperationParam UserItemsServiceOptionsJson;
 
 		//Datastream
 		static const OperationParam DataStreamCrashType;
