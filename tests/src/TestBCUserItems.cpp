@@ -109,3 +109,15 @@ TEST_F(TestBCUserItems, removeUserItemFromBlockchain)
     m_bc->getUserItemsService()->removeUserItemFromBlockchain("invalidForNow", 1, &tr);
     tr.runExpectFail(m_bc, HTTP_BAD_REQUEST, ITEM_NOT_FOUND);
 }
+
+TEST_F(TestBCUserItems, awardUserItemsWithOptions)
+{
+    TestResult tr;
+    std::string optionsJson = "{\"blockIfExceedItemMaxStackable\": \"true\"}";
+    std::string defId = "sword001";
+    auto quantity = 1;
+    bool includeDef = true;
+
+    m_bc->getUserItemsService()->awardUserItemWithOptions(defId, quantity, includeDef, optionsJson, &tr);
+    tr.run(m_bc);
+}

@@ -515,6 +515,7 @@ namespace BrainCloud
 	const OperationParam OperationParam::UserItemsServiceProfileId = OperationParam("profileId");
 	const OperationParam OperationParam::UserItemsServiceShopId = OperationParam("shopId");
 	const OperationParam OperationParam::UserItemsServiceNewItemData = OperationParam("newItemData");
+	const OperationParam OperationParam::UserItemsServiceOptionsJson = OperationParam("optionsJson");
 
 	//Datastream
 	const OperationParam OperationParam::DataStreamCrashType = OperationParam("crashType");
