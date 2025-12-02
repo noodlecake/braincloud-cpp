@@ -179,4 +179,17 @@ namespace BrainCloud
         ServerCall* sc = new ServerCall(ServiceName::UserItems, ServiceOperation::AwardUserItem, message, in_callback);
         m_client->sendRequest(sc);
     }
+    void BrainCloudUserItems::purchaseUserItemsWithOptions(const std::string& in_defId, int32_t in_quantity, const std::string& in_shopId, bool in_includeDef, const std::string& in_optionsJson, IServerCallback* in_callback)
+    {
+        Json::Value message;
+        message[OperationParam::UserItemsServiceDefId.getValue()] = in_defId;
+        message[OperationParam::UserItemsServiceQuantity.getValue()] = in_quantity;
+        message[OperationParam::UserItemsServiceShopId.getValue()] = in_shopId;
+        message[OperationParam::UserItemsServiceIncludeDef.getValue()] = in_includeDef;
+        message[OperationParam::UserItemsServiceOptionsJson.getValue()] = JsonUtil::jsonStringToValue(in_optionsJson);
+
+
+        ServerCall* sc = new ServerCall(ServiceName::UserItems, ServiceOperation::PurchaseUserItem, message, in_callback);
+        m_client->sendRequest(sc);
+    }
 }

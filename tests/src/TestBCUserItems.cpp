@@ -113,11 +113,24 @@ TEST_F(TestBCUserItems, removeUserItemFromBlockchain)
 TEST_F(TestBCUserItems, awardUserItemsWithOptions)
 {
     TestResult tr;
-    std::string optionsJson = "{\"blockIfExceedItemMaxStackable\": \"true\"}";
+    std::string optionsJson = "{\"blockIfExceedItemMaxStackable\": true}";
     std::string defId = "sword001";
     auto quantity = 1;
     bool includeDef = true;
 
     m_bc->getUserItemsService()->awardUserItemWithOptions(defId, quantity, includeDef, optionsJson, &tr);
+    tr.run(m_bc);
+}
+
+TEST_F(TestBCUserItems, purchaseUserItemsWithOptions)
+{
+    TestResult tr;
+    std::string optionsJson = "{\"blockIfExceedItemMaxStackable\": true}";
+    std::string shopId = "";
+    std::string defId = "sword001";
+    auto quantity = 1;
+    bool includeDef = true;
+
+    m_bc->getUserItemsService()->purchaseUserItemsWithOptions(defId, quantity, shopId, includeDef, optionsJson, &tr);
     tr.run(m_bc);
 }
