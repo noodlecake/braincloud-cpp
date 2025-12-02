@@ -294,6 +294,27 @@ namespace BrainCloud
 		/// Invoked after the response is received.
 		/// </param>
 		void getItemPromotionDetails(const std::string& in_defId, const std::string& in_shopId, bool in_includeDef, bool in_includePromotionDetails, IServerCallback* in_callback);
+
+		/// <summary>
+		/// Returns list of items on promotion available to the current user.
+		/// </summary>
+		/// <remarks>
+		/// ServiceName: userItems
+		/// ServiceOperation: GET_ITEMS_ON_PROMOTION
+		/// </remarks>
+		/// <param name="in_shopId">
+		/// The id identifying the store the item is being purchased from, if applicable.
+		/// </param>
+	/// <param name="in_includeDef">
+		/// If true, the associated item definition will be included in the response.
+		/// </param>
+		/// <param name="in_includePromotionDetails">
+		/// If true, the promotion details of the eligible promotions will be included in the response.
+		/// </param>
+		/// <param name="in_callback">
+		/// Invoked after the response is received.
+		/// </param>
+		void getItemsOnPromotion(const std::string& in_shopId, bool in_includeDef, bool in_includePromotionDef, IServerCallback* in_callback);
     private:
         BrainCloudClient * m_client;
     };
