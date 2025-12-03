@@ -167,4 +167,52 @@ namespace BrainCloud
         ServerCall * sc = new ServerCall(ServiceName::UserItems, ServiceOperation::RemoveUserItemFromBlockchain, message, in_callback);
         m_client->sendRequest(sc);
     }
+    void BrainCloudUserItems::awardUserItemWithOptions(const std::string& in_defId, int32_t in_quantity, bool in_includeDef, const std::string& in_optionsJson, IServerCallback* in_callback)
+    {
+        Json::Value message;
+        message[OperationParam::UserItemsServiceDefId.getValue()] = in_defId;
+        message[OperationParam::UserItemsServiceQuantity.getValue()] = in_quantity;
+        message[OperationParam::UserItemsServiceIncludeDef.getValue()] = in_includeDef;
+        message[OperationParam::UserItemsServiceOptionsJson.getValue()] = JsonUtil::jsonStringToValue(in_optionsJson);
+
+
+        ServerCall* sc = new ServerCall(ServiceName::UserItems, ServiceOperation::AwardUserItem, message, in_callback);
+        m_client->sendRequest(sc);
+    }
+    void BrainCloudUserItems::purchaseUserItemsWithOptions(const std::string& in_defId, int32_t in_quantity, const std::string& in_shopId, bool in_includeDef, const std::string& in_optionsJson, IServerCallback* in_callback)
+    {
+        Json::Value message;
+        message[OperationParam::UserItemsServiceDefId.getValue()] = in_defId;
+        message[OperationParam::UserItemsServiceQuantity.getValue()] = in_quantity;
+        message[OperationParam::UserItemsServiceShopId.getValue()] = in_shopId;
+        message[OperationParam::UserItemsServiceIncludeDef.getValue()] = in_includeDef;
+        message[OperationParam::UserItemsServiceOptionsJson.getValue()] = JsonUtil::jsonStringToValue(in_optionsJson);
+
+
+        ServerCall* sc = new ServerCall(ServiceName::UserItems, ServiceOperation::PurchaseUserItem, message, in_callback);
+        m_client->sendRequest(sc);
+    }
+    void BrainCloudUserItems::getItemPromotionDetails(const std::string& in_defId, const std::string& in_shopId, bool in_includeDef, bool in_includePromotionDetails, IServerCallback* in_callback)
+    {
+        Json::Value message;
+        message[OperationParam::UserItemsServiceDefId.getValue()] = in_defId;
+        message[OperationParam::UserItemsServiceShopId.getValue()] = in_shopId;
+        message[OperationParam::UserItemsServiceIncludeDef.getValue()] = in_includeDef;
+        message[OperationParam::UserItemsServiceIncludePromotionDetails.getValue()] = in_includePromotionDetails;
+        
+
+        ServerCall* sc = new ServerCall(ServiceName::UserItems, ServiceOperation::GetItemPromotionDetails, message, in_callback);
+        m_client->sendRequest(sc);
+    }
+    void BrainCloudUserItems::getItemsOnPromotion(const std::string& in_shopId, bool in_includeDef, bool in_includePromotionDef, IServerCallback* in_callback)
+    {
+        Json::Value message;
+        message[OperationParam::UserItemsServiceShopId.getValue()] = in_shopId;
+        message[OperationParam::UserItemsServiceIncludeDef.getValue()] = in_includeDef;
+        message[OperationParam::UserItemsServiceIncludePromotionDetails.getValue()] = in_includePromotionDef;
+
+
+        ServerCall* sc = new ServerCall(ServiceName::UserItems, ServiceOperation::GetItemsOnPromotion, message, in_callback);
+        m_client->sendRequest(sc);
+    }
 }

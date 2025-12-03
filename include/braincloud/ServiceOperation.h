@@ -423,6 +423,8 @@ namespace BrainCloud {
 		static const ServiceOperation PublishUserItemToBlockchain;
 		static const ServiceOperation RefreshBlockchainUserItems;
 		static const ServiceOperation RemoveUserItemFromBlockchain;
+		static const ServiceOperation GetItemPromotionDetails;
+		static const ServiceOperation GetItemsOnPromotion;
 
 		//itemCatalog
 		static const ServiceOperation GetCatalogItemDefinition;

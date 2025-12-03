@@ -209,6 +209,112 @@ namespace BrainCloud
 	 */
 		void removeUserItemFromBlockchain(const std::string& in_itemId, int32_t in_version, IServerCallback * in_callback = NULL);
 
+		/// <summary>
+		/// Allows item(s) to be awarded to a user without collecting the purchase amount.
+		/// If includeDef is true, response includes associated itemDef with language fields limited to the current or default language.
+		/// </summary>
+		/// <remarks>
+		/// ServiceName: userItems
+		/// ServiceOperation: AWARD_USER_ITEM
+		/// </remarks>
+		/// <param name="in_defId">
+		/// The unique id of the item definition to award.
+		/// </param>
+		/// <param name="in_quantity">
+		/// The quantity of the item to award.
+		/// </param>
+		/// <param name="in_includeDef">
+		/// If true, the associated item definition will be included in the response.
+		/// </param>
+		/// <param name="in_optionsJson">
+		/// Optional support for specifying 'blockIfExceedItemMaxStackable' indicating how to process the award
+		/// if the defId is for a stackable item with a max stackable quantity and the specified quantity to award is too high. If true and 
+		/// the quantity is too high, the call is blocked and an error is returned. If false (default) and quantity is too high, the quantity 
+		/// is adjusted to the allowed maximum and the quantity not awarded is reported in response key 'itemsNotAwarded' - unless the adjusted 
+		/// quantity would be 0, in which case the call is blocked and an error is returned.
+		/// </param>
+		/// <param name="in_callback">
+		/// Invoked after the response is received.
+		/// </param>
+		void awardUserItemWithOptions(const std::string& in_defId, int32_t in_quantity, bool in_includeDef, const std::string& in_optionsJson, IServerCallback* in_callback = NULL);
+
+		/// <summary>
+		/// Purchases a quantity of an item from the specified store, if the user has enough funds and purchasing for listed buy price is not 
+		/// disabled for associated catalog item definition. If includeDef is true, response includes associated itemDef with language fields
+		/// limited to the current or default language.
+		/// </summary>
+		/// <remarks>
+		/// ServiceName: userItems
+		/// ServiceOperation: PURCHASE_USER_ITEM
+		/// </remarks>
+		/// <param name="in_defId">
+		/// The unique id of the item definition to award.
+		/// </param>
+		/// <param name="in_quantity">
+		/// The quantity of the item to award.
+		/// </param>
+		/// <param name="in_shopId">
+		/// The id identifying the store the item is being purchased from, if applicable.
+		/// </param>
+		/// <param name="in_includeDef">
+		/// If true, the associated item definition will be included in the response.
+		/// </param>
+		/// <param name="in_optionsJson">
+		/// Optional support for specifying 'blockIfExceedItemMaxStackable' indicating how to process the award
+		/// if the defId is for a stackable item with a max stackable quantity and the specified quantity to award is too high. If true and 
+		/// the quantity is too high, the call is blocked and an error is returned. If false (default) and quantity is too high, the quantity 
+		/// is adjusted to the allowed maximum and the quantity not awarded is reported in response key 'itemsNotAwarded' - unless the adjusted 
+		/// quantity would be 0, in which case the call is blocked and an error is returned.
+		/// </param>
+		/// <param name="in_callback">
+		/// Invoked after the response is received.
+		/// </param>
+		void purchaseUserItemsWithOptions(const std::string& in_defId, int32_t in_quantity, const std::string& in_shopId, bool in_includeDef, const std::string& in_optionsJson, IServerCallback* in_callback=NULL);
+
+		/// <summary>
+		/// Returns list of promotional details for the specified item definition, for promotions available to the current user.
+		/// </summary>
+		/// <remarks>
+		/// ServiceName: userItems
+		/// ServiceOperation: GET_ITEM_PROMOTION_DETAILS
+		/// </remarks>
+		/// <param name="in_defId">
+		/// The unique id of the item definition to award.
+		/// </param>
+		/// <param name="in_shopId">
+		/// The id identifying the store the item is being purchased from, if applicable.
+		/// </param>
+		/// <param name="in_includeDef">
+		/// If true, the associated item definition will be included in the response.
+		/// </param>
+		/// <param name="in_includePromotionDetails">
+		/// If true, the promotion details of the eligible promotions will be included in the response.
+		/// </param>
+		/// <param name="in_callback">
+		/// Invoked after the response is received.
+		/// </param>
+		void getItemPromotionDetails(const std::string& in_defId, const std::string& in_shopId, bool in_includeDef, bool in_includePromotionDetails, IServerCallback* in_callback);
+
+		/// <summary>
+		/// Returns list of items on promotion available to the current user.
+		/// </summary>
+		/// <remarks>
+		/// ServiceName: userItems
+		/// ServiceOperation: GET_ITEMS_ON_PROMOTION
+		/// </remarks>
+		/// <param name="in_shopId">
+		/// The id identifying the store the item is being purchased from, if applicable.
+		/// </param>
+	/// <param name="in_includeDef">
+		/// If true, the associated item definition will be included in the response.
+		/// </param>
+		/// <param name="in_includePromotionDetails">
+		/// If true, the promotion details of the eligible promotions will be included in the response.
+		/// </param>
+		/// <param name="in_callback">
+		/// Invoked after the response is received.
+		/// </param>
+		void getItemsOnPromotion(const std::string& in_shopId, bool in_includeDef, bool in_includePromotionDef, IServerCallback* in_callback);
     private:
         BrainCloudClient * m_client;
     };

@@ -109,3 +109,53 @@ TEST_F(TestBCUserItems, removeUserItemFromBlockchain)
     m_bc->getUserItemsService()->removeUserItemFromBlockchain("invalidForNow", 1, &tr);
     tr.runExpectFail(m_bc, HTTP_BAD_REQUEST, ITEM_NOT_FOUND);
 }
+
+TEST_F(TestBCUserItems, awardUserItemsWithOptions)
+{
+    TestResult tr;
+    std::string optionsJson = "{\"blockIfExceedItemMaxStackable\": true}";
+    std::string defId = "sword001";
+    int32_t quantity = 1;
+    bool includeDef = true;
+
+    m_bc->getUserItemsService()->awardUserItemWithOptions(defId, quantity, includeDef, optionsJson, &tr);
+    tr.run(m_bc);
+}
+
+TEST_F(TestBCUserItems, purchaseUserItemsWithOptions)
+{
+    TestResult tr;
+    std::string optionsJson = "{\"blockIfExceedItemMaxStackable\": true}";
+    std::string shopId = "";
+    std::string defId = "sword001";
+    int32_t quantity = 1;
+    bool includeDef = true;
+
+    m_bc->getUserItemsService()->purchaseUserItemsWithOptions(defId, quantity, shopId, includeDef, optionsJson, &tr);
+    tr.run(m_bc);
+}
+
+TEST_F(TestBCUserItems, getItemPromotionDetails)
+{
+    TestResult tr;
+   
+    std::string shopId = "";
+    std::string defId = "sword001";
+    bool includeDef = true;
+    bool includePromotionDetails = true;
+
+    m_bc->getUserItemsService()->getItemPromotionDetails(defId, shopId, includeDef, includePromotionDetails, &tr);
+    tr.run(m_bc);
+}
+
+TEST_F(TestBCUserItems, getItemsOnPromotion)
+{
+    TestResult tr;
+
+    std::string shopId = "";
+    bool includeDef = true;
+    bool includePromotionDetails = true;
+
+    m_bc->getUserItemsService()->getItemsOnPromotion(shopId, includeDef, includePromotionDetails, &tr);
+    tr.run(m_bc);
+}
