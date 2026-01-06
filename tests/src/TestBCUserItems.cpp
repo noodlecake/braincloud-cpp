@@ -155,7 +155,8 @@ TEST_F(TestBCUserItems, getItemsOnPromotion)
     std::string shopId = "";
     bool includeDef = true;
     bool includePromotionDetails = true;
+    std::string optionsJson = "{}";
 
-    m_bc->getUserItemsService()->getItemsOnPromotion(shopId, includeDef, includePromotionDetails, &tr);
+    m_bc->getUserItemsService()->getItemsOnPromotion(shopId, includeDef, includePromotionDetails, optionsJson, &tr);
     tr.run(m_bc);
 }
