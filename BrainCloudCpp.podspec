@@ -2,16 +2,16 @@
 #  BrainCloudSDK.podspec
 #  BrainCloudSDK C++
 #
-#  Copyright (c) 2016 BitHeads Inc. All rights reserved.
+#  Copyright (c) 2026 BitHeads Inc. All rights reserved.
 #
-
+  
 Pod::Spec.new do |s|
 
   # ―――  Spec Metadata  ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
   s.name     = "BrainCloudCpp"
 
-  s.version  = "5.8.1"
+  s.version  = "5.9.0"
 
   s.summary  = "The C++ client library for brainCloud"
   s.homepage = "http://getbraincloud.com/"

@@ -1,4 +1,4 @@
-// Copyright 2025 bitHeads, Inc. All Rights Reserved.
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 #include "braincloud/internal/DataUtilities.h"
 #include <iostream>
 #include <zlib.h>
