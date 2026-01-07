@@ -311,10 +311,14 @@ namespace BrainCloud
 		/// <param name="in_includePromotionDetails">
 		/// If true, the promotion details of the eligible promotions will be included in the response.
 		/// </param>
+		/// <param name="in_optionsJson">
+		/// Optional support for specifying additional options. Currently supporting option 'category' to 
+		/// include only catalog items configured with the specified category, if desired.
+		/// </param>
 		/// <param name="in_callback">
 		/// Invoked after the response is received.
 		/// </param>
-		void getItemsOnPromotion(const std::string& in_shopId, bool in_includeDef, bool in_includePromotionDef, IServerCallback* in_callback);
+		void getItemsOnPromotion(const std::string& in_shopId, bool in_includeDef, bool in_includePromotionDef, const std::string &in_optionsJson, IServerCallback* in_callback);
     private:
         BrainCloudClient * m_client;
     };
