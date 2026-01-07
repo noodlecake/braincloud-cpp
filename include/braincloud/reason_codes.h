@@ -1,4 +1,4 @@
-// Copyright 2025 bitHeads, Inc. All Rights Reserved.
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 #ifndef _REASONCODES_H_
 #define _REASONCODES_H_
 
@@ -525,6 +525,12 @@ static const int NEWRELIC_ERROR = 40791;
 static const int ITEM_IMAGE_EXISTS = 40792;
 static const int INVALID_SEGMENT_ID_LIST = 40793;
 static const int I3D_ERROR = 40794;
+static const int INVALID_START_TIME = 40795;
+static const int ITEM_TYPE_NOT_APPLICABLE = 40796;
+static const int ITEM_PURCHASE_LIST_PRICE_DISABLED = 40797;
+static const int BUNDLE_DEF_INVALID = 40798;
+static const int ITEM_MAX_STACKABLE_ERROR = 40799;
+static const int ITEM_PROMOTION_MAX_PURCHASES_ERROR = 40800;
 static const int REQUEST_FAILED = 40801;
 static const int RESET_QUESTS_FAILED = 40802;
 static const int RESET_ALL_QUESTS_AND_MILESTONES_FAILED = 40803;
@@ -547,6 +553,7 @@ static const int PROMOTION_NOT_FOUND = 40820;
 static const int VERSION_MISMATCH = 40821;
 static const int UNSUPPORTED_CRITERIA_FOR_SHARDED_COLLECTIONS = 40822;
 static const int USER_RATE_LIMIT_EXCEEDED = 40823;
+static const int PROMOTION_CONFIG_INCOMPLETE = 40824;
 static const int STEAM_ERROR = 40830;
 static const int AZURE_AD_NOT_CONFIGURED = 40831;
 static const int INVALID_LEADERBOARD_TOURNAMENT_SETTING = 40840;
