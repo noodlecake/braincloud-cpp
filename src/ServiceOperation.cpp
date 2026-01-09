@@ -97,8 +97,8 @@ namespace BrainCloud
 	const ServiceOperation ServiceOperation::FindPlayerByName = ServiceOperation("FIND_PLAYER_BY_NAME");
 	const ServiceOperation ServiceOperation::FindUsersByExactName = ServiceOperation("FIND_USERS_BY_EXACT_NAME");
 	const ServiceOperation ServiceOperation::FindUserByExactUniversalId = ServiceOperation("FIND_USER_BY_EXACT_UNIVERSAL_ID");
-	const ServiceOperation ServiceOperation::FindUsersByUniversalIdStartingWith= ServiceOperation("FIND_USERS_BY_UNIVERSAL_ID_STARTING_WITH");
-	const ServiceOperation ServiceOperation::FindUsersByNameStartingWith= ServiceOperation("FIND_USERS_BY_NAME_STARTING_WITH");
+	const ServiceOperation ServiceOperation::FindUsersByUniversalIdStartingWith = ServiceOperation("FIND_USERS_BY_UNIVERSAL_ID_STARTING_WITH");
+	const ServiceOperation ServiceOperation::FindUsersByNameStartingWith = ServiceOperation("FIND_USERS_BY_NAME_STARTING_WITH");
 	const ServiceOperation ServiceOperation::FindUsersBySubstrName = ServiceOperation("FIND_USERS_BY_SUBSTR_NAME");
 	const ServiceOperation ServiceOperation::ListFriends = ServiceOperation("LIST_FRIENDS");
 	const ServiceOperation ServiceOperation::AddFriends = ServiceOperation("ADD_FRIENDS");
@@ -273,13 +273,13 @@ namespace BrainCloud
 	const ServiceOperation ServiceOperation::IncrementGlobalEntityData = ServiceOperation("INCREMENT_GLOBAL_ENTITY_DATA");
 	const ServiceOperation ServiceOperation::GetRandomEntitiesMatching = ServiceOperation("GET_RANDOM_ENTITIES_MATCHING");
 
-    const ServiceOperation ServiceOperation::CheckFilenameExists = ServiceOperation("CHECK_FILENAME_EXISTS");
-    const ServiceOperation ServiceOperation::CheckFullpathFilenameExists = ServiceOperation("CHECK_FULLPATH_FILENAME_EXISTS");
-    const ServiceOperation ServiceOperation::GroupCopyFile = ServiceOperation("COPY_FILE");
-    const ServiceOperation ServiceOperation::GroupDeleteFile = ServiceOperation("DELETE_FILE");
-    const ServiceOperation ServiceOperation::GroupMoveFile = ServiceOperation("MOVE_FILE");
-    const ServiceOperation ServiceOperation::MoveUserToGroupFile = ServiceOperation("MOVE_USER_TO_GROUP_FILE");
-    const ServiceOperation ServiceOperation::UpdateFileInfo = ServiceOperation("UPDATE_FILE_INFO");
+	const ServiceOperation ServiceOperation::CheckFilenameExists = ServiceOperation("CHECK_FILENAME_EXISTS");
+	const ServiceOperation ServiceOperation::CheckFullpathFilenameExists = ServiceOperation("CHECK_FULLPATH_FILENAME_EXISTS");
+	const ServiceOperation ServiceOperation::GroupCopyFile = ServiceOperation("COPY_FILE");
+	const ServiceOperation ServiceOperation::GroupDeleteFile = ServiceOperation("DELETE_FILE");
+	const ServiceOperation ServiceOperation::GroupMoveFile = ServiceOperation("MOVE_FILE");
+	const ServiceOperation ServiceOperation::MoveUserToGroupFile = ServiceOperation("MOVE_USER_TO_GROUP_FILE");
+	const ServiceOperation ServiceOperation::UpdateFileInfo = ServiceOperation("UPDATE_FILE_INFO");
 	const ServiceOperation ServiceOperation::GetFileInfo = ServiceOperation("GET_FILE_INFO");
 	const ServiceOperation ServiceOperation::GetFileInfoSimple = ServiceOperation("GET_FILE_INFO_SIMPLE");
 	const ServiceOperation ServiceOperation::GetGlobalCDNUrl = ServiceOperation("GET_GLOBAL_CDN_URL");
@@ -337,7 +337,7 @@ namespace BrainCloud
 	const ServiceOperation ServiceOperation::CreateGroupEntity = ServiceOperation("CREATE_GROUP_ENTITY");
 	const ServiceOperation ServiceOperation::DeleteGroup = ServiceOperation("DELETE_GROUP");
 	const ServiceOperation ServiceOperation::DeleteGroupEntity = ServiceOperation("DELETE_GROUP_ENTITY");
-    const ServiceOperation ServiceOperation::DeleteGroupJoinRequest = ServiceOperation("DELETE_GROUP_JOIN_REQUEST");
+	const ServiceOperation ServiceOperation::DeleteGroupJoinRequest = ServiceOperation("DELETE_GROUP_JOIN_REQUEST");
 	const ServiceOperation ServiceOperation::DeleteGroupMember = ServiceOperation("DELETE_MEMBER_FROM_GROUP");
 	const ServiceOperation ServiceOperation::GetMyGroups = ServiceOperation("GET_MY_GROUPS");
 	const ServiceOperation ServiceOperation::IncrementGroupData = ServiceOperation("INCREMENT_GROUP_DATA");
@@ -367,7 +367,7 @@ namespace BrainCloud
 	const ServiceOperation ServiceOperation::GetRandomGroupsMatching = ServiceOperation("GET_RANDOM_GROUPS_MATCHING");
 	const ServiceOperation ServiceOperation::UpdateGroupSummaryData = ServiceOperation("UPDATE_GROUP_SUMMARY_DATA");
 
-	//tournament
+	// tournament
 	const ServiceOperation ServiceOperation::GetTournamentStatus = ServiceOperation("GET_TOURNAMENT_STATUS");
 	const ServiceOperation ServiceOperation::GetDivisionInfo = ServiceOperation("GET_DIVISION_INFO");
 	const ServiceOperation ServiceOperation::GetMyDivisions = ServiceOperation("GET_MY_DIVISIONS");
@@ -381,16 +381,16 @@ namespace BrainCloud
 	const ServiceOperation ServiceOperation::ViewReward = ServiceOperation("VIEW_REWARD");
 	const ServiceOperation ServiceOperation::ClaimTournamentReward = ServiceOperation("CLAIM_TOURNAMENT_REWARD");
 
-	//mail
+	// mail
 	const ServiceOperation ServiceOperation::SendBasicEmail = ServiceOperation("SEND_BASIC_EMAIL");
 	const ServiceOperation ServiceOperation::SendAdvancedEmail = ServiceOperation("SEND_ADVANCED_EMAIL");
 	const ServiceOperation ServiceOperation::SendAdvancedEmailByAddress = ServiceOperation("SEND_ADVANCED_EMAIL_BY_ADDRESS");
 	const ServiceOperation ServiceOperation::SendAdvancedEmailByAddresses = ServiceOperation("SEND_ADVANCED_EMAIL_BY_ADDRESSES");
 
-	//rtt registration
+	// rtt registration
 	const ServiceOperation ServiceOperation::RequestClientConnection = ServiceOperation("REQUEST_CLIENT_CONNECTION");
 
-	//chat
+	// chat
 	const ServiceOperation ServiceOperation::ChannelConnect = ServiceOperation("CHANNEL_CONNECT");
 	const ServiceOperation ServiceOperation::ChannelDisconnect = ServiceOperation("CHANNEL_DISCONNECT");
 	const ServiceOperation ServiceOperation::DeleteChatMessage = ServiceOperation("DELETE_CHAT_MESSAGE");
@@ -402,7 +402,7 @@ namespace BrainCloud
 	const ServiceOperation ServiceOperation::PostChatMessage = ServiceOperation("POST_CHAT_MESSAGE");
 	const ServiceOperation ServiceOperation::UpdateChatMessage = ServiceOperation("UPDATE_CHAT_MESSAGE");
 
-	//lobby
+	// lobby
 	const ServiceOperation ServiceOperation::GetRegionsForLobbies = ServiceOperation("GET_REGIONS_FOR_LOBBIES");
 	const ServiceOperation ServiceOperation::PingRegions = ServiceOperation("PING_REGIONS");
 	const ServiceOperation ServiceOperation::CreateLobby = ServiceOperation("CREATE_LOBBY");
@@ -424,7 +424,7 @@ namespace BrainCloud
 	const ServiceOperation ServiceOperation::GetLobbyInstances = ServiceOperation("GET_LOBBY_INSTANCES");
 	const ServiceOperation ServiceOperation::GetLobbyInstancesWithPingData = ServiceOperation("GET_LOBBY_INSTANCES_WITH_PING_DATA");
 
-	//messaging
+	// messaging
 	const ServiceOperation ServiceOperation::DeleteMessages = ServiceOperation("DELETE_MESSAGES");
 	const ServiceOperation ServiceOperation::GetMessageboxes = ServiceOperation("GET_MESSAGE_BOXES");
 	const ServiceOperation ServiceOperation::GetMessageCounts = ServiceOperation("GET_MESSAGE_COUNTS");
@@ -435,7 +435,7 @@ namespace BrainCloud
 	const ServiceOperation ServiceOperation::MessagingSendMessage = ServiceOperation("SEND_MESSAGE");
 	const ServiceOperation ServiceOperation::SendMessageSimple = ServiceOperation("SEND_MESSAGE_SIMPLE");
 
-	//presence
+	// presence
 	const ServiceOperation ServiceOperation::ForcePush = ServiceOperation("FORCE_PUSH");
 	const ServiceOperation ServiceOperation::GetPresenceOfFriends = ServiceOperation("GET_PRESENCE_OF_FRIENDS");
 	const ServiceOperation ServiceOperation::GetPresenceOfGroup = ServiceOperation("GET_PRESENCE_OF_GROUP");
@@ -447,13 +447,13 @@ namespace BrainCloud
 	const ServiceOperation ServiceOperation::StopListening = ServiceOperation("STOP_LISTENING");
 	const ServiceOperation ServiceOperation::UpdateActivity = ServiceOperation("UPDATE_ACTIVITY");
 
-	//virtual currency
+	// virtual currency
 	const ServiceOperation ServiceOperation::VirtualCurrencyGetCurrency = ServiceOperation("GET_PLAYER_VC");
 	const ServiceOperation ServiceOperation::VirtualCurrencyGetParentCurrency = ServiceOperation("GET_PARENT_VC");
 	const ServiceOperation ServiceOperation::VirtualCurrencyGetPeerCurrency = ServiceOperation("GET_PEER_VC");
 	const ServiceOperation ServiceOperation::VirtualCurrencyResetCurrency = ServiceOperation("RESET_PLAYER_VC");
 
-	//app store
+	// app store
 	const ServiceOperation ServiceOperation::AppStoreCachePurchaseContext = ServiceOperation("CACHE_PURCHASE_PAYLOAD_CONTEXT");
 	const ServiceOperation ServiceOperation::AppStoreVerifyPurchase = ServiceOperation("VERIFY_PURCHASE");
 	const ServiceOperation ServiceOperation::AppStoreGetEligiblePromotions = ServiceOperation("ELIGIBLE_PROMOTIONS");
@@ -462,7 +462,7 @@ namespace BrainCloud
 	const ServiceOperation ServiceOperation::AppStoreFinalizePurchase = ServiceOperation("FINALIZE_PURCHASE");
 	const ServiceOperation ServiceOperation::AppStoreRefreshPromotions = ServiceOperation("REFRESH_PROMOTIONS");
 
-	//UserItems
+	// UserItems
 	const ServiceOperation ServiceOperation::AwardUserItem = ServiceOperation("AWARD_USER_ITEM");
 	const ServiceOperation ServiceOperation::DropUserItem = ServiceOperation("DROP_USER_ITEM");
 	const ServiceOperation ServiceOperation::GetUserItemsPage = ServiceOperation("GET_USER_ITEMS_PAGE");
@@ -479,13 +479,14 @@ namespace BrainCloud
 	const ServiceOperation ServiceOperation::RemoveUserItemFromBlockchain = ServiceOperation("REMOVE_USER_ITEM_FROM_BLOCKCHAIN");
 	const ServiceOperation ServiceOperation::GetItemPromotionDetails = ServiceOperation("GET_ITEM_PROMOTION_DETAILS");
 	const ServiceOperation ServiceOperation::GetItemsOnPromotion = ServiceOperation("GET_ITEMS_ON_PROMOTION");
+	const ServiceOperation ServiceOperation::OpenBundle = ServiceOperation("OPEN_BUNDLE");
 
-	//itemCatalog
+	// itemCatalog
 	const ServiceOperation ServiceOperation::GetCatalogItemDefinition = ServiceOperation("GET_CATALOG_ITEM_DEFINITION");
 	const ServiceOperation ServiceOperation::GetCatalogItemsPage = ServiceOperation("GET_CATALOG_ITEMS_PAGE");
 	const ServiceOperation ServiceOperation::GetCatalogItemsPageOffset = ServiceOperation("GET_CATALOG_ITEMS_PAGE_OFFSET");
 
-	//custom entity
+	// custom entity
 	const ServiceOperation ServiceOperation::CreateEntity = ServiceOperation("CREATE_ENTITY");
 	const ServiceOperation ServiceOperation::DeleteEntity = ServiceOperation("DELETE_ENTITY");
 	const ServiceOperation ServiceOperation::DeleteEntities = ServiceOperation("DELETE_ENTITIES");
@@ -496,6 +497,7 @@ namespace BrainCloud
 	const ServiceOperation ServiceOperation::UpdateEntityFieldsSharded = ServiceOperation("UPDATE_ENTITY_FIELDS_SHARDED");
 	const ServiceOperation ServiceOperation::GetEntityPage = ServiceOperation("GET_PAGE");
 	const ServiceOperation ServiceOperation::IncrementData = ServiceOperation("INCREMENT_DATA");
+	const ServiceOperation ServiceOperation::IncrementSingletonData = ServiceOperation("INCREMENT_SINGLETON_DATA");
 	const ServiceOperation ServiceOperation::GetCustomEntityPage = ServiceOperation("GET_ENTITY_PAGE");
 	const ServiceOperation ServiceOperation::GetEntityPageOffset = ServiceOperation("GET_ENTITY_PAGE_OFFSET");
 	const ServiceOperation ServiceOperation::UpdateSingletonFields = ServiceOperation("UPDATE_SINGLETON_FIELDS");
@@ -512,22 +514,25 @@ namespace BrainCloud
 	const ServiceOperation ServiceOperation::CompleteMatchWithSummaryData = ServiceOperation("COMPLETE_MATCH_WITH_SUMMARY_DATA");
 	const ServiceOperation ServiceOperation::AbandonMatchWithSummaryData = ServiceOperation("ABANDON_MATCH_WITH_SUMMARY_DATA");
 
-	ServiceOperation::ServiceOperation(const char * value)
+	const ServiceOperation ServiceOperation::GetBlockchainItems = ServiceOperation("GET_BLOCKCHAIN_ITEMS");
+	const ServiceOperation ServiceOperation::GetUniqs = ServiceOperation("GET_UNIQS");
+
+	ServiceOperation::ServiceOperation(const char *value)
 	{
 		_value = value;
 	}
 
-	bool ServiceOperation::operator== (const ServiceOperation& s) const
+	bool ServiceOperation::operator==(const ServiceOperation &s) const
 	{
 		return _value == s.getValue();
 	}
 
-	bool ServiceOperation::operator!= (const ServiceOperation& s) const
+	bool ServiceOperation::operator!=(const ServiceOperation &s) const
 	{
 		return _value != s.getValue();
 	}
 
-	void ServiceOperation::operator= (const ServiceOperation& s)
+	void ServiceOperation::operator=(const ServiceOperation &s)
 	{
 		_value = s.getValue();
 	}

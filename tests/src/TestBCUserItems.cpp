@@ -5,7 +5,6 @@
 #include "braincloud/reason_codes.h"
 #include "braincloud/http_codes.h"
 
-
 using namespace BrainCloud;
 
 TEST_F(TestBCUserItems, AwardUserItem)
@@ -138,7 +137,7 @@ TEST_F(TestBCUserItems, purchaseUserItemsWithOptions)
 TEST_F(TestBCUserItems, getItemPromotionDetails)
 {
     TestResult tr;
-   
+
     std::string shopId = "";
     std::string defId = "sword001";
     bool includeDef = true;
@@ -158,5 +157,54 @@ TEST_F(TestBCUserItems, getItemsOnPromotion)
     std::string optionsJson = "{}";
 
     m_bc->getUserItemsService()->getItemsOnPromotion(shopId, includeDef, includePromotionDetails, optionsJson, &tr);
+    tr.run(m_bc);
+}
+
+TEST_F(TestBCUserItems, openBundle)
+{
+    std::string s_awardedBundleItemId;
+    TestResult tr;
+
+    // example bundle catalog item id
+    std::string bundleDefId = "equipmentBundle";
+    int32_t quantity = 1;
+    bool includeDef = true;
+
+    m_bc->getUserItemsService()->awardUserItem(
+        bundleDefId,
+        quantity,
+        includeDef,
+        &tr);
+
+    tr.run(m_bc);
+
+    // Extract the awarded user itemId from the response
+    const Json::Value &items = tr.m_response["data"]["items"];
+    ASSERT_TRUE(items.isObject());
+    ASSERT_GT(items.size(), 0);
+
+    // Take the first awarded itemId
+    for (Json::ValueConstIterator it = items.begin(); it != items.end(); ++it)
+    {
+        s_awardedBundleItemId = it.key().asString();
+        break;
+    }
+
+    ASSERT_FALSE(s_awardedBundleItemId.empty());
+    // TestResult tr;
+
+    int version = 1; // or -1 if you want "any version"
+    quantity = 1;
+    includeDef = false;
+    std::string optionsJson = "{}";
+
+    m_bc->getUserItemsService()->openBundle(
+        s_awardedBundleItemId,
+        version,
+        quantity,
+        includeDef,
+        optionsJson,
+        &tr);
+
     tr.run(m_bc);
 }
