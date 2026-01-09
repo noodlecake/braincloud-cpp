@@ -6,7 +6,6 @@
 #pragma clang diagnostic ignored "-Wdocumentation"
 #endif
 
-
 #include <string>
 #include "braincloud/BrainCloudTypes.h"
 
@@ -19,195 +18,195 @@ namespace BrainCloud
 	class BrainCloudUserItems
 	{
 	public:
-		BrainCloudUserItems(BrainCloudClient* in_client);
-	/**
-	 * Allows item(s) to be awarded to a user without collecting
-	 *  the purchase amount. If includeDef is true, response 
-	 * includes associated itemDef with language fields limited
-	 *  to the current or default language.
-	 *
-	 * Service Name - userItems
-	 * Service Operation - AWARD_USER_ITEM
-	 *
-	 * @param defId 
-	 * @param quantity
-	 * @param includeDef 
-	 */
-        void awardUserItem(const std::string& in_defId, int32_t in_quantity, bool in_includeDef, IServerCallback * in_callback = NULL);
+		BrainCloudUserItems(BrainCloudClient *in_client);
+		/**
+		 * Allows item(s) to be awarded to a user without collecting
+		 *  the purchase amount. If includeDef is true, response
+		 * includes associated itemDef with language fields limited
+		 *  to the current or default language.
+		 *
+		 * Service Name - userItems
+		 * Service Operation - AWARD_USER_ITEM
+		 *
+		 * @param defId
+		 * @param quantity
+		 * @param includeDef
+		 */
+		void awardUserItem(const std::string &in_defId, int32_t in_quantity, bool in_includeDef, IServerCallback *in_callback = NULL);
 
-	/**
-	 * Allows a quantity of a specified user item to be dropped, 
-	 * without any recovery of the money paid for the item. 
-	 * If any quantity of the user item remains, it will be returned,
-	 * potentially with the associated itemDef (with language fields 
-	 * limited to the current or default language).
-	 *
-	 * Service Name - userItems
-	 * Service Operation - DROP_USER_ITEM
-	 *
-	 * @param defId 
-	 * @param quantity
-	 * @param includeDef 
-	 */
-        void dropUserItem(const std::string& in_defId, int32_t in_quantity, bool in_includeDef, IServerCallback * in_callback = NULL);
+		/**
+		 * Allows a quantity of a specified user item to be dropped,
+		 * without any recovery of the money paid for the item.
+		 * If any quantity of the user item remains, it will be returned,
+		 * potentially with the associated itemDef (with language fields
+		 * limited to the current or default language).
+		 *
+		 * Service Name - userItems
+		 * Service Operation - DROP_USER_ITEM
+		 *
+		 * @param defId
+		 * @param quantity
+		 * @param includeDef
+		 */
+		void dropUserItem(const std::string &in_defId, int32_t in_quantity, bool in_includeDef, IServerCallback *in_callback = NULL);
 
-    /**
-	 * Retrieves the page of user's inventory from the server 
-	 * based on the context. If includeDef is true, response
-	 *  includes associated itemDef with each user item, with 
-	 * language fields limited to the current or default language.
-	 *
-	 * Service Name - userItems
-	 * Service Operation - GET_USER_INVENTORY_PAGE
-	 *
-	 * @param context
-	 * @param includeDef 
-	 */
-        void getUserItemsPage(const std::string& in_context, bool in_includeDef, IServerCallback * in_callback = NULL);
+		/**
+		 * Retrieves the page of user's inventory from the server
+		 * based on the context. If includeDef is true, response
+		 *  includes associated itemDef with each user item, with
+		 * language fields limited to the current or default language.
+		 *
+		 * Service Name - userItems
+		 * Service Operation - GET_USER_INVENTORY_PAGE
+		 *
+		 * @param context
+		 * @param includeDef
+		 */
+		void getUserItemsPage(const std::string &in_context, bool in_includeDef, IServerCallback *in_callback = NULL);
 
-	/**
-	 * Retrieves the page of user's inventory from the server
-	 *  based on the encoded context. If includeDef is true, 
-	 * response includes associated itemDef with each user item, 
-	 * with language fields limited to the current or default
-	 * language.
-	 *
-	 * Service Name - userItems
-	 * Service Operation - GET_USER_INVENTORY_PAGE_OFFSET
-	 *
-	 * @param context
-	 * @param pageOffset
-	 * @param includeDef 
-	 */
-        void getUserItemsPageOffset(const std::string& in_context, int32_t in_pageOffset, bool in_includeDef, IServerCallback * in_callback = NULL);
+		/**
+		 * Retrieves the page of user's inventory from the server
+		 *  based on the encoded context. If includeDef is true,
+		 * response includes associated itemDef with each user item,
+		 * with language fields limited to the current or default
+		 * language.
+		 *
+		 * Service Name - userItems
+		 * Service Operation - GET_USER_INVENTORY_PAGE_OFFSET
+		 *
+		 * @param context
+		 * @param pageOffset
+		 * @param includeDef
+		 */
+		void getUserItemsPageOffset(const std::string &in_context, int32_t in_pageOffset, bool in_includeDef, IServerCallback *in_callback = NULL);
 
-	/**
-	 * Retrieves the identified user item from the server. 
-	 * If includeDef is true, response includes associated
-	 * itemDef with language fields limited to the current 
-	 * or default language.
-	 *
-	 * Service Name - userItems
-	 * Service Operation - GET_USER_ITEM
-	 *
-	 * @param itemId
-	 * @param includeDef 
-	 * @param callback The method to be invoked when the server response is received
-	 */
-        void getUserItem(const std::string& in_itemId, bool in_includeDef, IServerCallback * in_callback = NULL);
+		/**
+		 * Retrieves the identified user item from the server.
+		 * If includeDef is true, response includes associated
+		 * itemDef with language fields limited to the current
+		 * or default language.
+		 *
+		 * Service Name - userItems
+		 * Service Operation - GET_USER_ITEM
+		 *
+		 * @param itemId
+		 * @param includeDef
+		 * @param callback The method to be invoked when the server response is received
+		 */
+		void getUserItem(const std::string &in_itemId, bool in_includeDef, IServerCallback *in_callback = NULL);
 
-	/**
-	 * Gifts item to the specified player.
-	 *
-	 * Service Name - userItems
-	 * Service Operation - GIVE_USER_ITEM_TO
-	 *
-	 * @param profileId
-	 * @param itemId
-	 * @param version
-	 * @param immediate 
-	 */
-        void giveUserItemTo(const std::string& in_profileId, const std::string& in_itemId, int32_t in_version, int32_t in_quantity, bool in_immediate, IServerCallback * in_callback = NULL);
+		/**
+		 * Gifts item to the specified player.
+		 *
+		 * Service Name - userItems
+		 * Service Operation - GIVE_USER_ITEM_TO
+		 *
+		 * @param profileId
+		 * @param itemId
+		 * @param version
+		 * @param immediate
+		 */
+		void giveUserItemTo(const std::string &in_profileId, const std::string &in_itemId, int32_t in_version, int32_t in_quantity, bool in_immediate, IServerCallback *in_callback = NULL);
 
-	/**
-	 * Retrieves the identified user item from the server. 
-	 * If includeDef is true, response includes associated
-	 * itemDef with language fields limited to the current 
-	 * or default language.
-	 *
-	 * Service Name - userItems
-	 * Service Operation - PURCHASE_USER_ITEM
-	 *
-	 * @param defId
-	 * @param quantity
-	 * @param shopId
-	 * @param includeDef 
-	 */
-        void purchaseUserItem(const std::string& in_defId, int32_t in_quantity, const std::string& in_shopId, bool in_includeDef, IServerCallback * in_callback = NULL);
+		/**
+		 * Retrieves the identified user item from the server.
+		 * If includeDef is true, response includes associated
+		 * itemDef with language fields limited to the current
+		 * or default language.
+		 *
+		 * Service Name - userItems
+		 * Service Operation - PURCHASE_USER_ITEM
+		 *
+		 * @param defId
+		 * @param quantity
+		 * @param shopId
+		 * @param includeDef
+		 */
+		void purchaseUserItem(const std::string &in_defId, int32_t in_quantity, const std::string &in_shopId, bool in_includeDef, IServerCallback *in_callback = NULL);
 
-	/**
-	 * Retrieves and transfers the gift item from 
-	 * the specified player, who must have previously 
-	 * called giveUserItemTo.
-	 *
-	 * Service Name - userItems
-	 * Service Operation - RECEVIE_USER_ITEM_FROM
-	 *
-	 * @param profileId
-	 * @param itemId
-	 */
-        void receiveUserItemFrom(const std::string& in_profileId, const std::string& in_itemId, IServerCallback * in_callback = NULL);
+		/**
+		 * Retrieves and transfers the gift item from
+		 * the specified player, who must have previously
+		 * called giveUserItemTo.
+		 *
+		 * Service Name - userItems
+		 * Service Operation - RECEVIE_USER_ITEM_FROM
+		 *
+		 * @param profileId
+		 * @param itemId
+		 */
+		void receiveUserItemFrom(const std::string &in_profileId, const std::string &in_itemId, IServerCallback *in_callback = NULL);
 
-	/**
-	 * Allows a quantity of a specified user item to be sold. 
-	 * If any quantity of the user item remains, it will be returned, 
-	 * potentially with the associated itemDef (with language fields 
-	 * limited to the current or default language), along with the 
-	 * currency refunded and currency balances.
-	 *
-	 * Service Name - userItems
-	 * Service Operation - SELL_USER_ITEM
-	 *
-	 * @param itemId
-	 * @param version
-	 * @param quantity
-	 * @param shopId
-	 * @param includeDef 
-	 */
-        void sellUserItem(const std::string& in_itemId, int32_t in_version, int32_t in_quantity, const std::string& in_shopId, bool in_includeDef, IServerCallback * in_callback = NULL);
+		/**
+		 * Allows a quantity of a specified user item to be sold.
+		 * If any quantity of the user item remains, it will be returned,
+		 * potentially with the associated itemDef (with language fields
+		 * limited to the current or default language), along with the
+		 * currency refunded and currency balances.
+		 *
+		 * Service Name - userItems
+		 * Service Operation - SELL_USER_ITEM
+		 *
+		 * @param itemId
+		 * @param version
+		 * @param quantity
+		 * @param shopId
+		 * @param includeDef
+		 */
+		void sellUserItem(const std::string &in_itemId, int32_t in_version, int32_t in_quantity, const std::string &in_shopId, bool in_includeDef, IServerCallback *in_callback = NULL);
 
-	/**
-	 * Updates the item data on the specified user item.
-	 *
-	 * Service Name - userItems
-	 * Service Operation - UPDATE_USER_ITEM_DATA
-	 *
-	 * @param itemId
-	 * @param version
-	 * @param newItemData
-	 */
-        void updateUserItemData(const std::string& in_itemId, int32_t in_version, const std::string&  in_newItemData, IServerCallback * in_callback = NULL);
+		/**
+		 * Updates the item data on the specified user item.
+		 *
+		 * Service Name - userItems
+		 * Service Operation - UPDATE_USER_ITEM_DATA
+		 *
+		 * @param itemId
+		 * @param version
+		 * @param newItemData
+		 */
+		void updateUserItemData(const std::string &in_itemId, int32_t in_version, const std::string &in_newItemData, IServerCallback *in_callback = NULL);
 
-	/**
-	 * Uses the specified item, potentially consuming it.
-	 *
-	 * Service Name - userItems
-	 * Service Operation - USE_USER_ITEM
-	 *
-	 * @param itemId
-	 * @param version
-	 * @param newItemData
-	 * @param includeDef 
-	 */
-        void useUserItem(const std::string& in_itemId, int32_t in_version, const std::string&  in_newItemData, bool in_includeDef, IServerCallback * in_callback = NULL);
+		/**
+		 * Uses the specified item, potentially consuming it.
+		 *
+		 * Service Name - userItems
+		 * Service Operation - USE_USER_ITEM
+		 *
+		 * @param itemId
+		 * @param version
+		 * @param newItemData
+		 * @param includeDef
+		 */
+		void useUserItem(const std::string &in_itemId, int32_t in_version, const std::string &in_newItemData, bool in_includeDef, IServerCallback *in_callback = NULL);
 
-			/**
-	 * Publishes the specified item to the item management attached blockchain. Results are reported asynchronously via an RTT event.
-	 *
-	 * Service Name - userItems
-	 * Service Operation - PUBLISH_USER_ITEM_TO_BLOCKCHAIN
-	 *
-	 * @param itemId
-	 * @param version
-	 * @param newItemData
-	 */
-        void publishUserItemToBlockchain(const std::string& in_itemId, int32_t in_version, IServerCallback * in_callback = NULL);
+		/**
+		 * Publishes the specified item to the item management attached blockchain. Results are reported asynchronously via an RTT event.
+		 *
+		 * Service Name - userItems
+		 * Service Operation - PUBLISH_USER_ITEM_TO_BLOCKCHAIN
+		 *
+		 * @param itemId
+		 * @param version
+		 * @param newItemData
+		 */
+		void publishUserItemToBlockchain(const std::string &in_itemId, int32_t in_version, IServerCallback *in_callback = NULL);
 
-	/**
-	 * Syncs the caller's user items with the item management attached blockchain. Results are reported asynchronously via an RTT event.
-	 *
-	 * Service Name - userItems
-	 * Service Operation - REFRESH_BLOCKCHAIN_USER_ITEMS
-	 */
-        void refreshBlockchainUserItems(IServerCallback * in_callback = NULL);
-	
-	/**
-	 * Removes the specified item from the item management attached blockchain. Results are reported asynchronously via an RTT event.
-	 * 
-	 * Service Name - userItems
-	 * Service Operation - REMOVE_USER_ITEM_FROM_BLOCKCHAIN
-	 */
-		void removeUserItemFromBlockchain(const std::string& in_itemId, int32_t in_version, IServerCallback * in_callback = NULL);
+		/**
+		 * Syncs the caller's user items with the item management attached blockchain. Results are reported asynchronously via an RTT event.
+		 *
+		 * Service Name - userItems
+		 * Service Operation - REFRESH_BLOCKCHAIN_USER_ITEMS
+		 */
+		void refreshBlockchainUserItems(IServerCallback *in_callback = NULL);
+
+		/**
+		 * Removes the specified item from the item management attached blockchain. Results are reported asynchronously via an RTT event.
+		 *
+		 * Service Name - userItems
+		 * Service Operation - REMOVE_USER_ITEM_FROM_BLOCKCHAIN
+		 */
+		void removeUserItemFromBlockchain(const std::string &in_itemId, int32_t in_version, IServerCallback *in_callback = NULL);
 
 		/// <summary>
 		/// Allows item(s) to be awarded to a user without collecting the purchase amount.
@@ -228,18 +227,18 @@ namespace BrainCloud
 		/// </param>
 		/// <param name="in_optionsJson">
 		/// Optional support for specifying 'blockIfExceedItemMaxStackable' indicating how to process the award
-		/// if the defId is for a stackable item with a max stackable quantity and the specified quantity to award is too high. If true and 
-		/// the quantity is too high, the call is blocked and an error is returned. If false (default) and quantity is too high, the quantity 
-		/// is adjusted to the allowed maximum and the quantity not awarded is reported in response key 'itemsNotAwarded' - unless the adjusted 
+		/// if the defId is for a stackable item with a max stackable quantity and the specified quantity to award is too high. If true and
+		/// the quantity is too high, the call is blocked and an error is returned. If false (default) and quantity is too high, the quantity
+		/// is adjusted to the allowed maximum and the quantity not awarded is reported in response key 'itemsNotAwarded' - unless the adjusted
 		/// quantity would be 0, in which case the call is blocked and an error is returned.
 		/// </param>
 		/// <param name="in_callback">
 		/// Invoked after the response is received.
 		/// </param>
-		void awardUserItemWithOptions(const std::string& in_defId, int32_t in_quantity, bool in_includeDef, const std::string& in_optionsJson, IServerCallback* in_callback = NULL);
+		void awardUserItemWithOptions(const std::string &in_defId, int32_t in_quantity, bool in_includeDef, const std::string &in_optionsJson, IServerCallback *in_callback = NULL);
 
 		/// <summary>
-		/// Purchases a quantity of an item from the specified store, if the user has enough funds and purchasing for listed buy price is not 
+		/// Purchases a quantity of an item from the specified store, if the user has enough funds and purchasing for listed buy price is not
 		/// disabled for associated catalog item definition. If includeDef is true, response includes associated itemDef with language fields
 		/// limited to the current or default language.
 		/// </summary>
@@ -261,15 +260,15 @@ namespace BrainCloud
 		/// </param>
 		/// <param name="in_optionsJson">
 		/// Optional support for specifying 'blockIfExceedItemMaxStackable' indicating how to process the award
-		/// if the defId is for a stackable item with a max stackable quantity and the specified quantity to award is too high. If true and 
-		/// the quantity is too high, the call is blocked and an error is returned. If false (default) and quantity is too high, the quantity 
-		/// is adjusted to the allowed maximum and the quantity not awarded is reported in response key 'itemsNotAwarded' - unless the adjusted 
+		/// if the defId is for a stackable item with a max stackable quantity and the specified quantity to award is too high. If true and
+		/// the quantity is too high, the call is blocked and an error is returned. If false (default) and quantity is too high, the quantity
+		/// is adjusted to the allowed maximum and the quantity not awarded is reported in response key 'itemsNotAwarded' - unless the adjusted
 		/// quantity would be 0, in which case the call is blocked and an error is returned.
 		/// </param>
 		/// <param name="in_callback">
 		/// Invoked after the response is received.
 		/// </param>
-		void purchaseUserItemsWithOptions(const std::string& in_defId, int32_t in_quantity, const std::string& in_shopId, bool in_includeDef, const std::string& in_optionsJson, IServerCallback* in_callback=NULL);
+		void purchaseUserItemsWithOptions(const std::string &in_defId, int32_t in_quantity, const std::string &in_shopId, bool in_includeDef, const std::string &in_optionsJson, IServerCallback *in_callback = NULL);
 
 		/// <summary>
 		/// Returns list of promotional details for the specified item definition, for promotions available to the current user.
@@ -293,7 +292,7 @@ namespace BrainCloud
 		/// <param name="in_callback">
 		/// Invoked after the response is received.
 		/// </param>
-		void getItemPromotionDetails(const std::string& in_defId, const std::string& in_shopId, bool in_includeDef, bool in_includePromotionDetails, IServerCallback* in_callback);
+		void getItemPromotionDetails(const std::string &in_defId, const std::string &in_shopId, bool in_includeDef, bool in_includePromotionDetails, IServerCallback *in_callback);
 
 		/// <summary>
 		/// Returns list of items on promotion available to the current user.
@@ -305,23 +304,52 @@ namespace BrainCloud
 		/// <param name="in_shopId">
 		/// The id identifying the store the item is being purchased from, if applicable.
 		/// </param>
-	/// <param name="in_includeDef">
+		/// <param name="in_includeDef">
 		/// If true, the associated item definition will be included in the response.
 		/// </param>
 		/// <param name="in_includePromotionDetails">
 		/// If true, the promotion details of the eligible promotions will be included in the response.
 		/// </param>
 		/// <param name="in_optionsJson">
-		/// Optional support for specifying additional options. Currently supporting option 'category' to 
+		/// Optional support for specifying additional options. Currently supporting option 'category' to
 		/// include only catalog items configured with the specified category, if desired.
 		/// </param>
 		/// <param name="in_callback">
 		/// Invoked after the response is received.
 		/// </param>
-		void getItemsOnPromotion(const std::string& in_shopId, bool in_includeDef, bool in_includePromotionDef, const std::string &in_optionsJson, IServerCallback* in_callback);
-    private:
-        BrainCloudClient * m_client;
-    };
+		void getItemsOnPromotion(const std::string &in_shopId, bool in_includeDef, bool in_includePromotionDef, const std::string &in_optionsJson, IServerCallback *in_callback);
+
+		/// <summary>
+		/// Opens a quantity of a bundle user item. Applicable user items will be created
+		/// and any currencies awarded.
+		/// </summary>
+		/// <remarks>
+		/// ServiceName: UserItems
+		/// ServiceOperation: OPEN_BUNDLE
+		/// </remarks>
+		/// <param name="in_itemId">
+		/// ID uniquely identifying the user item to be opened.
+		/// </param>
+		/// <param name="in_version">
+		/// Version of the user's BUNDLE type item being opened. Pass -1 for any version.
+		/// </param>
+		/// <param name="in_quantity">
+		/// Quantity of the item being opened. Quantity greater than 1 only applicable if stackable.
+		/// </param>
+		/// <param name="in_includeDef">
+		/// If true, associated item definitions will be included in the response.
+		/// </param>
+		/// <param name="in_optionsJson">
+		/// Optional JSON string specifying additional options.
+		/// </param>
+		/// <param name="in_callback">
+		/// Invoked after the response is received.
+		/// </param>
+		void openBundle(const std::string &in_itemId, int in_version, int in_quantity, bool in_includeDef, const std::string &in_optionsJson, IServerCallback *in_callback);
+
+	private:
+		BrainCloudClient *m_client;
+	};
 }
 #if defined(__clang__)
 #pragma clang diagnostic pop
