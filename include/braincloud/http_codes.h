@@ -1,3 +1,4 @@
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 #ifndef _HTTPCODES_H_
 #define _HTTPCODES_H_
 

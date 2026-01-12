@@ -1,4 +1,4 @@
-// Copyright 2018 bitHeads, Inc. All Rights Reserved.
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 
 #pragma once
 #if defined(__clang__)
@@ -270,12 +270,6 @@ namespace BrainCloud
 
 		 */
 		void joinLobbyWithPingData(const std::string in_lobbyId, bool in_isReady, const std::string& in_extraJson, std::string in_teamCode, const std::vector<std::string>& in_otherUserCxIds, IServerCallback* in_callback);
-
-		/// <summary>
-		/// Cancel this members Find, Join and Searching of Lobbies
-		/// Deprecated: Use cancelFindRequest with entryId parameter
-		/// </summary>
-		DEPRECATED void cancelFindRequest(const std::string& in_lobbyType, IServerCallback* in_callback);
 
 		/// <summary>
 		/// Cancel this members Find, Join and Searching of Lobbies

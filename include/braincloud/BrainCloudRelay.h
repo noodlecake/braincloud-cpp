@@ -1,4 +1,4 @@
-// Copyright 2020 bitHeads, Inc. All Rights Reserved.
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 
 #pragma once
 #if defined(__clang__)

@@ -66,11 +66,10 @@ void TestFixtureBase::SetUp()
 	if (!ShouldSkipAuthenticate())
 	{
 		TestResult tr;
+		printf("\n [SkipAuthenticate is false, logging in with userA] \n");
 		m_bcWrapper->authenticateUniversal(GetUser(UserA)->m_id, GetUser(UserA)->m_password, true, &tr);
 		tr.run(m_bc);
 	}
-
-	m_bc->enableLogging(true);
 }
 
 void TestFixtureBase::TearDown()
@@ -80,6 +79,7 @@ void TestFixtureBase::TearDown()
 	if (!ShouldSkipAuthenticate())
 	{
 		TestResult tr;
+		printf("\n [SkipAuthenticate is false, logging out userA] \n");
 		m_bcWrapper->logout(true, &tr); // clears profile id
 		tr.run(m_bc);
 	}
@@ -87,10 +87,12 @@ void TestFixtureBase::TearDown()
 
 	m_bc->deregisterEventCallback();
 	m_bc->deregisterRewardCallback();
-
-	m_bc->enableLogging(true);
+	m_bcWrapper->resetStoredAnonymousId();
 
 	delete m_bcWrapper;
+
+	//Add delay at end of tests to ensure we do not get rate limited
+	this_thread::sleep_for(std::chrono::milliseconds(1000));
 }
 
 bool TestFixtureBase::ShouldSkipAuthenticate()

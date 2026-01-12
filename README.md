@@ -326,7 +326,7 @@ And redistributes public domain library [JsonCpp](https://github.com/getbrainclo
 
 ### Cocoapod Depenencies
 
-The brainCloud library ships with SSKeychain and requires SocketRocket and JsonCpp cocoapods. 
+The brainCloud library ships with SAMKeychain and requires SocketRocket and JsonCpp cocoapods. 
 
 ### Important Submodule Note
 

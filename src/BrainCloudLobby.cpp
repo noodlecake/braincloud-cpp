@@ -1,4 +1,4 @@
-// Copyright 2018 bitHeads, Inc. All Rights Reserved.
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 
 #include "braincloud/BrainCloudLobby.h"
 #include "braincloud/BrainCloudClient.h"
@@ -526,19 +526,6 @@ namespace BrainCloud
 		message[OperationParam::Settings.getValue()] = JsonUtil::jsonStringToValue(in_jsonSettings.c_str());
 
 		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::UpdateSettings, message, in_callback);
-		m_client->sendRequest(sc);
-	}
-
-	/// <summary>
-	/// Cancel this members Find, Join and Searching of Lobbies
-	/// Deprecated: Use cancelFindRequest with entryId parameter
-	/// </summary>
-	void BrainCloudLobby::cancelFindRequest(const std::string& in_lobbyType, IServerCallback* in_callback)
-	{
-		Json::Value message;
-		message[OperationParam::LobbyType.getValue()] = in_lobbyType;
-
-		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::CancelFindRequest, message, in_callback);
 		m_client->sendRequest(sc);
 	}
 	

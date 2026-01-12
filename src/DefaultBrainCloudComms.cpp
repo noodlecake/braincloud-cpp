@@ -1,3 +1,4 @@
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 #include <stdio.h>
 #include <iostream>
 #include <algorithm>
@@ -100,7 +101,7 @@ namespace BrainCloud
 		{
 			if (_loader->isDone())
 			{
-				handleResult(_loader->getResponse());
+				handleResult(_loader->getResponse(), _loader->getRequest());
 				delete _loader;
 				_loader = NULL;
 			}
@@ -555,9 +556,10 @@ namespace BrainCloud
 	 * Used to retrieve data from our call
 	 *
 	 * @param response response
+	 * @param request request
 	 * @return false if a retry is required, true if result parsed
 	 */
-	bool DefaultBrainCloudComms::handleResult(URLResponse const & response)
+	bool DefaultBrainCloudComms::handleResult(URLResponse const& response, URLRequest const request)
 	{
 		Json::Value root;
 		Json::Reader reader;
@@ -604,7 +606,7 @@ namespace BrainCloud
 			|| !reader.parse(responseData, root))
 		{
 			// deals with retry timers
-			handleError(response);
+			handleError(response, request);
 
 			// handleError method sets retry count to zero if we've hit retry limit.
 			// this is not a good way to check the value but hard to unwind the code.
@@ -782,9 +784,11 @@ namespace BrainCloud
 		return (int)_packetTimeouts.size();
 	}
 
-	void DefaultBrainCloudComms::handleError(URLResponse const & response)
+	void DefaultBrainCloudComms::handleError(URLResponse const& response, URLRequest const& request)
 	{
 #if ( defined(GAMECLIENT_DEBUGLEVEL)  )
+		std::cout << "DefaultBrainCloudComms::handleError() from request:" << request.getUrl() << " data: " << request.getData() << std::endl;
+
 		std::cout << "DefaultBrainCloudComms::handleError() status(" << response.getStatusCode()
 			<< ") reasonPhrase: " << response.getReasonPhrase() << " data: " << response.getData() << std::endl;
 #endif

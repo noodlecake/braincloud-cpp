@@ -49,6 +49,7 @@ TEST_F(TestBCFriend, GetExternalIdForProfileId)
 {
 	TestResult tr;
 	m_bc->getFriendService()->getExternalIdForProfileId(GetUser(UserA)->m_profileId, "Facebook", &tr);
+
 	tr.run(m_bc);
 }
 

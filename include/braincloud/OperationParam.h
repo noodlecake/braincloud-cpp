@@ -1,3 +1,4 @@
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 #pragma once
 
 #include <string>
@@ -7,8 +8,6 @@ namespace BrainCloud {
 	class OperationParam
 	{
 	public:
-		static const OperationParam Authenticate;
-
 		//Push Notification Service - Send Params
 		static const OperationParam PushNotificationSendParamToPlayerId;
 		static const OperationParam PushNotificationSendParamNotificationTemplateId;
@@ -522,6 +521,8 @@ namespace BrainCloud {
 		static const OperationParam UserItemsServiceProfileId;
 		static const OperationParam UserItemsServiceShopId;
 		static const OperationParam UserItemsServiceNewItemData;
+		static const OperationParam UserItemsServiceOptionsJson;
+		static const OperationParam UserItemsServiceIncludePromotionDetails;
 
 		//Datastream
 		static const OperationParam DataStreamCrashType;

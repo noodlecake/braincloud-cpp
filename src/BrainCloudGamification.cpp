@@ -1,4 +1,4 @@
-// Copyright 2016 bitHeads, Inc. All Rights Reserved.
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 
 #if defined(__APPLE__) && !defined(HG_PLATFORM_BB)
 #include "TargetConditionals.h"

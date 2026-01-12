@@ -1,3 +1,4 @@
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 #include "braincloud/BrainCloudWrapper.h"
 #include "braincloud/internal/SaveDataHelper.h"
 #include "braincloud/BrainCloudClient.h"
@@ -87,6 +88,9 @@ namespace BrainCloud {
         // inialize the save data helper with our company and app name
         // if this is not called the profile ids will not be saved
         SaveDataHelper::getInstance()->initialize(companyName, appName);
+
+        //initialize brainCloud identity
+        initializeIdentity();
     }
 
     void BrainCloudWrapper::initializeWithApps(const char * url, const char * in_defaultAppId, const std::map<std::string, std::string>& in_secretMap, const char * version, const char * companyName, const char * appName)
@@ -117,6 +121,9 @@ namespace BrainCloud {
         // inialize the save data helper with our company and app name
         // if this is not called the profile ids will not be saved
         SaveDataHelper::getInstance()->initialize(companyName, appName);
+
+        //initialize brainCloud identity
+        initializeIdentity();
     }
 
     void BrainCloudWrapper::initializeIdentity(bool in_isAnonymousAuth)
