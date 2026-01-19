@@ -156,7 +156,7 @@ namespace BrainCloud
 		int _killSwitchThreshold;
 
 		//compression
-		int _clientSideCompressionThreshold = 5000;
+		int _clientSideCompressionThreshold = 51200;
 
 		// This flag is set when _cacheMessagesOnNetworkError is true
 		// and a network error occurs. It is reset when a call is made
