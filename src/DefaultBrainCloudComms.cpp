@@ -1064,7 +1064,11 @@ namespace BrainCloud
 
 			request = new URLRequest(url);
 
-			if (compressRequests) {
+			bool compressMessage = compressRequests &&
+						_clientSideCompressionThreshold >= 0 &&
+						dataString.length() >= static_cast<size_t>(_clientSideCompressionThreshold);
+
+			if (compressMessage) {
 				std::string compressedData = DataUtilities::CompressString(dataString);
 
 				request->addHeader(URLRequestHeader("Content-Encoding", "gzip"));
