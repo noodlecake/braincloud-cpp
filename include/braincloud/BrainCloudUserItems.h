@@ -130,7 +130,7 @@ namespace BrainCloud
 		 * called giveUserItemTo.
 		 *
 		 * Service Name - userItems
-		 * Service Operation - RECEVIE_USER_ITEM_FROM
+		 * Service Operation - RECEIVE_USER_ITEM_FROM
 		 *
 		 * @param profileId
 		 * @param itemId
