@@ -4,12 +4,6 @@
 #include <jni.h>
 #include <time.h>
 
-#if TARGET_OCULUS
-static const std::string PLATFORM_NAME("OCULUS");
-#else
-static const std::string PLATFORM_NAME("ANG");
-#endif
-
 namespace BrainCloud
 {
     namespace Device
