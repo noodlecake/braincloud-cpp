@@ -25,8 +25,8 @@ namespace BrainCloud {
         /** 
          * Method called when a file upload has completed.
          *
-         * @param in_fileUploadId The file upload id
-         * @param in_jsonResponse The json response describing the file details similar to this
+         * @param fileUploadId The file upload id
+         * @param jsonResponse The json response describing the file details similar to this
          * {
          *  "status": 200,
          *  "data": {
@@ -48,15 +48,15 @@ namespace BrainCloud {
          *  }
          * }
          */
-        virtual void fileUploadCompleted(const char * in_fileUploadId, const std::string & in_jsonResponse) = 0;
+        virtual void fileUploadCompleted(const char * fileUploadId, const std::string & jsonResponse) = 0;
         
         /**
          * Method called when a file upload has failed.
          *
-         * @param in_fileUploadId The file upload id
-         * @param in_statusCode The http status of the operation (see http_codes.h)
-         * @param in_reasonCode The reason code of the operation (see reason_codes.h)
-         * @param in_jsonResponse The json response describing the failure. This uses the usual brainCloud error
+         * @param fileUploadId The file upload id
+         * @param statusCode The http status of the operation (see http_codes.h)
+         * @param reasonCode The reason code of the operation (see reason_codes.h)
+         * @param jsonResponse The json response describing the failure. This uses the usual brainCloud error
          * format similar to this:
          * {
          *   "status": 403,
@@ -65,7 +65,7 @@ namespace BrainCloud {
          *   "severity": "ERROR"
          * }
          */
-        virtual void fileUploadFailed(const char * in_fileUploadId, int in_statusCode, int in_reasonCode, const std::string & in_jsonResponse) = 0;
+        virtual void fileUploadFailed(const char * fileUploadId, int statusCode, int reasonCode, const std::string & jsonResponse) = 0;
     };
 }
 

@@ -545,6 +545,10 @@ namespace BrainCloud
 	{
 		return _value == s.getValue();
 	}
+	bool OperationParam::operator!=(const OperationParam& s) const
+	{
+		return _value != s.getValue();
+	}
 	void OperationParam::operator= (const OperationParam& s)
 	{
 		_value = s.getValue();

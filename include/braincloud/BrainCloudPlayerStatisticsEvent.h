@@ -18,7 +18,7 @@ namespace BrainCloud
     class BrainCloudPlayerStatisticsEvent
     {
     public:
-        BrainCloudPlayerStatisticsEvent(BrainCloudClient* in_client);
+        BrainCloudPlayerStatisticsEvent(BrainCloudClient* client);
 
         /**
          * Trigger an event server side that will increase the user's statistics.
@@ -35,10 +35,10 @@ namespace BrainCloud
          *
          * @see BrainCloudPlayerStatistics
          *
-         * @param in_callback The method to be invoked when the server response is received
+         * @param callback The method to be invoked when the server response is received
          */
-        void triggerStatsEvent(const char *in_eventName, int32_t in_eventMultiplier,
-                               IServerCallback *in_callback = NULL);
+        void triggerStatsEvent(const char *eventName, int32_t eventMultiplier,
+                               IServerCallback *callback = NULL);
 
         /**
          * See documentation for TriggerStatisticsEvent for more
@@ -47,7 +47,7 @@ namespace BrainCloud
          * Service Name - PlayerStatisticsEvent
          * Service Operation - TriggerMultiple
          *
-         * @param in_jsonData
+         * @param jsonData
          *   [
          *     {
          *       "eventName": "event1",
@@ -59,7 +59,7 @@ namespace BrainCloud
          *     }
          *   ]
          */
-        void triggerStatsEvents(const std::string &in_jsonData, IServerCallback *in_callback = NULL);
+        void triggerStatsEvents(const std::string &jsonData, IServerCallback *callback = NULL);
 
     private:
         BrainCloudClient * m_client;

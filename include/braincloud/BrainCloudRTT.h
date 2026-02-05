@@ -20,7 +20,7 @@ namespace BrainCloud
 	class BrainCloudRTT
 	{
 	public:
-		BrainCloudRTT(RTTComms* in_comms, BrainCloudClient* in_client);
+		BrainCloudRTT(RTTComms* comms, BrainCloudClient* client);
 		
 		enum RTTConnectionStatus
 		{
@@ -35,7 +35,7 @@ namespace BrainCloud
 		 *
 		 * @param callback The callback.
 		 */
-		void requestClientConnection(IServerCallback* in_callback);
+		void requestClientConnection(IServerCallback* callback);
 
 		/**
 		 * Enables Real Time event for this session.
@@ -48,7 +48,7 @@ namespace BrainCloud
 		 * @param callback The callback.
 		 * @param useWebSocket Use web sockets instead of TCP for the internal connections. Default is true
 		 */
-		void enableRTT(IRTTConnectCallback* in_callback, bool in_useWebSocket = true);
+		void enableRTT(IRTTConnectCallback* callback, bool useWebSocket = true);
 
 		/**
 		 * Disables Real Time event for this session.
@@ -73,7 +73,7 @@ namespace BrainCloud
 		 * Notes: RTT must be enabled for this app, and enableRTT must have been successfully called.
 		 * Only one event callback can be registered at a time. Calling this a second time will override the previous callback.
 		 */
-		void registerRTTEventCallback(IRTTCallback* in_callback);
+		void registerRTTEventCallback(IRTTCallback* callback);
 		void deregisterRTTEventCallback();
 
 		/**
@@ -82,7 +82,7 @@ namespace BrainCloud
 		 * Notes: RTT must be enabled for this app, and enableRTT must have been successfully called.
 		 * Only one chat callback can be registered at a time. Calling this a second time will override the previous callback.
 		 */
-		void registerRTTChatCallback(IRTTCallback* in_callback);
+		void registerRTTChatCallback(IRTTCallback* callback);
 		void deregisterRTTChatCallback();
 
 		/**
@@ -91,7 +91,7 @@ namespace BrainCloud
 		 * Notes: RTT must be enabled for this app, and enableRTT must have been successfully called.
 		 * Only one messaging callback can be registered at a time. Calling this a second time will override the previous callback.
 		 */
-		void registerRTTMessagingCallback(IRTTCallback* in_callback);
+		void registerRTTMessagingCallback(IRTTCallback* callback);
 		void deregisterRTTMessagingCallback();
 
 		/**
@@ -100,7 +100,7 @@ namespace BrainCloud
 		 * Notes: RTT must be enabled for this app, and enableRTT must have been successfully called.
 		 * Only one lobby callback can be registered at a time. Calling this a second time will override the previous callback.
 		 */
-		void registerRTTLobbyCallback(IRTTCallback* in_callback);
+		void registerRTTLobbyCallback(IRTTCallback* callback);
 		void deregisterRTTLobbyCallback();
 
 		/**
@@ -109,7 +109,7 @@ namespace BrainCloud
 		 * Notes: RTT must be enabled for this app, and enableRTT must have been successfully called.
 		 * Only one presence callback can be registered at a time. Calling this a second time will override the previous callback.
 		 */
-		void registerRTTPresenceCallback(IRTTCallback* in_callback);
+		void registerRTTPresenceCallback(IRTTCallback* callback);
 		void deregisterRTTPresenceCallback();
 
 		/**
@@ -118,7 +118,7 @@ namespace BrainCloud
 		 * Notes: RTT must be enabled for this app, and enableRTT must have been successfully called.
 		 * Only one presence callback can be registered at a time. Calling this a second time will override the previous callback.
 		 */
-		void registerRTTBlockchainRefresh(IRTTCallback* in_callback);
+		void registerRTTBlockchainRefresh(IRTTCallback* callback);
 		void deregisterRTTBlockchainRefresh();
 
 		/**

@@ -46,8 +46,8 @@ namespace BrainCloud {
     
     class StringUtil {
     public:
-        static bool IsOptionalParameterValid(const char * in_param);
-        static bool IsOptionalParameterValid(std::string in_param);
+        static bool IsOptionalParameterValid(const char * param);
+        static bool IsOptionalParameterValid(std::string param);
     };
 
 }

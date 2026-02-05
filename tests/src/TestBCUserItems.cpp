@@ -181,7 +181,7 @@ TEST_F(TestBCUserItems, openBundle)
     // Extract the awarded user itemId from the response
     const Json::Value &items = tr.m_response["data"]["items"];
     ASSERT_TRUE(items.isObject());
-    ASSERT_GT(items.size(), 0);
+    ASSERT_GT(items.size(), 0u);
 
     // Take the first awarded itemId
     for (Json::ValueConstIterator it = items.begin(); it != items.end(); ++it)
