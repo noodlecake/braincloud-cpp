@@ -8,9 +8,9 @@ namespace BrainCloud
     const FriendPlatform & FriendPlatform::Facebook = FriendPlatform("Facebook");
     const FriendPlatform & FriendPlatform::Unknown = FriendPlatform("Unknown");
 
-    FriendPlatform::FriendPlatform(const std::string & in_friendPlatform)
+    FriendPlatform::FriendPlatform(const std::string & friendPlatform)
     {
-        m_value = in_friendPlatform;
+        m_value = friendPlatform;
     }
 
     const std::string & FriendPlatform::toString() const
@@ -18,16 +18,16 @@ namespace BrainCloud
         return m_value;
     }
 
-    const FriendPlatform & FriendPlatform::fromString(const std::string &in_friendPlatform)
+    const FriendPlatform & FriendPlatform::fromString(const std::string &friendPlatform)
     {
         // this is a bit slow but not used often
-        if (in_friendPlatform == All) {
+        if (friendPlatform == All) {
             return FriendPlatform::All;
         }
-        if (in_friendPlatform == BrainCloud) {
+        if (friendPlatform == BrainCloud) {
             return FriendPlatform::BrainCloud;
         }
-        if (in_friendPlatform == Facebook) {
+        if (friendPlatform == Facebook) {
             return FriendPlatform::Facebook;
         }
 

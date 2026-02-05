@@ -549,6 +549,7 @@ namespace BrainCloud {
 		std::string getValue() const { return _value; }
 
 		bool operator== (const OperationParam& s) const;
+		bool operator!= (const OperationParam& s) const;
 		void operator= (const OperationParam& s);
 
 	private:

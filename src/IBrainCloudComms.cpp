@@ -20,8 +20,8 @@ namespace BrainCloud {
 	// Public methods
 	////////////////////////////////////////////////////////
 
-	IBrainCloudComms::IBrainCloudComms(BrainCloudClient* in_client)
-		: _client(in_client)
+	IBrainCloudComms::IBrainCloudComms(BrainCloudClient* client)
+		: _client(client)
 		, _packetId(0)
 		, _expectedPacketId(NO_PACKET_EXPECTED)
 		, _retryCount(0)
@@ -134,9 +134,9 @@ namespace BrainCloud {
 		return _packetTimeouts;
 	}
 
-	void IBrainCloudComms::setPacketTimeouts(const std::vector<int> & in_packetTimeouts)
+	void IBrainCloudComms::setPacketTimeouts(const std::vector<int> & packetTimeouts)
 	{
-		_packetTimeouts = in_packetTimeouts;
+		_packetTimeouts = packetTimeouts;
 	}
 
 	void IBrainCloudComms::setPacketTimeoutsToDefault()
@@ -148,11 +148,11 @@ namespace BrainCloud {
 		_packetTimeouts.push_back(50);
 	}
 
-	void IBrainCloudComms::setAuthenticationPacketTimeout(int in_timeoutSecs)
+	void IBrainCloudComms::setAuthenticationPacketTimeout(int timeoutSecs)
 	{
-		if (in_timeoutSecs > 0)
+		if (timeoutSecs > 0)
 		{
-			_authenticationTimeoutMillis = in_timeoutSecs * 1000;
+			_authenticationTimeoutMillis = timeoutSecs * 1000;
 		}
 	}
 
@@ -161,14 +161,14 @@ namespace BrainCloud {
 		return _authenticationTimeoutMillis / 1000;
 	}
 
-	void IBrainCloudComms::setOldStyleStatusMessageErrorCallback(bool in_enabled)
+	void IBrainCloudComms::setOldStyleStatusMessageErrorCallback(bool enabled)
 	{
-		_oldStyleStatusMessageErrorCallback = in_enabled;
+		_oldStyleStatusMessageErrorCallback = enabled;
 	}
 
-	void IBrainCloudComms::setErrorCallbackOn202Status(bool in_isError)
+	void IBrainCloudComms::setErrorCallbackOn202Status(bool isError)
 	{
-		_errorCallbackOn202 = in_isError;
+		_errorCallbackOn202 = isError;
 	}
 
 	int IBrainCloudComms::getUploadLowTransferRateTimeout()
@@ -176,9 +176,9 @@ namespace BrainCloud {
 		return _uploadLowTransferRateTimeoutSecs;
 	}
 
-	void IBrainCloudComms::setUploadLowTransferRateTimeout(int in_timeoutSecs)
+	void IBrainCloudComms::setUploadLowTransferRateTimeout(int timeoutSecs)
 	{
-		_uploadLowTransferRateTimeoutSecs = in_timeoutSecs;
+		_uploadLowTransferRateTimeoutSecs = timeoutSecs;
 	}
 
 	int IBrainCloudComms::getUploadLowTransferRateThreshold()
@@ -186,20 +186,20 @@ namespace BrainCloud {
 		return _uploadLowTransferRateThresholdBytesPerSec;
 	}
 
-	void IBrainCloudComms::setUploadLowTransferRateThreshold(int in_bytesPerSec)
+	void IBrainCloudComms::setUploadLowTransferRateThreshold(int bytesPerSec)
 	{
-		_uploadLowTransferRateThresholdBytesPerSec = in_bytesPerSec;
+		_uploadLowTransferRateThresholdBytesPerSec = bytesPerSec;
 	}
 
 	//////////////////////////////////////////////////////
 	// Protected methods
 	//////////////////////////////////////////////////////
 
-	void IBrainCloudComms::setCredentials(const Json::Value& in_jsonResponse)
+	void IBrainCloudComms::setCredentials(const Json::Value& jsonResponse)
 	{
-		if (in_jsonResponse["data"] != Json::nullValue)
+		if (jsonResponse["data"] != Json::nullValue)
 		{
-			const Json::Value& jsonData = in_jsonResponse["data"];
+			const Json::Value& jsonData = jsonResponse["data"];
 
 			if (jsonData["sessionId"] != Json::nullValue)
 			{
@@ -350,17 +350,17 @@ namespace BrainCloud {
 		addToQueue(sc);
 	}
 
-	void IBrainCloudComms::createJsonErrorResponse(int in_statusCode,
-		int in_reasonCode,
-		const std::string & in_statusMessage,
+	void IBrainCloudComms::createJsonErrorResponse(int statusCode,
+		int reasonCode,
+		const std::string & statusMessage,
 		std::string & out_jsonErrorResponse)
 	{
 		Json::Value root;
 		Json::FastWriter writer;
 
-		root["status"] = in_statusCode;
-		root["reason_code"] = in_reasonCode;
-		root["status_message"] = in_statusMessage;
+		root["status"] = statusCode;
+		root["reason_code"] = reasonCode;
+		root["status_message"] = statusMessage;
 		root["severity"] = "ERROR";
 
 		out_jsonErrorResponse = writer.write(root);
