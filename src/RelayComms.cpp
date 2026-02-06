@@ -348,7 +348,7 @@ namespace BrainCloud
         _playerMask = (_playerMask << 8) & 0x0000FFFFFFFFFF00;
 
         // AckId without packet id
-        uint64_t ackIdWithoutPacketId = (((uint64_t)rh << 48) & 0xFFFF000000000000) | playerMask;
+        uint64_t ackIdWithoutPacketId = (((uint64_t)rh << 48) & 0xFFFF000000000000) | _playerMask;
 
         // Packet Id
         int packetId = 0;
@@ -363,9 +363,9 @@ namespace BrainCloud
         rh |= packetId;
 
         auto rhBE = htons((u_short)rh);
-        auto playerMask0BE = (uint64_t)ntohs((u_short)((playerMask >> 32) & 0xFFFF));
-        auto playerMask1BE = (uint64_t)ntohs((u_short)((playerMask >> 16) & 0xFFFF));
-        auto playerMask2BE = (uint64_t)ntohs((u_short)((playerMask)       & 0xFFFF));
+        auto playerMask0BE = (uint64_t)ntohs((u_short)((_playerMask >> 32) & 0xFFFF));
+        auto playerMask1BE = (uint64_t)ntohs((u_short)((_playerMask >> 16) & 0xFFFF));
+        auto playerMask2BE = (uint64_t)ntohs((u_short)((_playerMask)       & 0xFFFF));
         memcpy(pPacket->data.data() + 3, &rhBE, 2);
         memcpy(pPacket->data.data() + 5, &playerMask0BE, 2);
         memcpy(pPacket->data.data() + 7, &playerMask1BE, 2);
