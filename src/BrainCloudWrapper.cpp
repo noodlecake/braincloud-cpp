@@ -320,8 +320,8 @@ namespace BrainCloud {
 		IServerCallback * authenticateCallback;
 
 		IdentityCallback(BrainCloudWrapper * wrapper, IServerCallback * authenticateCallback) {
-			wrapper = wrapper;
-			authenticateCallback = authenticateCallback;
+			this->wrapper = wrapper;
+			this->authenticateCallback = authenticateCallback;
 		}
 
 		void serverCallback(ServiceName serviceName, ServiceOperation serviceOperation, std::string const & jsonData)
@@ -357,8 +357,8 @@ namespace BrainCloud {
 	{
 	public:
 		SmartSwitchCallback(BrainCloudWrapper *wrapper, IServerCallback * callback) {
-			wrapper = wrapper;
-			callback = callback;
+			this->wrapper = wrapper;
+			this->callback = callback;
 		}
 
 		BrainCloudWrapper * wrapper;
@@ -377,9 +377,9 @@ namespace BrainCloud {
 		{
 		public:
 			SmartSwitchAuthenticateCallback(BrainCloudWrapper *wrapper, const char * email, const char * password, bool forceCreate, IServerCallback * callback) : SmartSwitchCallback(wrapper, callback) {
-				email = email;
-				password = password;
-				forceCreate = forceCreate;
+                this->email = email;
+                this->password = password;
+                this->forceCreate = forceCreate;
 			}
 
 			const char * email; const char * password; bool forceCreate;
@@ -402,10 +402,10 @@ namespace BrainCloud {
 		{
 		public:
 			SmartSwitchAuthenticateCallback(BrainCloudWrapper *wrapper, const char * userid, const char * token, const char * externalAuthName, bool forceCreate, IServerCallback * callback) : SmartSwitchCallback(wrapper, callback) {
-				userid = userid;
-				token = token;
-				externalAuthName = externalAuthName;
-				forceCreate = forceCreate;
+                this->userid = userid;
+                this->token = token;
+                this->externalAuthName = externalAuthName;
+                this->forceCreate = forceCreate;
 			}
 
 			const char * userid; const char * token; const char * externalAuthName; const char * fbAuthToken; bool forceCreate;
@@ -428,9 +428,9 @@ namespace BrainCloud {
 		{
 		public:
 			SmartSwitchAuthenticateCallback(BrainCloudWrapper *wrapper, const char * fbUserId, const char * fbAuthToken, bool forceCreate, IServerCallback * callback) : SmartSwitchCallback(wrapper, callback) {
-				fbUserId = fbUserId;
-				fbAuthToken = fbAuthToken;
-				forceCreate = forceCreate;
+                this->fbUserId = fbUserId;
+                this->fbAuthToken = fbAuthToken;
+                this->forceCreate = forceCreate;
 			}
 
 			const char * fbUserId; const char * fbAuthToken; bool forceCreate;
@@ -453,9 +453,9 @@ namespace BrainCloud {
 		{
 		public:
 			SmartSwitchAuthenticateCallback(BrainCloudWrapper *wrapper, const char * oculusUserId, const char * oculusNonce, bool forceCreate, IServerCallback * callback) : SmartSwitchCallback(wrapper, callback) {
-				oculusUserId = oculusUserId;
-				oculusNonce = oculusNonce;
-				forceCreate = forceCreate;
+                this->oculusUserId = oculusUserId;
+                this->oculusNonce = oculusNonce;
+                this->forceCreate = forceCreate;
 			}
 
 			const char * oculusUserId; const char * oculusNonce; bool forceCreate;
@@ -478,8 +478,8 @@ namespace BrainCloud {
 		{
 		public:
 			SmartSwitchAuthenticateCallback(BrainCloudWrapper *wrapper, const char * gameCenterId, bool forceCreate, IServerCallback * callback) : SmartSwitchCallback(wrapper, callback) {
-				gameCenterId = gameCenterId;
-				forceCreate = forceCreate;
+                this->gameCenterId = gameCenterId;
+                this->forceCreate = forceCreate;
 			}
 
 			const char * gameCenterId; bool forceCreate;
@@ -502,9 +502,9 @@ namespace BrainCloud {
 		{
 		public:
 			SmartSwitchAuthenticateCallback(BrainCloudWrapper *wrapper, const char * userid, const char * token, bool forceCreate, IServerCallback * callback) : SmartSwitchCallback(wrapper, callback) {
-				userid = userid;
-				token = token;
-				forceCreate = forceCreate;
+                this->userid = userid;
+                this->token = token;
+                this->forceCreate = forceCreate;
 			}
 
 			const char * userid; const char * token; bool forceCreate;
@@ -527,9 +527,9 @@ namespace BrainCloud {
 		{
 		public:
 			SmartSwitchAuthenticateCallback(BrainCloudWrapper *wrapper, const char * userid, const char * token, bool forceCreate, IServerCallback * callback) : SmartSwitchCallback(wrapper, callback) {
-				userid = userid;
-				token = token;
-				forceCreate = forceCreate;
+                this->userid = userid;
+                this->token = token;
+                this->forceCreate = forceCreate;
 			}
 
 			const char * userid; const char * token; bool forceCreate;
@@ -552,9 +552,9 @@ namespace BrainCloud {
 		{
 		public:
 			SmartSwitchAuthenticateCallback(BrainCloudWrapper *wrapper, const char * userid, const char * token, bool forceCreate, IServerCallback * callback) : SmartSwitchCallback(wrapper, callback) {
-				userid = userid;
-				token = token;
-				forceCreate = forceCreate;
+                this->userid = userid;
+                this->token = token;
+                this->forceCreate = forceCreate;
 			}
 
 			const char * userid; const char * token; bool forceCreate;
@@ -577,9 +577,9 @@ namespace BrainCloud {
 		{
 		public:
 			SmartSwitchAuthenticateCallback(BrainCloudWrapper *wrapper, const char * userid, const char * sessionticket, bool forceCreate, IServerCallback * callback) : SmartSwitchCallback(wrapper, callback) {
-				userid = userid;
-				sessionticket = sessionticket;
-				forceCreate = forceCreate;
+                this->userid = userid;
+                this->sessionticket = sessionticket;
+                this->forceCreate = forceCreate;
 			}
 
 			const char * userid; const char * sessionticket; bool forceCreate;
@@ -602,10 +602,10 @@ namespace BrainCloud {
 		{
 		public:
 			SmartSwitchAuthenticateCallback(BrainCloudWrapper *wrapper, const char * userid, const char * token, const char * secret, bool forceCreate, IServerCallback * callback) : SmartSwitchCallback(wrapper, callback) {
-				userid = userid;
-				token = token;
-				secret = secret;
-				forceCreate = forceCreate;
+                this->userid = userid;
+                this->token = token;
+                this->secret = secret;
+                this->forceCreate = forceCreate;
 			}
 
 			const char * userid; const char * token; const char * secret; bool forceCreate;
@@ -624,13 +624,14 @@ namespace BrainCloud {
 
     void BrainCloudWrapper::smartSwitchAuthenticateUniversal(const char * userid, const char * password, bool forceCreate, IServerCallback * callback)
     {
+        
 		class SmartSwitchAuthenticateCallback : public SmartSwitchCallback
 		{
 		public:
 			SmartSwitchAuthenticateCallback(BrainCloudWrapper *wrapper, const char * userid, const char * password, bool forceCreate, IServerCallback * callback) : SmartSwitchCallback(wrapper, callback) {
-				userid = userid;
-				password = password;
-				forceCreate = forceCreate;
+				this->userid = userid;
+                this->password = password;
+                this->forceCreate = forceCreate;
 			}
 
 			const char * userid; const char * password; bool forceCreate;
@@ -642,6 +643,7 @@ namespace BrainCloud {
 				delete this;
 			}
 		};
+        
 
 		SmartSwitchAuthenticateCallback *smartCallback = new SmartSwitchAuthenticateCallback(this, userid, password, forceCreate, callback);
 		getIdentitiesCallback(smartCallback);
