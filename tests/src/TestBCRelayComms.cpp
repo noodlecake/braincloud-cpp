@@ -164,15 +164,16 @@ static void relayFullFlow(BrainCloudClient* bc, eRelayConnectionType connectionT
     int size = (int)strlen(pData);
     RelayConnectCallback relayConnectCallback([bc, pData, size]()
     {
+        printf("Relay Connect Callback Success \n");
         auto netId = bc->getRelayService()->getNetIdForProfileId(bc->getAuthenticationService()->getProfileId());
+
+        printf("Attempting Relay Send... \n");
         bc->getRelayService()->send((uint8_t*)pData, size, netId, true, true, eRelayChannel::HighPriority1);
-        printf("Relay Connect Callback Success");
-        printf("Attempting Relay Send...");
     },
     [&relayFailed]()
     {
         relayFailed = true;
-        printf("Relay Failed to Connect");
+        printf("Relay Failed to Connect \n");
     });
     bool hasReceivedSystemMessage = false;
     bool hasReceivedEndMatch = false;
@@ -181,20 +182,20 @@ static void relayFullFlow(BrainCloudClient* bc, eRelayConnectionType connectionT
     {
         if (eventJson["op"].asString() == "CONNECT")
         {
-            printf("Received System Message Connect");
+            printf("Received System Message Connect \n");
             hasReceivedSystemMessage = true;
         }
         else if (eventJson["op"].asString() == "DISCONNECT")
         {
-            printf("Received System Message Disconnect");
+            printf("Received System Message Disconnect \n");
             hasReceivedDisconnect = true;
         }
         else if(eventJson["op"].asString() == "END_MATCH")
         {
-            printf("Received System Message End Match");
+            printf("Received System Message End Match \n");
             hasReceivedEndMatch = true;
         }
-        printf("Relay System Callback Success");
+        printf("Relay System Callback Success \n");
     });
     bool hasReceivedEcho = false;
     RelayCallback relayCallback([&hasReceivedEcho, pData, size](int netId, const uint8_t* bytes, int in_size)
@@ -228,20 +229,20 @@ static void relayFullFlow(BrainCloudClient* bc, eRelayConnectionType connectionT
         }
         auto passcode = connectionInfo["passcode"].asString();
         auto lobbyId = connectionInfo["lobbyId"].asString();
-        printf("Sending Connect Request...");
+        printf("Sending Connect Request... \n");
         bc->getRelayService()->connect(connectionType, host, port, passcode, lobbyId, &relayConnectCallback);
     }
 
     // Wait for 30sec. Enough so connect/echo the message and then see if ping keeps us alive
     {
         auto timeStart = steady_clock::now();
-        printf("Waiting for callbacks...");
+        printf("Waiting for callbacks...  \n");
         while (steady_clock::now() < timeStart + seconds(30) && !relayFailed)
         {
             bc->runCallbacks();
             this_thread::sleep_for(milliseconds(100));
         }
-        printf("Done waiting for callbacks...");
+        printf("Done waiting for callbacks... \n");
         ASSERT_TRUE(bc->getRelayService()->isConnected());
         ASSERT_TRUE(hasReceivedSystemMessage);
         ASSERT_TRUE(hasReceivedEcho);
