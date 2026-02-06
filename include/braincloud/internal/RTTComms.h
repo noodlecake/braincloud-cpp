@@ -32,7 +32,7 @@ namespace BrainCloud
     class RTTComms : public IServerCallback
     {
     public:
-        RTTComms(BrainCloudClient* in_client);
+        RTTComms(BrainCloudClient* client);
         virtual ~RTTComms();
 
         void initialize();
@@ -40,7 +40,7 @@ namespace BrainCloud
         void shutdown();
         void resetCommunication();
 
-        void enableRTT(IRTTConnectCallback* in_callback, bool in_useWebSocket);
+        void enableRTT(IRTTConnectCallback* callback, bool useWebSocket);
         void disableRTT();
         bool isRTTEnabled();
         bool getLoggingEnabled();
@@ -49,7 +49,7 @@ namespace BrainCloud
         const std::string& getConnectionId();
 
         void runCallbacks();
-        void registerRTTCallback(const ServiceName& serviceName, IRTTCallback* in_callback);
+        void registerRTTCallback(const ServiceName& serviceName, IRTTCallback* callback);
         void deregisterRTTCallback(const ServiceName& serviceName);
         void deregisterAllRTTCallbacks();
 

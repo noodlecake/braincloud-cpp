@@ -22,6 +22,9 @@
 #include "braincloud/IServerCallback.h"
 #include "braincloud/ServerCall.h"
 
+#include <braincloud/ServiceName.h>
+#include <braincloud/ServiceOperation.h>
+
 #include "braincloud/internal/URLLoader.h"
 #include "braincloud/internal/URLRequest.h"
 #include "braincloud/internal/URLResponse.h"
@@ -42,29 +45,31 @@ namespace BrainCloud
 
         virtual void addToQueue( ServerCall * );
 
-        virtual void enableNetworkErrorMessageCaching(bool in_enabled);
+        virtual void enableNetworkErrorMessageCaching(bool enabled);
         virtual void retryCachedMessages();
-        virtual void flushCachedMessages(bool in_sendApiErrorCallbacks);
+        virtual void flushCachedMessages(bool sendApiErrorCallbacks);
 
         virtual void sendHeartbeat();
         virtual void resetCommunication();
         virtual void shutdown();
         virtual void runCallbacks();
-        virtual void registerEventCallback(IEventCallback *in_eventCallback);
+        virtual void registerEventCallback(IEventCallback *eventCallback);
         virtual void deregisterEventCallback();
-        virtual void registerFileUploadCallback(IFileUploadCallback *in_fileUploadCallback);
+        virtual void registerFileUploadCallback(IFileUploadCallback *fileUploadCallback);
         virtual void deregisterFileUploadCallback();
-        virtual void registerRewardCallback(IRewardCallback *in_rewardCallback);
+        virtual void registerLongSessionCallback(std::shared_ptr<ILongSessionCallback> longSessionCallback);
+        virtual void deregisterLongSessionCallback();
+        virtual void registerRewardCallback(IRewardCallback *rewardCallback);
         virtual void deregisterRewardCallback();
-        virtual void registerGlobalErrorCallback(IGlobalErrorCallback *in_globalErrorCallback);
+        virtual void registerGlobalErrorCallback(IGlobalErrorCallback *globalErrorCallback);
         virtual void deregisterGlobalErrorCallback();
-        virtual void registerNetworkErrorCallback(INetworkErrorCallback * in_networkErrorCallback);
+        virtual void registerNetworkErrorCallback(INetworkErrorCallback * networkErrorCallback);
         virtual void deregisterNetworkErrorCallback();
 
-        virtual void cancelUpload(const char * in_fileUploadId);
-        virtual double getUploadProgress(const char * in_fileUploadId);
-        virtual int64_t getUploadTotalBytesToTransfer(const char * in_fileUploadId);
-        virtual int64_t getUploadBytesTransferred(const char * in_fileUploadId);
+        virtual void cancelUpload(const char * fileUploadId);
+        virtual double getUploadProgress(const char * fileUploadId);
+        virtual int64_t getUploadTotalBytesToTransfer(const char * fileUploadId);
+        virtual int64_t getUploadBytesTransferred(const char * fileUploadId);
 
         // returns true if packet requires a retry
         bool handleResult( URLResponse const & response, URLRequest const request);
@@ -72,9 +77,9 @@ namespace BrainCloud
     protected:
         friend class IBrainCloudComms;
 
-        DefaultBrainCloudComms(BrainCloudClient* in_client);
+        DefaultBrainCloudComms(BrainCloudClient* client);
 
-        virtual void startFileUpload(const Json::Value & in_jsonPrepareUploadResponse);
+        virtual void startFileUpload(const Json::Value & jsonPrepareUploadResponse);
 
     private:
         URLLoader * _loader;
@@ -97,7 +102,7 @@ namespace BrainCloud
 
         void handleResponseBundle(Json::Value & root);
         void handleError(URLResponse const& response, URLRequest const& request);
-        void triggerCommsError(int statusCode, int responseCode, const std::string & in_error, const std::string & in_severity);
+        void triggerCommsError(int statusCode, int responseCode, const std::string & error, const std::string & severity);
         void processEvents( Json::Value *, bool = true );
         bool shouldRetryPacket();
         long getRetryTimeoutMillis(int retry);
@@ -107,13 +112,36 @@ namespace BrainCloud
         void createAndSendBundle();
         void startHttpRequest();
 
-        void ProcessSwitchResponse(Json::Value in_data);
+        void ProcessSwitchResponse(Json::Value data);
 
         void resetErrorCache();
         void fakeErrorResponse(int32_t statusCode, int32_t reasonCode, const std::string & statusMessage);
 
 		void updateKillSwitch(const std::string & service, const std::string & operation, int32_t statusCode);
 		void resetKillSwitch();
+    };
+
+    struct CachedCall
+    {
+        ServiceName service;
+        ServiceOperation operation;
+        Json::Value payload;
+        IServerCallback* callback;
+    };
+
+    class LongSessionAuthCallback final : public IServerCallback
+    {
+    public:
+        LongSessionAuthCallback(DefaultBrainCloudComms* commsRef, std::shared_ptr<ILongSessionCallback> callback, std::vector<CachedCall> lastPacket);
+
+        void serverCallback(ServiceName serviceName, ServiceOperation serviceOperation, std::string const& jsonData) override;
+        void serverError(ServiceName serviceName, ServiceOperation serviceOperation, int statusCode, int reasonCode, const std::string& jsonError) override;
+
+    protected:
+        DefaultBrainCloudComms* _commsRef;
+        std::shared_ptr<ILongSessionCallback> _callback;
+        std::vector<CachedCall> _lastPacket;
+
     };
 };
 

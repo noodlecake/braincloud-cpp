@@ -7,6 +7,7 @@
 #include "braincloud/IGlobalErrorCallback.h"
 #include "braincloud/INetworkErrorCallback.h"
 #include "braincloud/IRewardCallback.h"
+#include "braincloud/ILongSessionCallback.h"
 #include "braincloud/IServerCallback.h"
 
 #include "braincloud/ServerCall.h"
@@ -58,7 +59,7 @@ namespace BrainCloud
 	class IBrainCloudComms
 	{
 	public:
-        static IBrainCloudComms* create(BrainCloudClient* in_client);
+        static IBrainCloudComms* create(BrainCloudClient* client);
 
 		virtual ~IBrainCloudComms();
 
@@ -72,29 +73,32 @@ namespace BrainCloud
 		virtual void shutdown() = 0;
 		virtual void runCallbacks() = 0;
 
-		virtual void registerEventCallback(IEventCallback *in_eventCallback) = 0;
+		virtual void registerEventCallback(IEventCallback *eventCallback) = 0;
 		virtual void deregisterEventCallback() = 0;
 
-		virtual void registerFileUploadCallback(IFileUploadCallback *in_fileUploadCallback) = 0;
+		virtual void registerFileUploadCallback(IFileUploadCallback *fileUploadCallback) = 0;
 		virtual void deregisterFileUploadCallback() = 0;
 
-		virtual void registerRewardCallback(IRewardCallback *in_rewardCallback) = 0;
+		virtual void registerLongSessionCallback(std::shared_ptr<ILongSessionCallback> longSessionCallback) = 0;
+		virtual void deregisterLongSessionCallback() = 0;
+
+		virtual void registerRewardCallback(IRewardCallback *rewardCallback) = 0;
 		virtual void deregisterRewardCallback() = 0;
 
-		virtual void registerGlobalErrorCallback(IGlobalErrorCallback *in_globalErrorCallback) = 0;
+		virtual void registerGlobalErrorCallback(IGlobalErrorCallback *globalErrorCallback) = 0;
 		virtual void deregisterGlobalErrorCallback() = 0;
 
-		virtual void registerNetworkErrorCallback(INetworkErrorCallback * in_networkErrorCallback) = 0;
+		virtual void registerNetworkErrorCallback(INetworkErrorCallback * networkErrorCallback) = 0;
 		virtual void deregisterNetworkErrorCallback() = 0;
 
-		virtual void cancelUpload(const char * in_fileUploadId) = 0;
-		virtual double getUploadProgress(const char * in_fileUploadId) = 0;
-		virtual int64_t getUploadTotalBytesToTransfer(const char * in_fileUploadId) = 0;
-		virtual int64_t getUploadBytesTransferred(const char * in_fileUploadId) = 0;
+		virtual void cancelUpload(const char * fileUploadId) = 0;
+		virtual double getUploadProgress(const char * fileUploadId) = 0;
+		virtual int64_t getUploadTotalBytesToTransfer(const char * fileUploadId) = 0;
+		virtual int64_t getUploadBytesTransferred(const char * fileUploadId) = 0;
 
-		virtual void enableNetworkErrorMessageCaching(bool in_enabled) = 0;
+		virtual void enableNetworkErrorMessageCaching(bool enabled) = 0;
 		virtual void retryCachedMessages() = 0;
-		virtual void flushCachedMessages(bool in_sendApiErrorCallbacks) = 0;
+		virtual void flushCachedMessages(bool sendApiErrorCallbacks) = 0;
 
 		// implemented methods
 		void enableLogging(bool shouldEnable);
@@ -115,27 +119,30 @@ namespace BrainCloud
 		void setServerUrl(const char *);
 
 		const std::vector<int> & getPacketTimeouts();
-		void setPacketTimeouts(const std::vector<int> & in_packetTimeouts);
+		void setPacketTimeouts(const std::vector<int> & packetTimeouts);
 		void setPacketTimeoutsToDefault();
-		void setAuthenticationPacketTimeout(int in_timeoutSecs);
+		void setAuthenticationPacketTimeout(int timeoutSecs);
 		int getAuthenticationPacketTimeout();
-		void setOldStyleStatusMessageErrorCallback(bool in_enabled);
-		void setErrorCallbackOn202Status(bool in_isError);
+		void setOldStyleStatusMessageErrorCallback(bool enabled);
+		void setErrorCallbackOn202Status(bool isError);
 
 		int getUploadLowTransferRateTimeout();
-		void setUploadLowTransferRateTimeout(int in_timeoutSecs);
+		void setUploadLowTransferRateTimeout(int timeoutSecs);
 		int getUploadLowTransferRateThreshold();
-		void setUploadLowTransferRateThreshold(int in_bytesPerSec);
+		void setUploadLowTransferRateThreshold(int bytesPerSec);
 
 		void insertEndOfMessageBundleMarker();
 
-		static void createJsonErrorResponse(int in_statusCode,
-                                            int in_reasonCode,
-                                            const std::string & in_statusMessage,
+		void setLongSessionEnabled(bool enabled) { _longSessionEnabled = enabled; }
+		bool getLongSessionEnabled() { return _longSessionEnabled; }
+
+		static void createJsonErrorResponse(int statusCode,
+                                            int reasonCode,
+                                            const std::string & statusMessage,
                                             std::string & out_jsonErrorResponse);
 
 	protected:
-        IBrainCloudComms(BrainCloudClient* in_client);
+        IBrainCloudComms(BrainCloudClient* client);
 
 		BrainCloudClient* _client;
 
@@ -166,6 +173,7 @@ namespace BrainCloud
 		IEventCallback *_eventCallback;
 		IFileUploadCallback *_fileUploadCallback;
 		IGlobalErrorCallback * _globalErrorCallback;
+		std::shared_ptr<ILongSessionCallback> _longSessionCallback;
 		IRewardCallback *_rewardCallback;
 		INetworkErrorCallback *_networkErrorCallback;
 
@@ -192,10 +200,12 @@ namespace BrainCloud
 		std::string _killSwitchService;
 		std::string _killSwitchOperation;
 
-		void setCredentials(const Json::Value& in_jsonAuthenticationResponse);
+		bool _longSessionEnabled;
+
+		void setCredentials(const Json::Value& jsonAuthenticationResponse);
 		void filterIncomingMessages(const ServerCall* servercall, const Json::Value& response);
 
-		virtual void startFileUpload(const Json::Value & in_jsonPrepareUploadResponse) = 0;
+		virtual void startFileUpload(const Json::Value & jsonPrepareUploadResponse) = 0;
 		void runCallbacksFileUpload();
 	};
 };

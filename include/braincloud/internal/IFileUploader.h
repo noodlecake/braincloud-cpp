@@ -31,16 +31,16 @@ namespace BrainCloud
 
         virtual ~IFileUploader() {};
 
-        virtual void enableLogging(bool in_loggingEnabled) = 0;
+        virtual void enableLogging(bool loggingEnabled) = 0;
 
-        virtual bool uploadFile(std::string & in_sessionId,
-            std::string & in_fileUploadId,
-            std::string & in_fileName,
-            int64_t in_fileSize,
-            std::string & in_uploadUrl) = 0;
+        virtual bool uploadFile(std::string & sessionId,
+            std::string & fileUploadId,
+            std::string & fileName,
+            int64_t fileSize,
+            std::string & uploadUrl) = 0;
 
-        virtual void setUploadLowTransferRateTimeout(int in_timeoutSecs) = 0;
-        virtual void setUploadLowTransferRateThreshold(int in_bytesPerSec) = 0;
+        virtual void setUploadLowTransferRateTimeout(int timeoutSecs) = 0;
+        virtual void setUploadLowTransferRateThreshold(int bytesPerSec) = 0;
         
         virtual void cancelUpload() = 0;
         virtual int64_t getBytesTransferred() = 0;

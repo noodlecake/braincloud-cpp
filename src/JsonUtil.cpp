@@ -3,35 +3,35 @@
 
 namespace BrainCloud
 {
-    Json::Value JsonUtil::jsonStringToValue(const std::string& in_jsonString)
+    Json::Value JsonUtil::jsonStringToValue(const std::string& jsonString)
     {
         Json::Value value;
         Json::Reader reader;
-        reader.parse(in_jsonString, value);
+        reader.parse(jsonString, value);
         return value;
     }
 
-    Json::Value JsonUtil::jsonStringToValue(const char * in_jsonString)
+    Json::Value JsonUtil::jsonStringToValue(const char * jsonString)
     {
-        const char * end = in_jsonString;
+        const char * end = jsonString;
         while (*end != '\0') {
             ++end;
         }
         Json::Value value;
         Json::Reader reader;
-        reader.parse(in_jsonString, end, value);
+        reader.parse(jsonString, end, value);
         return value;
     }
 
-    std::string JsonUtil::jsonValueToString(const Json::Value& in_jsonValue)
+    std::string JsonUtil::jsonValueToString(const Json::Value& jsonValue)
     {
         Json::FastWriter write;
-        return write.write(in_jsonValue);
+        return write.write(jsonValue);
     }
 
-    void JsonUtil::commaSepStringToJsonArray(const char * in_str, Json::Value & out_value)
+    void JsonUtil::commaSepStringToJsonArray(const char * str, Json::Value & out_value)
     {
-        std::string s = in_str;
+        std::string s = str;
         std::string json = "[";
         size_t start = 0, end = 0;
 
@@ -52,12 +52,12 @@ namespace BrainCloud
         out_value = value;
     }
 
-    Json::Value JsonUtil::stringVectorToJson(const std::vector<std::string> & in_stringVec)
+    Json::Value JsonUtil::stringVectorToJson(const std::vector<std::string> & stringVec)
     {
         Json::Value value(Json::arrayValue);
-        for (size_t i = 0, isize = in_stringVec.size(); i < isize; ++i)
+        for (size_t i = 0, isize = stringVec.size(); i < isize; ++i)
         {
-            value.append(in_stringVec[i]);
+            value.append(stringVec[i]);
         }
         return value;
     }
