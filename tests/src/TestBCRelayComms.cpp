@@ -203,8 +203,8 @@ static void relayFullFlow(BrainCloudClient* bc, eRelayConnectionType connectionT
         if (memcmp(pData, bytes, size) == 0)
         {
             hasReceivedEcho = true;
+            printf("Relay Callback Success, Echo Received \n");
         }
-        printf("Relay Callback Success, Echo Received");
     });
     bc->getRelayService()->registerSystemCallback(&relaySystemCallback);
     bc->getRelayService()->registerRelayCallback(&relayCallback);
@@ -251,7 +251,7 @@ static void relayFullFlow(BrainCloudClient* bc, eRelayConnectionType connectionT
     if(endMatch)
     {
         // send end match
-        printf("Sending End Match...");
+        printf("Sending End Match... \n");
 
         //Json::Value json;
         //json["cxId"] = bc->getRttConnectionId();
@@ -272,7 +272,7 @@ static void relayFullFlow(BrainCloudClient* bc, eRelayConnectionType connectionT
     else
     {
         // send disconenct
-        printf("Sending Disconnect...");
+        printf("Sending Disconnect... \n");
         bc->getRelayService()->disconnect();
 
         auto timeStart = steady_clock::now();

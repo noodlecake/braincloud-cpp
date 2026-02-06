@@ -378,6 +378,14 @@ namespace BrainCloud
         send(pPacket->data.data(), (int)pPacket->data.size());
 
         // UDP, store reliable in send map
+        uint64_t mask = playerMask;
+        uint64_t toNetId = 0;
+
+        while ((mask & 1) == 0) {
+            mask >>= 1;
+            ++toNetId;
+        }
+
         if (reliable)
         {
             pPacket->id = packetId;
@@ -388,7 +396,7 @@ namespace BrainCloud
             m_reliables[ackId] = pPacket;
             if (m_loggingEnabled && m_loggingPackets)
             {
-                std::cout<<"<<< send on "<<static_cast<int>(channel)<<" netId: "<<m_netId<<" packet: "<<packetId<<" "<<ackId<<std::endl;
+                std::cout<<"<<< send on channel: "<<static_cast<int>(channel)<<" from netId: "<< static_cast<int>(m_netId) << " to netId: " << toNetId << " packet: "<<packetId<<" "<<ackId<<std::endl;
             }
         }
         else
@@ -396,7 +404,7 @@ namespace BrainCloud
             if (m_loggingEnabled && m_loggingPackets)
             {
                 uint64_t ackId = *(uint64_t*)(pPacket->data.data() + 3);
-                std::cout<<"<<< send on "<<static_cast<int>(channel)<<" netId: "<<m_netId<<" packet: "<<packetId<<" "<<ackId<<std::endl;
+                std::cout<<"<<< send on channel: "<<static_cast<int>(channel)<<" from netId: "<< static_cast<int>(m_netId) << " to netId: "<< toNetId << " packet: "<<packetId<<" "<<ackId<<std::endl;
             }
             m_packetPool.free(pPacket);
         }
@@ -534,10 +542,10 @@ namespace BrainCloud
     void RelayComms::sendAck(const uint8_t* data)
     {
         uint8_t _data[11];
-        *(uint16_t*)(data) = (uint16_t)htons((u_short)11);
+        *(uint16_t*)(_data) = (uint16_t)htons((u_short)11);
         _data[2] = CL2RS_ACK;
         memcpy(_data + 3, data, 8);
-        send(data, 11);
+        send(_data, 11);
     }
 
     void RelayComms::onRSMG(const uint8_t* data, int size)
@@ -732,7 +740,7 @@ namespace BrainCloud
 
         if (m_loggingEnabled && m_loggingPackets)
         {
-            std::cout<<">>> recv on "<<static_cast<int>(channel)<<" netId: "<<static_cast<int>(netId)<<" packet: "<<packetId<<" "<<ackId<<std::endl;
+            std::cout<<">>> recv on channel: "<<static_cast<int>(channel)<<" from netId: "<<static_cast<int>(netId)<< " to netId: " << m_netId << " packet: "<<packetId<<" "<<ackId<<std::endl;
         }
 
         // Reconstruct ack id without packet id
