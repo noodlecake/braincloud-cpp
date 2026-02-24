@@ -200,7 +200,7 @@ namespace BrainCloud
 		std::string _killSwitchService;
 		std::string _killSwitchOperation;
 
-		bool _longSessionEnabled;
+		bool _longSessionEnabled = false;
 
 		void setCredentials(const Json::Value& jsonAuthenticationResponse);
 		void filterIncomingMessages(const ServerCall* servercall, const Json::Value& response);
