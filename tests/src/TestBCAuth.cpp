@@ -387,4 +387,12 @@ TEST_F(TestBCAuth, LongSession)
     // Verify UserA session retries via long session (if long session isn't enabled, this should fail)
     bc_a->getIdentityService()->getIdentities(&tr);
     tr.run(bc_a);
+
+    //teardown extra wrappers
+
+    bc_a->resetCommunication();
+    bc_b->resetCommunication();
+
+    delete userAWrapper;
+    delete userBWrapper;
 }

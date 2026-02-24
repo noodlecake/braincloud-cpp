@@ -90,9 +90,6 @@ void TestFixtureBase::TearDown()
 	m_bcWrapper->resetStoredAnonymousId();
 
 	delete m_bcWrapper;
-
-	//Add delay at end of tests to ensure we do not get rate limited
-	this_thread::sleep_for(std::chrono::milliseconds(1000));
 }
 
 bool TestFixtureBase::ShouldSkipAuthenticate()
