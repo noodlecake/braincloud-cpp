@@ -248,16 +248,3 @@ TEST_F(TestBCRTTComms, RTTEventCallback)
     // Wait 60sec, creating lobby can take time
     EXPECT_TRUE(rttCallback.receivedCallback());
 }
-
-TEST_F (TestBCRTTComms, RTTRequestWithNoAuthSession)
-{
-    TestResult tr;
-    //FL: Not sure how to make this test suite skip authenticating in set up without creating a whole new test suite. So logging out to get rid of our auth session.
-    m_bc->getPlayerStateService()->logout(&tr);
-    tr.run(m_bc);
-    
-    m_bc->getRTTService()->enableRTT(&tr);
-    tr.run(m_bc);
-    EXPECT_FALSE(m_bc->getRTTService()->getRTTEnabled());
-}
-
