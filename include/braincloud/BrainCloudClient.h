@@ -362,6 +362,10 @@ namespace BrainCloud
 		 */
 		bool isInitialized();
 
+		/// Returns if killswitch was activated.
+		/// @return true if killswitch is activated.
+		bool isKillswitchEngaged();
+
 		/**
 		 * If true, tells the comms library to immediately retry a packet
 		 * when an error is received.

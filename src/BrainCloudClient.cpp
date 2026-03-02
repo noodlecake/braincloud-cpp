@@ -403,6 +403,11 @@ namespace BrainCloud
         return _brainCloudComms->isInitialized() && _rttComms->isInitialized() && _relayComms->isInitialized();
     }
 
+    bool BrainCloudClient::isKillswitchEngaged()
+    {
+        return _brainCloudComms->isKillswitchEngaged();
+    }
+
     void BrainCloudClient::setImmediateRetryOnError(bool value)
     {
         _brainCloudComms->setImmediateRetryOnError(value);
