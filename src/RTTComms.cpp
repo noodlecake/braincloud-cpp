@@ -150,7 +150,13 @@ namespace BrainCloud
         {
             return;
         }
-        else
+        else if(!_client->isAuthenticated() || _client->isKillswitchEngaged())
+        {
+            std::cout << "VERBOSE: RTT: EnableRTT called before calling authentication request. Disabling RTT." << std::endl;
+            callback->rttConnectFailure("RTT: EnableRTT called before calling authentication request. Disabling RTT.");
+            return;
+        }
+        else 
         {               
             _connectCallback = callback;
             _useWebSocket = useWebSocket;
