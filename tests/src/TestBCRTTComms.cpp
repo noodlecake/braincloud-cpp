@@ -3,7 +3,7 @@
 #include "braincloud/reason_codes.h"
 #include "braincloud/http_codes.h"
 #include "braincloud/IRTTCallback.h"
-#include "braincloud/BrainCloudRTT.h";
+
 #include <chrono>
 #include <thread>
 
@@ -248,3 +248,4 @@ TEST_F(TestBCRTTComms, RTTEventCallback)
     // Wait 60sec, creating lobby can take time
     EXPECT_TRUE(rttCallback.receivedCallback());
 }
+
