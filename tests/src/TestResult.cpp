@@ -253,6 +253,29 @@ void TestResult::rttConnectFailure(const std::string& errorMessage)
     }
 }
 
+void TestResult::relayConnectSuccess(const std::string& jsonResponse)
+{
+    m_response.clear();
+    m_result = true;
+    --m_apiCountExpected;
+    if (m_apiCountExpected <= 0)
+    {
+        m_done = true;
+    }
+}
+
+void TestResult::relayConnectFailure(const std::string& errorMessage)
+{
+    m_statusMessage = errorMessage;
+
+    m_result = false;
+    --m_apiCountExpected;
+    if (m_apiCountExpected <= 0)
+    {
+        m_done = true;
+    }
+}
+
 void TestResult::serverCallback(ServiceName serviceName, ServiceOperation serviceOperation, std::string const & jsonData)
 {
     Json::Value value;

@@ -127,6 +127,13 @@ namespace BrainCloud
 
     void RelayComms::connect(eRelayConnectionType connectionType, const std::string& host, int port, const std::string& passcode, const std::string& lobbyId, IRelayConnectCallback* callback)
     {
+        if(!m_client->isAuthenticated() || m_client->isKillswitchEngaged())
+        {
+            printf("Relay: Connect called before calling authentication request. Disabling Relay.");
+            queueErrorEvent("Relay: Connect called before calling authentication request. Disabling Relay.");
+            return;
+        }
+
         if (m_isSocketConnected)
         {
             socketCleanup();

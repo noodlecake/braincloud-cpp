@@ -4,10 +4,11 @@
 #include <stdlib.h>
 #include "gtest/gtest.h"
 #include "braincloud/BrainCloudClient.h"
+#include "brainCloud/IRelayConnectCallback.h"
 
 using namespace BrainCloud;
 
-class TestResult : public IServerCallback, public IGlobalErrorCallback, public INetworkErrorCallback, public IRTTConnectCallback
+class TestResult : public IServerCallback, public IGlobalErrorCallback, public INetworkErrorCallback, public IRTTConnectCallback, public IRelayConnectCallback
 {
 public:
     bool m_done;
@@ -35,6 +36,8 @@ public:
     virtual void serverError( ServiceName serviceName, ServiceOperation serviceOperation, int statusCode, int reasonCode, const std::string & statusMessage);
 	virtual void rttConnectSuccess();
 	virtual void rttConnectFailure(const std::string& errorMessage);
+    virtual void relayConnectSuccess(const std::string& jsonResponse);
+    virtual void relayConnectFailure(const std::string& errorMessage);
     
     virtual void globalError( ServiceName serviceName, ServiceOperation serviceOperation, int statusCode, int reasonCode, const std::string & jsonError);
     
