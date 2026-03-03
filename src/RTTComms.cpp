@@ -156,7 +156,6 @@ namespace BrainCloud
             std::cout << "VERBOSE: RTT: EnableRTT called before calling authentication request. Disabling RTT." << std::endl;
 #endif
             callback->rttConnectFailure("RTT: EnableRTT called before calling authentication request. Disabling RTT.");
-            return;
         }
         else 
         {               
