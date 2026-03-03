@@ -92,6 +92,11 @@ namespace BrainCloud {
 		_isAuthenticated = true;
 	}
 
+	bool IBrainCloudComms::isKillswitchEngaged()
+	{
+		return _killSwitchEngaged;
+	}
+
 	void IBrainCloudComms::setHeartbeatInterval(int milliseconds)
 	{
 		_heartbeatInterval = milliseconds;

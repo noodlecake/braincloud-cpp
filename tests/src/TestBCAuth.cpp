@@ -396,3 +396,19 @@ TEST_F(TestBCAuth, LongSession)
     delete userAWrapper;
     delete userBWrapper;
 }
+
+TEST_F (TestBCAuth, RTTRequestWithNoAuthSession)
+{
+    TestResult trRTT;
+    
+    m_bc->getRTTService()->enableRTT(&trRTT);
+    EXPECT_FALSE(m_bc->getRTTService()->getRTTEnabled());
+}
+
+TEST_F(TestBCAuth, RelayRequestWithNoAuthSession)
+{
+    TestResult trRelay;
+    
+    m_bc->getRelayService()->connect(BrainCloud::eRelayConnectionType::WS, std::string(""), 0, std::string(""), std::string(""), &trRelay);
+    EXPECT_FALSE(m_bc->getRelayService()->isConnected());
+}

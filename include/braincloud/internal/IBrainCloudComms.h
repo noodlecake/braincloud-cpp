@@ -104,6 +104,7 @@ namespace BrainCloud
 		void enableLogging(bool shouldEnable);
 		bool isInitialized();
 		bool isAuthenticated();
+		bool isKillswitchEngaged();
 		void setAuthenticated();
 
 		//compression
@@ -195,7 +196,7 @@ namespace BrainCloud
 		int32_t _reasonCodeCache;
 		std::string _statusMessageCache;
 
-		bool _killSwitchEngaged;
+		bool _killSwitchEngaged = false;
 		int32_t _killSwitchErrorCount;
 		std::string _killSwitchService;
 		std::string _killSwitchOperation;
