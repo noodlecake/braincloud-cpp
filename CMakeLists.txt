@@ -147,8 +147,12 @@ endif()
 # Sockets
 if (USE_LIBWEBSOCKETS)
     list(APPEND OS_SPECIFIC_INCS
-            "include/braincloud/internal/DefaultWebSocket.h")
-    list(APPEND OS_SPECIFIC_SRCS "src/DefaultWebSocket.cpp")
+            "include/braincloud/internal/DefaultWebSocket.h"
+            "include/braincloud/internal/IRelayWSSocket.h"
+            "include/braincloud/internal/DefaultRelayWSSocket.h")
+    list(APPEND OS_SPECIFIC_SRCS
+            "src/DefaultWebSocket.cpp"
+            "src/DefaultRelayWSSocket.cpp")
 endif()
 if (WIN32)
     list(APPEND OS_SPECIFIC_SRCS "src/win/Win32TCPSocket.cpp")
@@ -322,6 +326,7 @@ add_library(brainCloud STATIC
         include/braincloud/internal/IRelaySocket.h
         include/braincloud/internal/IRelayTCPSocket.h
         include/braincloud/internal/IRelayUDPSocket.h
+        include/braincloud/internal/IRelayWSSocket.h
         include/braincloud/internal/ITCPSocket.h
         include/braincloud/internal/JsonUtil.h
         include/braincloud/internal/Mutex.h
