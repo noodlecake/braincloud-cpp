@@ -8,6 +8,7 @@
 #include "braincloud/internal/IRelayUDPSocket.h"
 #if (!defined(TARGET_OS_WATCH) || TARGET_OS_WATCH == 0)
 #include "braincloud/internal/IWebSocket.h"
+#include "braincloud/internal/IRelayWSSocket.h"
 #endif
 #include "braincloud/internal/RelayComms.h"
 
@@ -177,6 +178,18 @@ namespace BrainCloud
                 m_lastRecvTime = std::chrono::system_clock::now();
                 break;
             }
+#if (!defined(TARGET_OS_WATCH) || TARGET_OS_WATCH == 0)
+            case eRelayConnectionType::WS:
+            {
+                m_pSocket = IRelayWSSocket::create(host, port, MAX_PACKET_SIZE, false);
+                break;
+            }
+            case eRelayConnectionType::WSS:
+            {
+                m_pSocket = IRelayWSSocket::create(host, port, MAX_PACKET_SIZE, true);
+                break;
+            }
+#endif
             default:
             {
                 socketCleanup();
@@ -895,6 +908,23 @@ namespace BrainCloud
         {
             if (m_pSocket->isConnected())
             {
+                // If the socket just connected (e.g., WS background thread connected before
+                // this runCallbacks tick), send the handshake CONNECT packet now.
+                if (!m_isSocketConnected)
+                {
+                    m_isSocketConnected = true;
+                    if (m_loggingEnabled)
+                    {
+                        std::cout << "RelayComms: Relay Socket Connected" << std::endl;
+                    }
+                    send(CL2RS_CONNECT, buildConnectionRequest());
+                    if (m_connectionType == eRelayConnectionType::UDP)
+                    {
+                        m_resendConnectRequest = true;
+                        m_lastConnectResendTime = now;
+                    }
+                }
+
                 // Peek messages
                 int packetSize;
                 const uint8_t* pPacketData;
