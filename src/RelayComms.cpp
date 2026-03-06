@@ -334,6 +334,7 @@ namespace BrainCloud
     void RelayComms::send(const uint8_t* data, int size, uint64_t playerMask, bool reliable, bool ordered, eRelayChannel channel)
     {
         if (!isConnected()) return;
+        if (playerMask == 0) return;
         if (size > 1024)
         {
             socketCleanup();
