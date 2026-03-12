@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include "gtest/gtest.h"
 #include "braincloud/BrainCloudClient.h"
-#include "brainCloud/IRelayConnectCallback.h"
+#include "braincloud/IRelayConnectCallback.h"
 
 using namespace BrainCloud;
 
