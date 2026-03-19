@@ -298,15 +298,15 @@ namespace BrainCloud
         _brainCloudComms->deregisterEventCallback();
     }
 
-    void BrainCloudClient::registerLongSessionCallback(ILongSessionCallback* longSessionCallback)
+    void BrainCloudClient::registerAutoReconnectCallback(IAutoReconnectCallback* autoReconnectCallback)
     {
-        std::shared_ptr<ILongSessionCallback> sharedCallback(longSessionCallback);
-        _brainCloudComms->registerLongSessionCallback(sharedCallback);
+        std::shared_ptr<IAutoReconnectCallback> sharedCallback(autoReconnectCallback);
+        _brainCloudComms->registerAutoReconnectCallback(sharedCallback);
     }
 
-    void BrainCloudClient::deregisterLongSessionCallback()
+    void BrainCloudClient::deregisterAutoReconnectCallback()
     {
-        _brainCloudComms->deregisterLongSessionCallback();
+        _brainCloudComms->deregisterAutoReconnectCallback();
     }
 
     void BrainCloudClient::registerRewardCallback(IRewardCallback *rewardCallback)
@@ -349,9 +349,9 @@ namespace BrainCloud
         _brainCloudComms->deregisterNetworkErrorCallback();
     }
 
-    void BrainCloudClient::enableLongSession(bool shouldEnable)
+    void BrainCloudClient::enableAutoReconnect(bool shouldEnable)
     {
-        _brainCloudComms->setLongSessionEnabled(shouldEnable);
+        _brainCloudComms->setAutoReconnectEnabled(shouldEnable);
     }
 
     void BrainCloudClient::enableLogging(bool shouldEnable)

@@ -7,7 +7,7 @@
 #include "braincloud/IGlobalErrorCallback.h"
 #include "braincloud/INetworkErrorCallback.h"
 #include "braincloud/IRewardCallback.h"
-#include "braincloud/ILongSessionCallback.h"
+#include "braincloud/IAutoReconnectCallback.h"
 #include "braincloud/IServerCallback.h"
 
 #include "braincloud/ServerCall.h"
@@ -79,8 +79,8 @@ namespace BrainCloud
 		virtual void registerFileUploadCallback(IFileUploadCallback *fileUploadCallback) = 0;
 		virtual void deregisterFileUploadCallback() = 0;
 
-		virtual void registerLongSessionCallback(std::shared_ptr<ILongSessionCallback> longSessionCallback) = 0;
-		virtual void deregisterLongSessionCallback() = 0;
+		virtual void registerAutoReconnectCallback(std::shared_ptr<IAutoReconnectCallback> autoReconnectCallback) = 0;
+		virtual void deregisterAutoReconnectCallback() = 0;
 
 		virtual void registerRewardCallback(IRewardCallback *rewardCallback) = 0;
 		virtual void deregisterRewardCallback() = 0;
@@ -134,8 +134,8 @@ namespace BrainCloud
 
 		void insertEndOfMessageBundleMarker();
 
-		void setLongSessionEnabled(bool enabled) { _longSessionEnabled = enabled; }
-		bool getLongSessionEnabled() { return _longSessionEnabled; }
+		void setAutoReconnectEnabled(bool enabled) { _autoReconnectEnabled = enabled; }
+		bool getAutoReconnectEnabled() { return _autoReconnectEnabled; }
 
 		static void createJsonErrorResponse(int statusCode,
                                             int reasonCode,
@@ -174,7 +174,7 @@ namespace BrainCloud
 		IEventCallback *_eventCallback;
 		IFileUploadCallback *_fileUploadCallback;
 		IGlobalErrorCallback * _globalErrorCallback;
-		std::shared_ptr<ILongSessionCallback> _longSessionCallback;
+		std::shared_ptr<IAutoReconnectCallback> _autoReconnectCallback;
 		IRewardCallback *_rewardCallback;
 		INetworkErrorCallback *_networkErrorCallback;
 
@@ -201,7 +201,7 @@ namespace BrainCloud
 		std::string _killSwitchService;
 		std::string _killSwitchOperation;
 
-		bool _longSessionEnabled = false;
+		bool _autoReconnectEnabled = false;
 
 		void setCredentials(const Json::Value& jsonAuthenticationResponse);
 		void filterIncomingMessages(const ServerCall* servercall, const Json::Value& response);
