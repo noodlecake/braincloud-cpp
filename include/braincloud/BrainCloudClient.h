@@ -255,14 +255,14 @@ namespace BrainCloud
 		/**
 		* Registers a callback that is invoked when long sessions are enabled and a re-authentication has just happened
 		* 
-		* @param longSessionCallback The long session callback handler
+		* @param autoReconnectCallback The auto reconnect callback handler
 		*/
-		void registerLongSessionCallback(ILongSessionCallback* longSessionCallback);
+		void registerAutoReconnectCallback(IAutoReconnectCallback* autoReconnectCallback);
 
 		/**
-		 * Deregisters the event callback
+		 * Deregisters the auto reconnect callback
 		 */
-		void deregisterLongSessionCallback();
+		void deregisterAutoReconnectCallback();
 
 		/**
 		 * Sets a reward handler for any api call results that return rewards.
@@ -318,9 +318,9 @@ namespace BrainCloud
 		/**
 		 * When enabled, automatically attempt to reconnect and retry server calls in the event of an expired session.
 		 * 
-		 * @param shouldEnable Determines if Long Session should be enabled or not
+		 * @param shouldEnable Determines if Auto Reconnect should be enabled or not
 		 */
-		void enableLongSession(bool shouldEnable);
+		void enableAutoReconnect(bool shouldEnable);
 
 		/**
 		 * Set to true to enable logging packets to std::out

@@ -73,6 +73,8 @@ TEST_F(TestBCComms, Heartbeat)
 
 TEST_F(TestBCComms, HeartbeatStops)
 {
+	//disable auto reconnect
+	m_bc->enableAutoReconnect(false);
 	//delay heartbeat
 	m_bc->setHeartbeatInterval(1200 * 1000);
 

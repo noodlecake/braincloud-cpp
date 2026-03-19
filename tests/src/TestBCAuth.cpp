@@ -321,28 +321,28 @@ TEST_F(TestBCAuth, AuthenticateUltra)
     Logout();
 }
 
-class TestBCLongSessionCallback final : public ILongSessionCallback
+class TestBCAutoReconnectCallback final : public IAutoReconnectCallback
 {
 public:
-    TestBCLongSessionCallback()
+    TestBCAutoReconnectCallback()
     {
     }
 
 private:
 
 
-    // Inherited via ILongSessionCallback
-    void longSessionSuccess(std::string const& jsonData) override
+    // Inherited via IAutoReconnectCallback
+    void autoReconnectSuccess(std::string const& jsonData) override
     {
-        std::cout << "[CALLBACK] LongSessionCallback : Re-Authentication SUCCESS!" << std::endl;
+        std::cout << "[CALLBACK] AutoReconnectCallback : Re-Authentication SUCCESS!" << std::endl;
     }
-    void longSessionFailed(std::string const& jsonData) override
+    void autoReconnectFailed(std::string const& jsonData) override
     {
-        std::cout << "[CALLBACK] LongSessionCallback : Re-Authentication FAILED!" << std::endl;
+        std::cout << "[CALLBACK] AutoReconnectCallback : Re-Authentication FAILED!" << std::endl;
     }
 };
 
-TEST_F(TestBCAuth, LongSession)
+TEST_F(TestBCAuth, AutoReconnect)
 {
     TestResult tr;
     Json::FastWriter writer;
@@ -351,12 +351,12 @@ TEST_F(TestBCAuth, LongSession)
     userAWrapper->initialize(m_serverUrl.c_str(), m_secret.c_str(), m_appId.c_str(), m_version.c_str(), "", "");
     auto bc_a = userAWrapper->getBCClient();
     bc_a->enableLogging(true);
-    bc_a->enableLongSession(true);
+    bc_a->enableAutoReconnect(true);
     bc_a->getAuthenticationService()->authenticateUniversal(GetUser(UserA)->m_id, GetUser(UserA)->m_password, true, &tr);
     tr.run(bc_a);
 
-    TestBCLongSessionCallback* callback = new TestBCLongSessionCallback();
-    bc_a->registerLongSessionCallback(callback);
+    TestBCAutoReconnectCallback* callback = new TestBCAutoReconnectCallback();
+    bc_a->registerAutoReconnectCallback(callback);
 
     std::string profileId = tr.m_response["data"]["profileId"].asString();
     std::string sessionId = tr.m_response["data"]["sessionId"].asString();

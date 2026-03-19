@@ -1,6 +1,6 @@
 // Copyright 2026 bitHeads, Inc. All Rights Reserved.
 //
-//  ILongSession.h
+//  IAutoReconnectCallback.h
 //  GameClientLib
 //
 //  Created by brainCloud Team on 2026-02-04.
@@ -17,24 +17,24 @@
 
 namespace BrainCloud {
 
-    class ILongSessionCallback
+    class IAutoReconnectCallback
     {
     public:
-        virtual ~ILongSessionCallback() {}
+        virtual ~IAutoReconnectCallback() {}
 
         /**
-         * Method called when a long session re-authentication is successfull
+         * Method called when an auto reconnect re-authentication is successfull
          *
          * @param jsonData - returned data from the server for the re-authenticate call
          */
-        virtual void longSessionSuccess(std::string const& jsonData) = 0;
+        virtual void autoReconnectSuccess(std::string const& jsonData) = 0;
 
         /**
-         * Method called when a long session re-authentication has failed
+         * Method called when an auto reconnect re-authentication has failed
          *
          * @param jsonData - returned data from the server for the re-authenticate call
          */
-        virtual void longSessionFailed(std::string const& jsonData) = 0;
+        virtual void autoReconnectFailed(std::string const& jsonData) = 0;
     };
 
 };

@@ -246,17 +246,17 @@ namespace BrainCloud
         _mutex.unlock();
     }
 
-	void DefaultBrainCloudComms::registerLongSessionCallback(std::shared_ptr<ILongSessionCallback> longSessionCallback)
+	void DefaultBrainCloudComms::registerAutoReconnectCallback(std::shared_ptr<IAutoReconnectCallback> autoReconnectCallback)
 	{
 		_mutex.lock();
-		_longSessionCallback = std::move(longSessionCallback);
+		_autoReconnectCallback = std::move(autoReconnectCallback);
 		_mutex.unlock();
 	}
 
-	void DefaultBrainCloudComms::deregisterLongSessionCallback()
+	void DefaultBrainCloudComms::deregisterAutoReconnectCallback()
 	{
 		_mutex.lock();
-		_longSessionCallback = NULL;
+		_autoReconnectCallback = NULL;
 		_mutex.unlock();
 	}
 
@@ -454,7 +454,7 @@ namespace BrainCloud
 			else
 			{
 				if (reasonCode == PLAYER_SESSION_EXPIRED &&
-					_longSessionEnabled &&
+					_autoReconnectEnabled &&
 					operation != ServiceOperation::Authenticate &&
 					_isAuthenticated)
 				{
@@ -472,14 +472,14 @@ namespace BrainCloud
 							});
 					}
 
-					std::cout << "Long session expired, will attempt re-authentication." << std::endl;
+					std::cout << "Auto reconnect: session expired, will attempt re-authentication." << std::endl;
 
-					LongSessionAuthCallback* callback = new LongSessionAuthCallback(this, _longSessionCallback, curRequests);
+					AutoReconnectAuthCallback* callback = new AutoReconnectAuthCallback(this, _autoReconnectCallback, curRequests);
 					_client->getAuthenticationService()->authenticateAnonymous(false, callback);
 					break;
 				}
 
-				if ((reasonCode == PLAYER_SESSION_EXPIRED && !_longSessionEnabled)
+				if ((reasonCode == PLAYER_SESSION_EXPIRED && !_autoReconnectEnabled)
 					|| reasonCode == NO_SESSION
 					|| reasonCode == PLAYER_SESSION_LOGGED_OUT)
 				{
@@ -1307,9 +1307,9 @@ namespace BrainCloud
         _mutex.unlock();
     }
 
-	LongSessionAuthCallback::LongSessionAuthCallback(
+	AutoReconnectAuthCallback::AutoReconnectAuthCallback(
 		DefaultBrainCloudComms* commsRef,
-		std::shared_ptr<ILongSessionCallback> callback,
+		std::shared_ptr<IAutoReconnectCallback> callback,
 		std::vector<CachedCall> lastPacket)
 		: _commsRef(commsRef)
 		, _callback(std::move(callback))
@@ -1317,10 +1317,10 @@ namespace BrainCloud
 	{
 	}
 
-	void LongSessionAuthCallback::serverCallback(ServiceName serviceName, ServiceOperation serviceOperation, std::string const& jsonData)
+	void AutoReconnectAuthCallback::serverCallback(ServiceName serviceName, ServiceOperation serviceOperation, std::string const& jsonData)
 	{
 		if (serviceName == ServiceName::AuthenticateV2 && serviceOperation == ServiceOperation::Authenticate) {
-			std::cout << "Long session re-authentication success. Retrying cached messages... " << std::endl;
+			std::cout << "Auto reconnect re-authentication success. Retrying cached messages... " << std::endl;
 
 			for (int i = static_cast<int>(_lastPacket.size()) - 1; i >= 0; --i)
 			{
@@ -1337,16 +1337,16 @@ namespace BrainCloud
 
 			if (_callback)
 			{
-				_callback->longSessionSuccess(jsonData);
+				_callback->autoReconnectSuccess(jsonData);
 			}
 		}
 	}
 
-	void LongSessionAuthCallback::serverError(ServiceName serviceName, ServiceOperation serviceOperation, int statusCode, int reasonCode, const std::string& jsonError)
+	void AutoReconnectAuthCallback::serverError(ServiceName serviceName, ServiceOperation serviceOperation, int statusCode, int reasonCode, const std::string& jsonError)
 	{
-		std::cout << "Error: Long session re-authentication failed. Disabling long session." << std::endl;
-		_commsRef->setLongSessionEnabled(false);
-		if (_callback != nullptr) _callback->longSessionFailed(jsonError);
+		std::cout << "Error: Auto reconnect re-authentication failed. Disabling auto reconnect." << std::endl;
+		_commsRef->setAutoReconnectEnabled(false);
+		if (_callback != nullptr) _callback->autoReconnectFailed(jsonError);
 		delete this;
 	}
 

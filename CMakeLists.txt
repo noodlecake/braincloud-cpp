@@ -298,7 +298,7 @@ add_library(brainCloud STATIC
         include/braincloud/IEventCallback.h
         include/braincloud/IFileUploadCallback.h
         include/braincloud/IGlobalErrorCallback.h
-        include/braincloud/ILongSessionCallback.h
+        include/braincloud/IAutoReconnectCallback.h
         include/braincloud/INetworkErrorCallback.h
         include/braincloud/IRewardCallback.h
         include/braincloud/IRelayConnectCallback.h

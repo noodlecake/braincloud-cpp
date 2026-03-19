@@ -57,8 +57,8 @@ namespace BrainCloud
         virtual void deregisterEventCallback();
         virtual void registerFileUploadCallback(IFileUploadCallback *fileUploadCallback);
         virtual void deregisterFileUploadCallback();
-        virtual void registerLongSessionCallback(std::shared_ptr<ILongSessionCallback> longSessionCallback);
-        virtual void deregisterLongSessionCallback();
+        virtual void registerAutoReconnectCallback(std::shared_ptr<IAutoReconnectCallback> autoReconnectCallback);
+        virtual void deregisterAutoReconnectCallback();
         virtual void registerRewardCallback(IRewardCallback *rewardCallback);
         virtual void deregisterRewardCallback();
         virtual void registerGlobalErrorCallback(IGlobalErrorCallback *globalErrorCallback);
@@ -129,17 +129,17 @@ namespace BrainCloud
         IServerCallback* callback;
     };
 
-    class LongSessionAuthCallback final : public IServerCallback
+    class AutoReconnectAuthCallback final : public IServerCallback
     {
     public:
-        LongSessionAuthCallback(DefaultBrainCloudComms* commsRef, std::shared_ptr<ILongSessionCallback> callback, std::vector<CachedCall> lastPacket);
+        AutoReconnectAuthCallback(DefaultBrainCloudComms* commsRef, std::shared_ptr<IAutoReconnectCallback> callback, std::vector<CachedCall> lastPacket);
 
         void serverCallback(ServiceName serviceName, ServiceOperation serviceOperation, std::string const& jsonData) override;
         void serverError(ServiceName serviceName, ServiceOperation serviceOperation, int statusCode, int reasonCode, const std::string& jsonError) override;
 
     protected:
         DefaultBrainCloudComms* _commsRef;
-        std::shared_ptr<ILongSessionCallback> _callback;
+        std::shared_ptr<IAutoReconnectCallback> _callback;
         std::vector<CachedCall> _lastPacket;
 
     };
