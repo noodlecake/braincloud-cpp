@@ -22,12 +22,12 @@
 #include <string.h>
 #import <Foundation/Foundation.h>
 
-@interface URLSessionDelegate () {
+@interface BCURLSessionDelegate () {
     BrainCloud::nsURLLoader* _urlLoader;
     NSURLSession *_session;
 }
 @end
-@implementation URLSessionDelegate
+@implementation BCURLSessionDelegate
 - (instancetype)initWithLoader:(BrainCloud::nsURLLoader*) loader
 {
     self = [super init];
@@ -285,7 +285,7 @@ namespace BrainCloud
 		// Assume the specified URL in the request is valid.
 		setRequest(urlRequest);
     
-		_sessionDelegate = [[URLSessionDelegate alloc] initWithLoader:this];
+		_sessionDelegate = [[BCURLSessionDelegate alloc] initWithLoader:this];
 		if (_sessionDelegate) {
 			[_sessionDelegate start];
 			_initialized = true;
