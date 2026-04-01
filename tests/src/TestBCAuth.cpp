@@ -320,3 +320,95 @@ TEST_F(TestBCAuth, AuthenticateUltra)
     // Logout again (This test fixture doesn't do it)
     Logout();
 }
+
+class TestBCAutoReconnectCallback final : public IAutoReconnectCallback
+{
+public:
+    TestBCAutoReconnectCallback()
+    {
+    }
+
+private:
+
+
+    // Inherited via IAutoReconnectCallback
+    void autoReconnectSuccess(std::string const& jsonData) override
+    {
+        std::cout << "[CALLBACK] AutoReconnectCallback : Re-Authentication SUCCESS!" << std::endl;
+    }
+    void autoReconnectFailed(std::string const& jsonData) override
+    {
+        std::cout << "[CALLBACK] AutoReconnectCallback : Re-Authentication FAILED!" << std::endl;
+    }
+};
+
+TEST_F(TestBCAuth, AutoReconnect)
+{
+    TestResult tr;
+    Json::FastWriter writer;
+    //create userA wrapper and authenticate
+    BrainCloudWrapper* userAWrapper = new BrainCloudWrapper("bctests_userA");
+    userAWrapper->initialize(m_serverUrl.c_str(), m_secret.c_str(), m_appId.c_str(), m_version.c_str(), "", "");
+    auto bc_a = userAWrapper->getBCClient();
+    bc_a->enableLogging(true);
+    bc_a->enableAutoReconnect(true);
+    bc_a->getAuthenticationService()->authenticateUniversal(GetUser(UserA)->m_id, GetUser(UserA)->m_password, true, &tr);
+    tr.run(bc_a);
+
+    TestBCAutoReconnectCallback* callback = new TestBCAutoReconnectCallback();
+    bc_a->registerAutoReconnectCallback(callback);
+
+    std::string profileId = tr.m_response["data"]["profileId"].asString();
+    std::string sessionId = tr.m_response["data"]["sessionId"].asString();
+
+    Json::Value sessionData;
+    sessionData["profileId"] = profileId;
+    sessionData["sessionId"] = sessionId;
+    std::string sessionJsonString = writer.write(sessionData);
+
+    //create userB wrapper and authenticate
+
+
+    BrainCloudWrapper* userBWrapper = new BrainCloudWrapper("bctests_userB");
+    userBWrapper->initialize(m_serverUrl.c_str(), m_secret.c_str(), m_appId.c_str(), m_version.c_str(), "", "");
+    auto bc_b = userBWrapper->getBCClient();
+    bc_b->enableLogging(true);
+    bc_b->getAuthenticationService()->authenticateUniversal(GetUser(UserB)->m_id, GetUser(UserB)->m_password, true, &tr);
+    tr.run(bc_b);
+
+    // Verify UserA session is active
+    bc_a->getIdentityService()->getIdentities(&tr);
+    tr.run(bc_a);
+
+    // End UserA session via script run from UserB
+    bc_b->getScriptService()->runScript("LogoutSession", sessionJsonString, &tr);
+    tr.run(bc_b);
+
+    // Verify UserA session retries via long session (if long session isn't enabled, this should fail)
+    bc_a->getIdentityService()->getIdentities(&tr);
+    tr.run(bc_a);
+
+    //teardown extra wrappers
+
+    bc_a->resetCommunication();
+    bc_b->resetCommunication();
+
+    delete userAWrapper;
+    delete userBWrapper;
+}
+
+TEST_F (TestBCAuth, RTTRequestWithNoAuthSession)
+{
+    TestResult trRTT;
+    
+    m_bc->getRTTService()->enableRTT(&trRTT);
+    EXPECT_FALSE(m_bc->getRTTService()->getRTTEnabled());
+}
+
+TEST_F(TestBCAuth, RelayRequestWithNoAuthSession)
+{
+    TestResult trRelay;
+    
+    m_bc->getRelayService()->connect(BrainCloud::eRelayConnectionType::WS, std::string(""), 0, std::string(""), std::string(""), &trRelay);
+    EXPECT_FALSE(m_bc->getRelayService()->isConnected());
+}

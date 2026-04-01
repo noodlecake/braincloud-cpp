@@ -22,7 +22,7 @@ namespace BrainCloud
         URLRequest const    getRequest() const { return _urlRequest; }
         URLResponse &       getResponse() { return _urlResponse; }
         void                setRequest(URLRequest const & r) { _urlRequest = r; }
-        void                setLoggingEnabled(bool in_enabled) { _loggingEnabled = in_enabled; }
+        void                setLoggingEnabled(bool enabled) { _loggingEnabled = enabled; }
 
     protected:
         URLLoader();

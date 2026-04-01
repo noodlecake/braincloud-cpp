@@ -409,7 +409,19 @@ namespace BrainCloud
             // Set up the object to store the response headers.
             curl_easy_setopt(curl, CURLOPT_WRITEHEADER, loader);
             curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, writeHeader);
-
+			
+#if defined(__ANDROID__)
+			const char* caPath = std::getenv("CURL_CA_BUNDLE");
+			if(caPath) {
+				curl_easy_setopt(curl, CURLOPT_CAINFO, caPath);
+				std::cout << "set CA info to : " << caPath << std::endl;
+			}
+#endif
+			const char* disableSSL = std::getenv("SSL_DISABLED");
+			if(disableSSL){
+				curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, (long)0);
+				curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, (long)0);
+			}
             //curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, (long)0);
             //curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, (long)0);
 

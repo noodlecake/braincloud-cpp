@@ -7,6 +7,7 @@
 #include "braincloud/IGlobalErrorCallback.h"
 #include "braincloud/INetworkErrorCallback.h"
 #include "braincloud/IRewardCallback.h"
+#include "braincloud/IAutoReconnectCallback.h"
 #include "braincloud/IServerCallback.h"
 
 #include "braincloud/ServerCall.h"
@@ -58,7 +59,7 @@ namespace BrainCloud
 	class IBrainCloudComms
 	{
 	public:
-        static IBrainCloudComms* create(BrainCloudClient* in_client);
+        static IBrainCloudComms* create(BrainCloudClient* client);
 
 		virtual ~IBrainCloudComms();
 
@@ -72,34 +73,38 @@ namespace BrainCloud
 		virtual void shutdown() = 0;
 		virtual void runCallbacks() = 0;
 
-		virtual void registerEventCallback(IEventCallback *in_eventCallback) = 0;
+		virtual void registerEventCallback(IEventCallback *eventCallback) = 0;
 		virtual void deregisterEventCallback() = 0;
 
-		virtual void registerFileUploadCallback(IFileUploadCallback *in_fileUploadCallback) = 0;
+		virtual void registerFileUploadCallback(IFileUploadCallback *fileUploadCallback) = 0;
 		virtual void deregisterFileUploadCallback() = 0;
 
-		virtual void registerRewardCallback(IRewardCallback *in_rewardCallback) = 0;
+		virtual void registerAutoReconnectCallback(std::shared_ptr<IAutoReconnectCallback> autoReconnectCallback) = 0;
+		virtual void deregisterAutoReconnectCallback() = 0;
+
+		virtual void registerRewardCallback(IRewardCallback *rewardCallback) = 0;
 		virtual void deregisterRewardCallback() = 0;
 
-		virtual void registerGlobalErrorCallback(IGlobalErrorCallback *in_globalErrorCallback) = 0;
+		virtual void registerGlobalErrorCallback(IGlobalErrorCallback *globalErrorCallback) = 0;
 		virtual void deregisterGlobalErrorCallback() = 0;
 
-		virtual void registerNetworkErrorCallback(INetworkErrorCallback * in_networkErrorCallback) = 0;
+		virtual void registerNetworkErrorCallback(INetworkErrorCallback * networkErrorCallback) = 0;
 		virtual void deregisterNetworkErrorCallback() = 0;
 
-		virtual void cancelUpload(const char * in_fileUploadId) = 0;
-		virtual double getUploadProgress(const char * in_fileUploadId) = 0;
-		virtual int64_t getUploadTotalBytesToTransfer(const char * in_fileUploadId) = 0;
-		virtual int64_t getUploadBytesTransferred(const char * in_fileUploadId) = 0;
+		virtual void cancelUpload(const char * fileUploadId) = 0;
+		virtual double getUploadProgress(const char * fileUploadId) = 0;
+		virtual int64_t getUploadTotalBytesToTransfer(const char * fileUploadId) = 0;
+		virtual int64_t getUploadBytesTransferred(const char * fileUploadId) = 0;
 
-		virtual void enableNetworkErrorMessageCaching(bool in_enabled) = 0;
+		virtual void enableNetworkErrorMessageCaching(bool enabled) = 0;
 		virtual void retryCachedMessages() = 0;
-		virtual void flushCachedMessages(bool in_sendApiErrorCallbacks) = 0;
+		virtual void flushCachedMessages(bool sendApiErrorCallbacks) = 0;
 
 		// implemented methods
 		void enableLogging(bool shouldEnable);
 		bool isInitialized();
 		bool isAuthenticated();
+		bool isKillswitchEngaged();
 		void setAuthenticated();
 
 		//compression
@@ -115,27 +120,30 @@ namespace BrainCloud
 		void setServerUrl(const char *);
 
 		const std::vector<int> & getPacketTimeouts();
-		void setPacketTimeouts(const std::vector<int> & in_packetTimeouts);
+		void setPacketTimeouts(const std::vector<int> & packetTimeouts);
 		void setPacketTimeoutsToDefault();
-		void setAuthenticationPacketTimeout(int in_timeoutSecs);
+		void setAuthenticationPacketTimeout(int timeoutSecs);
 		int getAuthenticationPacketTimeout();
-		void setOldStyleStatusMessageErrorCallback(bool in_enabled);
-		void setErrorCallbackOn202Status(bool in_isError);
+		void setOldStyleStatusMessageErrorCallback(bool enabled);
+		void setErrorCallbackOn202Status(bool isError);
 
 		int getUploadLowTransferRateTimeout();
-		void setUploadLowTransferRateTimeout(int in_timeoutSecs);
+		void setUploadLowTransferRateTimeout(int timeoutSecs);
 		int getUploadLowTransferRateThreshold();
-		void setUploadLowTransferRateThreshold(int in_bytesPerSec);
+		void setUploadLowTransferRateThreshold(int bytesPerSec);
 
 		void insertEndOfMessageBundleMarker();
 
-		static void createJsonErrorResponse(int in_statusCode,
-                                            int in_reasonCode,
-                                            const std::string & in_statusMessage,
+		void setAutoReconnectEnabled(bool enabled) { _autoReconnectEnabled = enabled; }
+		bool getAutoReconnectEnabled() { return _autoReconnectEnabled; }
+
+		static void createJsonErrorResponse(int statusCode,
+                                            int reasonCode,
+                                            const std::string & statusMessage,
                                             std::string & out_jsonErrorResponse);
 
 	protected:
-        IBrainCloudComms(BrainCloudClient* in_client);
+        IBrainCloudComms(BrainCloudClient* client);
 
 		BrainCloudClient* _client;
 
@@ -156,7 +164,7 @@ namespace BrainCloud
 		int _killSwitchThreshold;
 
 		//compression
-		int _clientSideCompressionThreshold = 5000;
+		int _clientSideCompressionThreshold = 51200;
 
 		// This flag is set when _cacheMessagesOnNetworkError is true
 		// and a network error occurs. It is reset when a call is made
@@ -166,6 +174,7 @@ namespace BrainCloud
 		IEventCallback *_eventCallback;
 		IFileUploadCallback *_fileUploadCallback;
 		IGlobalErrorCallback * _globalErrorCallback;
+		std::shared_ptr<IAutoReconnectCallback> _autoReconnectCallback;
 		IRewardCallback *_rewardCallback;
 		INetworkErrorCallback *_networkErrorCallback;
 
@@ -187,15 +196,17 @@ namespace BrainCloud
 		int32_t _reasonCodeCache;
 		std::string _statusMessageCache;
 
-		bool _killSwitchEngaged;
+		bool _killSwitchEngaged = false;
 		int32_t _killSwitchErrorCount;
 		std::string _killSwitchService;
 		std::string _killSwitchOperation;
 
-		void setCredentials(const Json::Value& in_jsonAuthenticationResponse);
+		bool _autoReconnectEnabled = false;
+
+		void setCredentials(const Json::Value& jsonAuthenticationResponse);
 		void filterIncomingMessages(const ServerCall* servercall, const Json::Value& response);
 
-		virtual void startFileUpload(const Json::Value & in_jsonPrepareUploadResponse) = 0;
+		virtual void startFileUpload(const Json::Value & jsonPrepareUploadResponse) = 0;
 		void runCallbacksFileUpload();
 	};
 };

@@ -33,7 +33,7 @@ namespace BrainCloud
     class RelayComms
     {
     public:
-        RelayComms(BrainCloudClient* in_client);
+        RelayComms(BrainCloudClient* client);
         virtual ~RelayComms();
 
         void initialize();
@@ -43,23 +43,23 @@ namespace BrainCloud
         void runCallbacks();
         void enableLogging(bool shouldEnable);
 
-        void connect(eRelayConnectionType in_connectionType, const std::string& host, int port, const std::string& passcode, const std::string& lobbyId, IRelayConnectCallback* in_callback);
+        void connect(eRelayConnectionType connectionType, const std::string& host, int port, const std::string& passcode, const std::string& lobbyId, IRelayConnectCallback* callback);
         void endMatch(const Json::Value& jsonPayload);
         void disconnect();
         bool isConnected() const;
         int getPing() const;
-        void setPingInterval(int in_intervalMS);
+        void setPingInterval(int intervalMS);
         const std::string& getOwnerProfileId() const;
-        const std::string& getProfileIdForNetId(int in_netId) const;
-        int getNetIdForProfileId(const std::string& in_profileId) const;
+        const std::string& getProfileIdForNetId(int netId) const;
+        int getNetIdForProfileId(const std::string& profileId) const;
         const std::string& getOwnerCxId() const;
-        const std::string& getCxIdForNetId(int in_netId) const;
-        int getNetIdForCxId(const std::string& in_cxId) const;
-        void registerRelayCallback(IRelayCallback* in_callback);
+        const std::string& getCxIdForNetId(int netId) const;
+        int getNetIdForCxId(const std::string& cxId) const;
+        void registerRelayCallback(IRelayCallback* callback);
         void deregisterRelayCallback();
-        void registerSystemCallback(IRelaySystemCallback* in_callback);
+        void registerSystemCallback(IRelaySystemCallback* callback);
         void deregisterSystemCallback();
-        void send(const uint8_t* in_data, int in_size, uint64_t in_playerMask, bool in_reliable, bool in_ordered, eRelayChannel in_channel);
+        void send(const uint8_t* data, int size, uint64_t playerMask, bool reliable, bool ordered, eRelayChannel channel);
 
     private:
         static const int CHANNEL_COUNT = 4;
@@ -157,16 +157,16 @@ namespace BrainCloud
         Json::Value buildConnectionRequest();
         void sendPing();
         void sendRSMGAck(int rsmgPacketId);
-        void sendAck(const uint8_t* in_data);
-        void send(const uint8_t* in_data, int in_size);
+        void sendAck(const uint8_t* data);
+        void send(const uint8_t* data, int size);
         void send(int netId, const Json::Value& json);
         void send(int netId, const std::string& text);
 
-        void onRecv(const uint8_t* in_data, int in_size);
-        void onRSMG(const uint8_t* in_data, int in_size);
+        void onRecv(const uint8_t* data, int size);
+        void onRSMG(const uint8_t* data, int size);
         void onPONG();
-        void onRelay(const uint8_t* in_data, int in_size);
-        void onAck(const uint8_t* in_data);
+        void onRelay(const uint8_t* data, int size);
+        void onAck(const uint8_t* data);
 
         // Main objects/flags
         BrainCloudClient* m_client = nullptr;

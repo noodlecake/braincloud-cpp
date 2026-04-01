@@ -40,9 +40,9 @@ namespace BrainCloud
     {
     }
 
-    RTTComms::RTTComms(BrainCloudClient* in_client)
+    RTTComms::RTTComms(BrainCloudClient* client)
         : _isInitialized(false)
-        , _client(in_client)
+        , _client(client)
         , _loggingEnabled(false)
         , _connectCallback(NULL)
         , _socket(NULL)
@@ -141,7 +141,7 @@ namespace BrainCloud
         }
     }
 
-    void RTTComms::enableRTT(IRTTConnectCallback* in_callback, bool in_useWebSocket)
+    void RTTComms::enableRTT(IRTTConnectCallback* callback, bool useWebSocket)
     {
 #if RTTCOMMS_LOG_EVERY_METHODS
         std::cout << "VERBOSE: RTTComms::enableRTT" << std::endl;
@@ -150,10 +150,17 @@ namespace BrainCloud
         {
             return;
         }
-        else
+        else if(!_client->isAuthenticated() || _client->isKillswitchEngaged())
+        {
+#if RTTCOMMS_LOG_EVERY_METHODS
+            std::cout << "VERBOSE: RTT: EnableRTT called before calling authentication request. Disabling RTT." << std::endl;
+#endif
+            callback->rttConnectFailure("RTT: EnableRTT called before calling authentication request. Disabling RTT.");
+        }
+        else 
         {               
-            _connectCallback = in_callback;
-            _useWebSocket = in_useWebSocket;
+            _connectCallback = callback;
+            _useWebSocket = useWebSocket;
 
             _appId = _client->getAppId();
             _sessionId = _client->getSessionId();
@@ -250,12 +257,12 @@ namespace BrainCloud
         }
     }
 
-    void RTTComms::registerRTTCallback(const ServiceName& serviceName, IRTTCallback* in_callback)
+    void RTTComms::registerRTTCallback(const ServiceName& serviceName, IRTTCallback* callback)
     {
 #if RTTCOMMS_LOG_EVERY_METHODS
         std::cout << "VERBOSE: RTTComms::registerRTTCallback" << std::endl;
 #endif
-        _callbacks[serviceName.getValue()] = in_callback;
+        _callbacks[serviceName.getValue()] = callback;
     }
 
     void RTTComms::deregisterRTTCallback(const ServiceName& serviceName)

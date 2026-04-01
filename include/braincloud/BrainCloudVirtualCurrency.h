@@ -18,19 +18,19 @@ namespace BrainCloud
     class BrainCloudVirtualCurrency
     {
     public:
-        BrainCloudVirtualCurrency(BrainCloudClient* in_client);
+        BrainCloudVirtualCurrency(BrainCloudClient* client);
 
         /**
          * @warning Method is recommended to be used in Cloud Code only for security
          * If you need to use it client side, enable 'Allow Currency Calls from Client' on the brainCloud dashboard
          */
-        void awardCurrency(const std::string& in_currencyType, int32_t in_amount, IServerCallback * in_callback = NULL);
+        void awardCurrency(const std::string& currencyType, int32_t amount, IServerCallback * callback = NULL);
 
         /**
          * @warning Method is recommended to be used in Cloud Code only for security
          * If you need to use it client side, enable 'Allow Currency Calls from Client' on the brainCloud dashboard
          */
-        void consumeCurrency(const std::string& in_currencyType, int32_t in_amount, IServerCallback * in_callback = NULL);
+        void consumeCurrency(const std::string& currencyType, int32_t amount, IServerCallback * callback = NULL);
 
         /**
         * Retrieve the user's currency account. Optional parameters: vcId (if retrieving all currencies).
@@ -39,9 +39,9 @@ namespace BrainCloud
         * Service Operation - GetCurrency
         *
         * @param vcId
-        * @param in_callback The method to be invoked when the server response is received
+        * @param callback The method to be invoked when the server response is received
         */
-        void getCurrency(const char* in_vcId, IServerCallback * in_callback = NULL);
+        void getCurrency(const char* vcId, IServerCallback * callback = NULL);
 
         /**
         * Retrieve the parent user's currency account. Optional parameters: vcId (if retrieving all currencies).
@@ -51,9 +51,9 @@ namespace BrainCloud
         *
         * @param vcId
         * @param levelName
-        * @param in_callback The method to be invoked when the server response is received
+        * @param callback The method to be invoked when the server response is received
         */
-        void getParentCurrency(const char* in_vcId, const std::string& in_levelName, IServerCallback * in_callback = NULL);
+        void getParentCurrency(const char* vcId, const std::string& levelName, IServerCallback * callback = NULL);
 
         /**
         * Retrieve the peer user's currency account. Optional parameters: vcId (if retrieving all currencies).
@@ -63,9 +63,9 @@ namespace BrainCloud
         *
         * @param vcId
         * @param peerCode
-        * @param in_callback The method to be invoked when the server response is received
+        * @param callback The method to be invoked when the server response is received
         */
-        void getPeerCurrency(const char* in_vcId, const std::string& in_peerCode, IServerCallback * in_callback = NULL);
+        void getPeerCurrency(const char* vcId, const std::string& peerCode, IServerCallback * callback = NULL);
 
         /**
         * Reset player's currency to zero
@@ -73,9 +73,9 @@ namespace BrainCloud
         * Service Name - VirtualCurrency
         * Service Operation - ResetCurrency
         *
-        * @param in_callback The method to be invoked when the server response is received
+        * @param callback The method to be invoked when the server response is received
         */
-        void resetCurrency(IServerCallback * in_callback = NULL);
+        void resetCurrency(IServerCallback * callback = NULL);
 
     private:
         BrainCloudClient * m_client;
