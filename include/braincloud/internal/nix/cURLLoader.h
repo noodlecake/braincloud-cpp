@@ -24,9 +24,8 @@
 
 #if defined(USE_PTHREAD)
 #include <pthread.h>
-#else
-#include <atomic>
 #endif
+#include <atomic>
 
 #include <string>
 
@@ -70,7 +69,7 @@ namespace BrainCloud
 
         static void     loadThreadCurl(cURLLoader *);
 
-        static curl_socket_t openSocket(void *data, curlsocktype purpose, struct curl_sockaddr *addr);
+        static int      progressCallback(void *data, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow);
         static size_t   readData(char *, size_t, size_t, void *);
         static size_t   writeData(char *, size_t, size_t, void *);
         static size_t   writeHeader(char *, size_t, size_t, void *);
@@ -83,17 +82,8 @@ namespace BrainCloud
         pthread_t       _threadId;
 #endif
 
-#if defined(USE_PTHREAD) // We should use atomics also in pthread, but I'd rather not touch the behavior of the old code. At least putting it volatlie
-        volatile bool   _threadRunning;
-#else
         std::atomic<bool> _threadRunning;
-#endif
-
-#ifndef WIN32
-        int             _socket;
-#else
-        SOCKET          _socket;
-#endif
+        std::atomic<bool> _cancelRequested;
     };
 }
 

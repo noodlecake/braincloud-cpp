@@ -45,13 +45,8 @@ namespace BrainCloud
 
     cURLLoader::cURLLoader()
         : _threadRunning(false)
+        , _cancelRequested(false)
     {
-#ifndef WIN32
-        _socket = -1;
-#else
-        _socket = INVALID_SOCKET;
-#endif
-
 #if defined(USE_PTHREAD)
         memset(&_threadId, 0, sizeof(pthread_t));
         memset(&_threadAttributes, 0, sizeof(_threadAttributes));
@@ -68,25 +63,12 @@ namespace BrainCloud
      */
     void cURLLoader::close()
     {
-        // We can stop loading the page by killing its thread.
+        // Signal the curl thread to abort via the progress callback.
         if (_threadRunning)
         {
-            // close socket directly to kill the curl request more quickly (WAT !??)
-#ifndef WIN32
-            if (_socket >= 0)
-            {
-                ::close(_socket);
-            }
-#else
-            if (_socket != INVALID_SOCKET)
-            {
-                shutdown(_socket, SD_BOTH);
-                closesocket(_socket);
-            }
-#endif
+            _cancelRequested = true;
 #if defined(USE_PTHREAD)
             pthread_attr_destroy(&_threadAttributes);
-#else
 #endif
         }
     }
@@ -111,6 +93,7 @@ namespace BrainCloud
         // load is sometimes called while prev thread is processing
         // so make sure to cleanup beforehand...
         close();
+        _cancelRequested = false;
 
 #if defined(USE_PTHREAD)
         // Start up a thread to load the web page.
@@ -332,11 +315,11 @@ namespace BrainCloud
     }
     */
 
-    curl_socket_t cURLLoader::openSocket(void *data, curlsocktype purpose, struct curl_sockaddr *addr)
+    int cURLLoader::progressCallback(void *data, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow)
     {
         cURLLoader * loader = (cURLLoader*)data;
-        loader->_socket = socket(addr->family, addr->socktype, addr->protocol);
-        return loader->_socket;
+        // Returning non-zero causes curl to abort the transfer with CURLE_ABORTED_BY_CALLBACK.
+        return loader->_cancelRequested ? 1 : 0;
     }
 
     /*
@@ -395,8 +378,9 @@ namespace BrainCloud
 
             curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
-            curl_easy_setopt(curl, CURLOPT_OPENSOCKETFUNCTION, openSocket);
-            curl_easy_setopt(curl, CURLOPT_OPENSOCKETDATA, loader);
+            curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
+            curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, progressCallback);
+            curl_easy_setopt(curl, CURLOPT_XFERINFODATA, loader);
 
             // Set up the object to store the content of the response.
             curl_easy_setopt(curl, CURLOPT_WRITEDATA, loader);

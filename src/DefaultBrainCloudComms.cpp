@@ -1102,7 +1102,19 @@ namespace BrainCloud
 
 			if (_loader != NULL)
 			{
-				delete _loader;
+				_loader->close();
+				int timeToWait = 2000;
+				int timeSlice = 100;
+				while (!_loader->isDone() && timeToWait > 0)
+				{
+					TimeUtil::sleepMillis(timeSlice);
+					timeToWait -= timeSlice;
+				}
+				if (_loader->isDone())
+				{
+					delete _loader;
+				}
+				_loader = NULL;
 			}
 
 			startHttpRequest();
