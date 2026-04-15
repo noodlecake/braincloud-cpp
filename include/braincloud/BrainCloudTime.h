@@ -1,4 +1,4 @@
-// Copyright 2016 bitHeads, Inc. All Rights Reserved.
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 
 #pragma once
 #if defined(__clang__)
@@ -17,7 +17,7 @@ namespace BrainCloud
     class BrainCloudTime
     {
     public:
-        BrainCloudTime(BrainCloudClient* in_client);
+        BrainCloudTime(BrainCloudClient* client);
 
         /**
          * Method returns the server time in UTC. This is in UNIX millis time format.
@@ -28,9 +28,9 @@ namespace BrainCloud
          *
          * Server API reference: ServiceName.Time, ServiceOperation.Read
          *
-         * @param in_callback The method to be invoked when the server response is received
+         * @param callback The method to be invoked when the server response is received
          */
-        void readServerTime( IServerCallback * in_callback = NULL);
+        void readServerTime( IServerCallback * callback = NULL);
 
     private:
         BrainCloudClient * m_client;

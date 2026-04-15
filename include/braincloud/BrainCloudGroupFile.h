@@ -1,4 +1,4 @@
-// Copyright 2023 bitHeads, Inc. All Rights Reserved.
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 
 #pragma once
 #if defined(__clang__)
@@ -23,7 +23,7 @@ public:
     /**
      * Initializes the brainCloudService
      */
-    BrainCloudGroupFile(BrainCloudClient* in_client);
+    BrainCloudGroupFile(BrainCloudClient* client);
     
     /**
      * Check if filename exists for provided path and name
@@ -34,9 +34,9 @@ public:
      * @param groupId ID of the group.
      * @param folderPath The path of the file
      * @param filename The filename of the file
-     * @param in_callback Block to call on return of  server response
+     * @param callback Block to call on return of  server response
      */
-    void checkFilenameExists(std::string groupId, std::string folderPath, std::string fileName, IServerCallback* in_callback = NULL);
+    void checkFilenameExists(std::string groupId, std::string folderPath, std::string fileName, IServerCallback* callback = NULL);
     
     /**
      * Check if filename exists for provided full path name
@@ -46,9 +46,9 @@ public:
      *
      * @param groupId ID of the group.
      * @param fullPathFilename The full path of the file
-     * @param in_callback Block to call on return of  server response
+     * @param callback Block to call on return of  server response
      */
-    void checkFullpathFilenameExists(std::string groupId, std::string fullPathFilename, IServerCallback* in_callback = NULL);
+    void checkFullpathFilenameExists(std::string groupId, std::string fullPathFilename, IServerCallback* callback = NULL);
     
     /**
      *  Copy a file.
@@ -62,9 +62,9 @@ public:
      * @param newTreeId thenewTreeId
      * @param treeVersion the treeVersion
      * @param newFilename the newFilename
-     * @param in_callback Block to call on return of  server response
+     * @param callback Block to call on return of  server response
      */
-    void copyFile(std::string groupId, std::string fileId, int version, std::string newTreeId, int treeVersion, std::string newFilename, bool overwriteIfPresent, IServerCallback* in_callback = NULL);
+    void copyFile(std::string groupId, std::string fileId, int version, std::string newTreeId, int treeVersion, std::string newFilename, bool overwriteIfPresent, IServerCallback* callback = NULL);
     
     /**
      * Delete a file.
@@ -76,10 +76,10 @@ public:
      * @param fileId the fileId
      * @param version the version
      * @param newFilename the newFilename
-     * @param in_callback Block to call on return of  server response
+     * @param callback Block to call on return of  server response
      
      */
-    void deleteFile(std::string groupId, std::string fileId, int version, std::string filename, IServerCallback* in_callback = NULL);
+    void deleteFile(std::string groupId, std::string fileId, int version, std::string filename, IServerCallback* callback = NULL);
     
     /**
      * Return CDN url for file for clients that cannot handle redirect.
@@ -89,10 +89,10 @@ public:
      *
      * @param groupId the groupId
      * @param fileId the fileId
-     * @param in_callback Block to call on return of  server response
+     * @param callback Block to call on return of  server response
      
      */
-    void getCDNUrl(std::string groupId, std::string fileId, IServerCallback* in_callback = NULL);
+    void getCDNUrl(std::string groupId, std::string fileId, IServerCallback* callback = NULL);
     
     /**
      * Returns information on a file using fileId.
@@ -102,9 +102,9 @@ public:
      *
      * @param groupId the groupId
      * @param fileId the fileId
-     * @param in_callback Block to call on return of  server response
+     * @param callback Block to call on return of  server response
      */
-    void getFileInfo(std::string groupId, std::string fileId, IServerCallback* in_callback = NULL);
+    void getFileInfo(std::string groupId, std::string fileId, IServerCallback* callback = NULL);
     
     /**
      * Returns information on a file using path and name.
@@ -115,10 +115,10 @@ public:
      * @param groupId the groupId
      * @param folderPath the folderPath
      * @param fileName the fileName
-     * @param in_callback Block to call on return of  server response
+     * @param callback Block to call on return of  server response
      
      */
-    void getFileInfoSimple(std::string groupId, std::string folderPath, std::string filename, IServerCallback* in_callback = NULL);
+    void getFileInfoSimple(std::string groupId, std::string folderPath, std::string filename, IServerCallback* callback = NULL);
     
     /**
      * Returns a list of files.
@@ -129,9 +129,9 @@ public:
      * @param groupId the groupId
      * @param folderPath the folderPath
      * @param recurse true to recurse
-     * @param in_callback Block to call on return of  server response
+     * @param callback Block to call on return of  server response
      */
-    void getFileList(std::string groupId, std::string folderPath, bool recurse, IServerCallback* in_callback = NULL);
+    void getFileList(std::string groupId, std::string folderPath, bool recurse, IServerCallback* callback = NULL);
     
     /**
      *  Move a file.
@@ -144,9 +144,9 @@ public:
      * @param version the version
      * @param newTreeId the newTreeId
      * @param newFilename the newFilename
-     * @param in_callback Block to call on return of  server response
+     * @param callback Block to call on return of  server response
      */
-    void moveFile( std::string groupId,  std::string fileId, int version,  std::string newTreeId,  int treeVersion, std::string newFilename, bool overwriteIfPresent, IServerCallback* in_callback = NULL);
+    void moveFile( std::string groupId,  std::string fileId, int version,  std::string newTreeId,  int treeVersion, std::string newFilename, bool overwriteIfPresent, IServerCallback* callback = NULL);
     
     /**
      * Move a file from user space to group space.
@@ -161,9 +161,9 @@ public:
      * @param groupFilename the groupFilename
      * @param groupFileAcl the groupFileAcl
      * @param overwriteIfPresent the overwriteIfPresent
-     * @param in_callback Block to call on return of  server response
+     * @param callback Block to call on return of  server response
      */
-    void moveUserToGroupFile(std::string userCloudPath, std::string userCloudFilename, std::string groupId, std::string groupTreeId, std::string groupFilename, const std::string& groupFileAcl, bool overwriteIfPresent, IServerCallback* in_callback = NULL);
+    void moveUserToGroupFile(std::string userCloudPath, std::string userCloudFilename, std::string groupId, std::string groupTreeId, std::string groupFilename, const std::string& groupFileAcl, bool overwriteIfPresent, IServerCallback* callback = NULL);
     
     /**
      * updates information on a file given fileId.
@@ -176,9 +176,9 @@ public:
      * @param version the version
      * @param newFilename the newFilename
      * @param newAcl the newAcl
-     * @param in_callback Block to call on return of  server response
+     * @param callback Block to call on return of  server response
      */
-    void updateFileInfo(std::string groupId, std::string fileId, int version, std::string newFilename, const std::string& newACL, IServerCallback* in_callback = NULL);
+    void updateFileInfo(std::string groupId, std::string fileId, int version, std::string newFilename, const std::string& newACL, IServerCallback* callback = NULL);
     
 private:
     BrainCloudClient * m_client;

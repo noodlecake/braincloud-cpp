@@ -1,3 +1,4 @@
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 #include "braincloud/AuthenticationType.h"
 
 namespace BrainCloud
@@ -20,9 +21,9 @@ namespace BrainCloud
     const AuthenticationType & AuthenticationType::Ultra = AuthenticationType("Ultra");
     const AuthenticationType & AuthenticationType::Unknown = AuthenticationType("Unknown");
 
-    AuthenticationType::AuthenticationType(const std::string & in_AuthenticationType)
+    AuthenticationType::AuthenticationType(const std::string & AuthenticationType)
     {
-        m_value = in_AuthenticationType;
+        m_value = AuthenticationType;
     }
 
     const std::string & AuthenticationType::toString() const
@@ -30,62 +31,62 @@ namespace BrainCloud
         return m_value;
     }
 
-    const AuthenticationType & AuthenticationType::fromString(const std::string &in_AuthenticationType)
+    const AuthenticationType & AuthenticationType::fromString(const std::string &AuthenticationType)
     {
         // this is a bit slow but not used often
-        if (in_AuthenticationType == Anonymous)
+        if (AuthenticationType == Anonymous)
         {
             return AuthenticationType::Anonymous;
         }
-        if (in_AuthenticationType == Universal)
+        if (AuthenticationType == Universal)
         {
             return AuthenticationType::Universal;
         }
-        if (in_AuthenticationType == Email)
+        if (AuthenticationType == Email)
         {
             return AuthenticationType::Email;
         }
-        if (in_AuthenticationType == Facebook)
+        if (AuthenticationType == Facebook)
         {
             return AuthenticationType::Facebook;
         }
-        if (in_AuthenticationType == GameCenter)
+        if (AuthenticationType == GameCenter)
         {
             return AuthenticationType::GameCenter;
         }
-        if (in_AuthenticationType == Steam)
+        if (AuthenticationType == Steam)
         {
             return AuthenticationType::Steam;
         }
-        if (in_AuthenticationType == Apple)
+        if (AuthenticationType == Apple)
         {
             return AuthenticationType::Apple;
         }
-        if (in_AuthenticationType == Google)
+        if (AuthenticationType == Google)
         {
             return AuthenticationType::Google;
         }
-        if (in_AuthenticationType == GoogleOpenId)
+        if (AuthenticationType == GoogleOpenId)
         {
             return AuthenticationType::GoogleOpenId;
         }
-        if (in_AuthenticationType == Twitter)
+        if (AuthenticationType == Twitter)
         {
             return AuthenticationType::Twitter;
         }
-        if (in_AuthenticationType == Parse)
+        if (AuthenticationType == Parse)
         {
             return AuthenticationType::Parse;
         }
-        if (in_AuthenticationType == Handoff)
+        if (AuthenticationType == Handoff)
         {
             return AuthenticationType::Handoff;
         }
-        if (in_AuthenticationType == Ultra)
+        if (AuthenticationType == Ultra)
         {
             return AuthenticationType::Ultra;
         }
-        if (in_AuthenticationType == External)
+        if (AuthenticationType == External)
         {
             return AuthenticationType::External;
         }

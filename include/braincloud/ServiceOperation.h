@@ -1,8 +1,10 @@
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 #pragma once
 
 #include <string>
 
-namespace BrainCloud {
+namespace BrainCloud
+{
 
 	class ServiceOperation
 	{
@@ -10,6 +12,7 @@ namespace BrainCloud {
 		static const ServiceOperation None;
 
 		static const ServiceOperation Authenticate;
+		static const ServiceOperation GetServerVersion;
 		static const ServiceOperation Attach;
 		static const ServiceOperation Merge;
 		static const ServiceOperation Detach;
@@ -27,10 +30,10 @@ namespace BrainCloud {
 		static const ServiceOperation UpdateUniversalIdLogin;
 		static const ServiceOperation GetChildProfiles;
 		static const ServiceOperation GetIdentities;
+		static const ServiceOperation GetIdentityStatus;
 		static const ServiceOperation GetExpiredIdentities;
 		static const ServiceOperation RefreshIdentity;
 		static const ServiceOperation ChangeEmailIdentity;
-
 
 		static const ServiceOperation AttachParentWithIdentity;
 		static const ServiceOperation AttachPeerProfile;
@@ -89,7 +92,9 @@ namespace BrainCloud {
 
 		static const ServiceOperation GetFriendProfileInfoForExternalId;
 		static const ServiceOperation GetProfileInfoForCredential;
+		static const ServiceOperation GetProfileInfoForCredentialIfExists;
 		static const ServiceOperation GetProfileInfoForExternalAuthId;
+		static const ServiceOperation GetProfileInfoForExternalAuthIdIfExists;
 		static const ServiceOperation GetExternalIdForProfileId;
 		static const ServiceOperation ReadFriendEntity;
 		static const ServiceOperation ReadFriendsEntities;
@@ -109,25 +114,33 @@ namespace BrainCloud {
 		static const ServiceOperation GetUsersOnlineStatus;
 		static const ServiceOperation FindPlayerByUniversalId;
 		static const ServiceOperation GetSocialLeaderboard;
+		static const ServiceOperation GetSocialLeaderboardIfExists;
 		static const ServiceOperation GetSocialLeaderboardByVersion;
+		static const ServiceOperation GetSocialLeaderboardByVersionIfExists;
 		static const ServiceOperation GetMultiSocialLeaderboard;
 		static const ServiceOperation GetGlobalLeaderboard;
 		static const ServiceOperation GetGlobalLeaderboardPage;
+		static const ServiceOperation GetGlobalLeaderboardPageIfExists;
 		static const ServiceOperation GetGlobalLeaderboardView;
+		static const ServiceOperation GetGlobalLeaderboardViewIfExists;
 		static const ServiceOperation GetGlobalLeaderboardVersions;
 		static const ServiceOperation GetCompletedTournament;
 		static const ServiceOperation RewardTournament;
 		static const ServiceOperation PostScore;
 		static const ServiceOperation PostScoreDynamic;
+		static const ServiceOperation PostScoreDynamicUsingConfig;
 		static const ServiceOperation GetGroupSocialLeaderboard;
 		static const ServiceOperation GetGroupSocialLeaderboardByVersion;
 		static const ServiceOperation PostScoreToGroupLeaderboard;
 		static const ServiceOperation PostScoreToDynamicGroupLeaderboard;
+		static const ServiceOperation PostScoreToDynamicGroupLeaderboardUsingConfig;
 		static const ServiceOperation RemoveGroupScore;
 		static const ServiceOperation GetGroupLeaderboardView;
 		static const ServiceOperation GetSummaryDataForProfileId;
 		static const ServiceOperation GetPlayersSocialLeaderboard;
+		static const ServiceOperation GetPlayersSocialLeaderboardIfExists;
 		static const ServiceOperation GetPlayersSocialLeaderboardByVersion;
+		static const ServiceOperation GetPlayersSocialLeaderboardByVersionIfExists;
 		static const ServiceOperation ListAllLeaderboards;
 		static const ServiceOperation GetGlobalLeaderboardEntryCount;
 		static const ServiceOperation RemovePlayerScore;
@@ -157,7 +170,9 @@ namespace BrainCloud {
 		static const ServiceOperation ResetParentVC;
 
 		static const ServiceOperation Send;
+		static const ServiceOperation SendEventToProfiles;
 		static const ServiceOperation UpdateEventData;
+		static const ServiceOperation UpdateEventDataIfExists;
 		static const ServiceOperation DeleteSent;
 		static const ServiceOperation DeleteIncoming;
 		static const ServiceOperation DeleteIncomingEvents;
@@ -206,7 +221,7 @@ namespace BrainCloud {
 		static const ServiceOperation DeleteMatch;
 		static const ServiceOperation CompleteMatchWithSummaryData;
 		static const ServiceOperation AbandonMatchWithSummaryData;
-        static const ServiceOperation UpdateMatchStateCurrentTurn;
+		static const ServiceOperation UpdateMatchStateCurrentTurn;
 
 		static const ServiceOperation LastUploadStatus;
 
@@ -230,7 +245,7 @@ namespace BrainCloud {
 		static const ServiceOperation ReadInProgressMilestones;
 
 		static const ServiceOperation Logout;
-		static const ServiceOperation UpdateName;
+		static const ServiceOperation UpdateUserName;
 
 		static const ServiceOperation StartMatch;
 		static const ServiceOperation CancelMatch;
@@ -247,6 +262,7 @@ namespace BrainCloud {
 		static const ServiceOperation GetStreamSummariesForTargetPlayer;
 		static const ServiceOperation GetRecentStreamsForInitiatingPlayer;
 		static const ServiceOperation GetRecentStreamsForTargetPlayer;
+		static const ServiceOperation ProtectStreamUntil;
 
 		static const ServiceOperation GetUserInfo;
 
@@ -267,16 +283,16 @@ namespace BrainCloud {
 		static const ServiceOperation IncrementGlobalEntityData;
 		static const ServiceOperation GetRandomEntitiesMatching;
 
-        // group file
-        static const ServiceOperation CheckFilenameExists;
-        static const ServiceOperation CheckFullpathFilenameExists;
-        static const ServiceOperation GroupCopyFile;
-        static const ServiceOperation GroupDeleteFile;
-        static const ServiceOperation GroupMoveFile;
-        static const ServiceOperation MoveUserToGroupFile;
-        static const ServiceOperation UpdateFileInfo;
+		// group file
+		static const ServiceOperation CheckFilenameExists;
+		static const ServiceOperation CheckFullpathFilenameExists;
+		static const ServiceOperation GroupCopyFile;
+		static const ServiceOperation GroupDeleteFile;
+		static const ServiceOperation GroupMoveFile;
+		static const ServiceOperation MoveUserToGroupFile;
+		static const ServiceOperation UpdateFileInfo;
 
-		//GlobalFileV3
+		// GlobalFileV3
 		static const ServiceOperation GetFileInfo;
 		static const ServiceOperation GetFileInfoSimple;
 		static const ServiceOperation GetGlobalCDNUrl;
@@ -331,7 +347,7 @@ namespace BrainCloud {
 		static const ServiceOperation DeleteUserFiles;
 		static const ServiceOperation GetCdnUrl;
 
-		//group
+		// group
 		static const ServiceOperation AcceptGroupInvitation;
 		static const ServiceOperation AddGroupMember;
 		static const ServiceOperation ApproveGroupJoinRequest;
@@ -343,7 +359,7 @@ namespace BrainCloud {
 		static const ServiceOperation DeleteGroup;
 		static const ServiceOperation DeleteGroupEntity;
 		static const ServiceOperation DeleteGroupMember;
-        static const ServiceOperation DeleteGroupJoinRequest;
+		static const ServiceOperation DeleteGroupJoinRequest;
 		static const ServiceOperation GetMyGroups;
 		static const ServiceOperation IncrementGroupData;
 		static const ServiceOperation IncrementGroupEntityData;
@@ -360,22 +376,25 @@ namespace BrainCloud {
 		static const ServiceOperation ReadGroupEntity;
 		static const ServiceOperation ReadGroupMembers;
 		static const ServiceOperation RejectGroupInvitation;
-        static const ServiceOperation RejectGroupJoinRequest;
+		static const ServiceOperation RejectGroupJoinRequest;
 		static const ServiceOperation RemoveGroupMember;
 		static const ServiceOperation UpdateGroupData;
-		static const ServiceOperation UpdateGroupEntity;
+		static const ServiceOperation UpdateGroupEntityAcl;
+		static const ServiceOperation UpdateGroupEntityData;
 		static const ServiceOperation UpdateGroupMember;
 		static const ServiceOperation UpdateGroupName;
 		static const ServiceOperation SetGroupOpen;
+		static const ServiceOperation UpdateGroupAcl;
 		static const ServiceOperation GetRandomGroupsMatching;
 		static const ServiceOperation UpdateGroupSummaryData;
 
-		//mail
+		// mail
 		static const ServiceOperation SendBasicEmail;
 		static const ServiceOperation SendAdvancedEmail;
 		static const ServiceOperation SendAdvancedEmailByAddress;
+		static const ServiceOperation SendAdvancedEmailByAddresses;
 
-		//tournament
+		// tournament
 		static const ServiceOperation GetTournamentStatus;
 		static const ServiceOperation GetDivisionInfo;
 		static const ServiceOperation GetMyDivisions;
@@ -389,7 +408,7 @@ namespace BrainCloud {
 		static const ServiceOperation ViewReward;
 		static const ServiceOperation ClaimTournamentReward;
 
-		//UserItems
+		// UserItems
 		static const ServiceOperation AwardUserItem;
 		static const ServiceOperation DropUserItem;
 		static const ServiceOperation GetUserItemsPage;
@@ -404,13 +423,16 @@ namespace BrainCloud {
 		static const ServiceOperation PublishUserItemToBlockchain;
 		static const ServiceOperation RefreshBlockchainUserItems;
 		static const ServiceOperation RemoveUserItemFromBlockchain;
+		static const ServiceOperation GetItemPromotionDetails;
+		static const ServiceOperation GetItemsOnPromotion;
+		static const ServiceOperation OpenBundle;
 
-		//itemCatalog
+		// itemCatalog
 		static const ServiceOperation GetCatalogItemDefinition;
 		static const ServiceOperation GetCatalogItemsPage;
 		static const ServiceOperation GetCatalogItemsPageOffset;
 
-		//custom entity
+		// custom entity
 		static const ServiceOperation CreateEntity;
 		static const ServiceOperation DeleteEntity;
 		static const ServiceOperation DeleteEntities;
@@ -421,15 +443,16 @@ namespace BrainCloud {
 		static const ServiceOperation UpdateEntityFieldsSharded;
 		static const ServiceOperation GetEntityPage;
 		static const ServiceOperation IncrementData;
+		static const ServiceOperation IncrementSingletonData;
 		static const ServiceOperation GetCustomEntityPage;
 		static const ServiceOperation UpdateSingletonFields;
 
 		static const ServiceOperation GetEntityPageOffset;
 
-		//rtt Registration
+		// rtt Registration
 		static const ServiceOperation RequestClientConnection;
 
-		//chat
+		// chat
 		static const ServiceOperation ChannelConnect;
 		static const ServiceOperation ChannelDisconnect;
 		static const ServiceOperation DeleteChatMessage;
@@ -441,7 +464,7 @@ namespace BrainCloud {
 		static const ServiceOperation PostChatMessage;
 		static const ServiceOperation UpdateChatMessage;
 
-		//lobby
+		// lobby
 		static const ServiceOperation GetRegionsForLobbies;
 		static const ServiceOperation PingRegions;
 		static const ServiceOperation CreateLobby;
@@ -465,7 +488,7 @@ namespace BrainCloud {
 
 		static const ServiceOperation SubmitCrashReport;
 
-		//messaging
+		// messaging
 		static const ServiceOperation DeleteMessages;
 		static const ServiceOperation GetMessageboxes;
 		static const ServiceOperation GetMessageCounts;
@@ -476,7 +499,7 @@ namespace BrainCloud {
 		static const ServiceOperation MessagingSendMessage; /* Windows has a macro called SendMessage */
 		static const ServiceOperation SendMessageSimple;
 
-		//presence
+		// presence
 		static const ServiceOperation ForcePush;
 		static const ServiceOperation GetPresenceOfFriends;
 		static const ServiceOperation GetPresenceOfGroup;
@@ -488,31 +511,35 @@ namespace BrainCloud {
 		static const ServiceOperation StopListening;
 		static const ServiceOperation UpdateActivity;
 
-        //virtual currency
-        static const ServiceOperation VirtualCurrencyGetCurrency;
-        static const ServiceOperation VirtualCurrencyGetParentCurrency;
-        static const ServiceOperation VirtualCurrencyGetPeerCurrency;
+		// virtual currency
+		static const ServiceOperation VirtualCurrencyGetCurrency;
+		static const ServiceOperation VirtualCurrencyGetParentCurrency;
+		static const ServiceOperation VirtualCurrencyGetPeerCurrency;
 		static const ServiceOperation VirtualCurrencyResetCurrency;
 
-        //appstore
-        static const ServiceOperation AppStoreVerifyPurchase;
-        static const ServiceOperation AppStoreGetEligiblePromotions;
-        static const ServiceOperation AppStoreGetSalesInventory;
-        static const ServiceOperation AppStoreStartPurchase;
-        static const ServiceOperation AppStoreFinalizePurchase;
-        static const ServiceOperation AppStoreRefreshPromotions;
+		// appstore
+		static const ServiceOperation AppStoreCachePurchaseContext;
+		static const ServiceOperation AppStoreVerifyPurchase;
+		static const ServiceOperation AppStoreGetEligiblePromotions;
+		static const ServiceOperation AppStoreGetSalesInventory;
+		static const ServiceOperation AppStoreStartPurchase;
+		static const ServiceOperation AppStoreFinalizePurchase;
+		static const ServiceOperation AppStoreRefreshPromotions;
 
+		// Blockchain
+		static const ServiceOperation GetBlockchainItems;
+		static const ServiceOperation GetUniqs;
 
 		std::string getValue() const { return _value; }
 
-		bool operator== (const ServiceOperation& s) const;
-		bool operator!= (const ServiceOperation& s) const;
-		void operator= (const ServiceOperation& s);
+		bool operator==(const ServiceOperation &s) const;
+		bool operator!=(const ServiceOperation &s) const;
+		void operator=(const ServiceOperation &s);
 
 	private:
 		std::string _value;
 
-		ServiceOperation(const char * value);
+		ServiceOperation(const char *value);
 	};
 
 }

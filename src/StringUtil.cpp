@@ -1,3 +1,4 @@
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 
 #include "braincloud/internal/StringUtil.h"
 
@@ -20,18 +21,18 @@ namespace BrainCloud {
 //#endif
 //  }
     
-    bool StringUtil::IsOptionalParameterValid(const char * in_param)
+    bool StringUtil::IsOptionalParameterValid(const char * param)
     {
-        if (in_param == 0 || *in_param == '\0')
+        if (param == 0 || *param == '\0')
         {
             return false;
         }
         return true;
     }
     
-    bool StringUtil::IsOptionalParameterValid(std::string in_param)
+    bool StringUtil::IsOptionalParameterValid(std::string param)
     {
-        if (in_param.length() <= 0)
+        if (param.length() <= 0)
         {
             return false;
         }

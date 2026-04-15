@@ -1,3 +1,4 @@
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 #if (!defined(TARGET_OS_WATCH) || TARGET_OS_WATCH == 0)
 
 #include "braincloud/internal/DefaultWebSocket.h"
@@ -58,6 +59,22 @@ namespace BrainCloud
         , _isConnecting(true)
         , _authHeaders(headers)
     {
+
+#if defined(LWS_OPENSSL_SUPPORT)
+#if defined(LWS_WITH_MBEDTLS)
+        printf("Using MbedTLS\n");
+#else
+        printf("Using OpenSSL\n");
+#endif
+#endif
+
+
+#if !defined(BC_SSL_ALLOW_SELFSIGNED)
+        std::cout<<"Using packaged cacerts.pem file."<<std::endl;
+#else
+        std::cout<<"RTT using self-signed certificate."<<std::endl;
+#endif
+        std::string uriCopy = uri;
         lws_set_log_level(
             //LLL_DEBUG, NULL);
             LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE, NULL);
@@ -107,6 +124,9 @@ namespace BrainCloud
             //info.extensions = exts;
             info.options = LWS_SERVER_OPTION_VALIDATE_UTF8;
             info.options |= LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;
+            #if(LWS_LIBRARY_VERSION_MAJOR >= 4) && !defined(BC_SSL_ALLOW_SELFSIGNED) && defined(LWS_WITH_MBEDTLS)
+                info.client_ssl_ca_filepath = CACERTS_FILE_PATH;
+            #endif
             #if(LWS_LIBRARY_VERSION_MAJOR >= 4)
                 info.options |= LWS_SERVER_OPTION_DISABLE_OS_CA_CERTS;
                 info.client_ssl_ca_mem = full_certs.front().c_str();

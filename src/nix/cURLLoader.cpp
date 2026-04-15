@@ -6,7 +6,10 @@
 
 
 #if ( defined(GAMECLIENT_DEBUGLEVEL)  &&  GAMECLIENT_DEBUGLEVEL > 0 )
-#   include <iostream>
+#include <iostream>
+#if defined(USE_PTHREAD)
+#include <gnu/libc-version.h>
+#endif
 #endif
 #include <cctype>
 
@@ -35,7 +38,7 @@ namespace BrainCloud
     }
 
     bool cURLLoader::_initialized = false;
-    long cURLLoader::_timeoutInterval = 0;
+    long cURLLoader::_timeoutInterval = 5000;
 
     /**
      * Constructor
@@ -56,6 +59,7 @@ namespace BrainCloud
         memset(&_threadId, 0, sizeof(pthread_t));
         memset(&_threadAttributes, 0, sizeof(_threadAttributes));
 #endif
+		printCurlVersion();
     }
 
     cURLLoader::~cURLLoader()
@@ -405,18 +409,39 @@ namespace BrainCloud
             // Set up the object to store the response headers.
             curl_easy_setopt(curl, CURLOPT_WRITEHEADER, loader);
             curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, writeHeader);
-
-            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, (long)0);
-            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, (long)0);
+			
+#if defined(__ANDROID__)
+			const char* caPath = std::getenv("CURL_CA_BUNDLE");
+			if(caPath) {
+				curl_easy_setopt(curl, CURLOPT_CAINFO, caPath);
+				std::cout << "set CA info to : " << caPath << std::endl;
+			}
+#endif
+			const char* disableSSL = std::getenv("SSL_DISABLED");
+			if(disableSSL){
+				curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, (long)0);
+				curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, (long)0);
+			}
+            //curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, (long)0);
+            //curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, (long)0);
 
             //curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, my_trace);
-            //curl_easy_setopt(curl, CURLOPT_VERBOSE, (long)1);
+            curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+			
+			//Disable connection reuse
+			curl_easy_setopt(curl, CURLOPT_FORBID_REUSE, 1L);
+			
+			//Enable keep alive
+			curl_easy_setopt(curl, CURLOPT_TCP_KEEPALIVE, 1L);
+			curl_easy_setopt(curl, CURLOPT_TCP_KEEPIDLE, 30L);
+			curl_easy_setopt(curl, CURLOPT_TCP_KEEPINTVL, 30L);
 
             // Only set timeout if it's not 0.
             if (_timeoutInterval)
             {
                 curl_easy_setopt(curl, CURLOPT_NOSIGNAL, (long)1);
                 curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, _timeoutInterval);
+				curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, 10000);
             }
 
             // Determine the type of request being made.
@@ -514,6 +539,29 @@ namespace BrainCloud
         }
         loader->_threadRunning = false; // This is not even atomic !!!
     }
+	
+	void cURLLoader::printCurlVersion()
+	{
+		curl_version_info_data *info = curl_version_info(CURLVERSION_NOW);
+
+		std::cout << "libcurl version: " << info->version << std::endl;
+		std::cout << "SSL version: " << (info->ssl_version ? info->ssl_version : "none") << std::endl;
+		std::cout << "libz version: " << (info->libz_version ? info->libz_version : "none") << std::endl;
+
+		if (info->protocols)
+		{
+			std::cout << "Supported protocols: ";
+			for (const char *const *proto = info->protocols; *proto; ++proto)
+			{
+				std::cout << *proto << " ";
+			}
+			std::cout << std::endl;
+		}
+		
+#if defined(USE_PTHREAD)
+		std::cout << "glibc version: " << gnu_get_libc_version() << std::endl;
+#endif
+	}
 }
 
 #endif

@@ -1,6 +1,6 @@
 //  BrainCloudClient.h
 //  BrainCloudLib
-//  Copyright 2016 bitHeads, Inc. All Rights Reserved.
+//  Copyright 2026 bitHeads, Inc. All Rights Reserved.
 
 #pragma once
 #if defined(__clang__)
@@ -129,57 +129,78 @@ namespace BrainCloud
 		BrainCloudClient();
 
 		/**
+		* Enables / Disables compression of both API requests and responses, disabled by default
+		*
+		* @param isEnabled Boolean to decide whether to enable or disable compression
+		*/
+		void enableCompression(bool isEnabled);
+
+		/**
+		* Enables / Disables compression of API requests, disabled by default
+		*
+		* @param isEnabled Boolean to decide whether to enable or disable compression
+		*/
+		void enableCompressedRequests(bool isEnabled);
+
+		/**
+		* Enables / Disables compression of API responses, disabled by default
+		*
+		* @param isEnabled Boolean to decide whether to enable or disable compression
+		*/
+		void enableCompressedResponses(bool isEnabled);
+
+		/**
 		 * Method initializes the BrainCloudClient.
 		 *
-		 * @param in_serverURL The url to the brainCloud server
+		 * @param serverURL The url to the brainCloud server
 		 *     Currently this should be:  https://api.braincloudservers.com/dispatcherv2
-		 * @param in_secretKey The secret key for your game
-		 * @param in_appId The app id
-		 * @param in_appVersion The version
+		 * @param secretKey The secret key for your game
+		 * @param appId The app id
+		 * @param appVersion The version
 		 */
-		void initialize(const char * in_serverURL, const char * in_secretKey, const char * in_appId, const char * in_appVersion);
+		void initialize(const char * serverURL, const char * secretKey, const char * appId, const char * appVersion);
 
 		/**
 		 * Method initializes the BrainCloudClient. Automatically passes in current serverURL
 		 * as https://api.braincloudservers.com/dispatcherv2
 		 *  
-		 * @param in_secretKey The secret key for your game
-		 * @param in_appId The app id
-		 * @param in_appVersion The version
+		 * @param secretKey The secret key for your game
+		 * @param appId The app id
+		 * @param appVersion The version
 		 */
-		void initialize(const char * in_secretKey, const char * in_appId, const char * in_appVersion);
+		void initialize(const char * secretKey, const char * appId, const char * appVersion);
 
 		/**
 		 * Method initializes the BrainCloudClient with multiple app/secret.
 		 * Used when needed to switch between child and parent apps.
 		 *
-		 * @param in_serverURL The url to the brainCloud server
+		 * @param serverURL The url to the brainCloud server
 		 *     Currently this should be:  https://api.braincloudservers.com/dispatcherv2
-		 * @param in_defaultAppId The default app id that we start with
-		 * @param in_secretMap A map of <appId, secretKey>
-		 * @param in_appVersion The version
+		 * @param defaultAppId The default app id that we start with
+		 * @param secretMap A map of <appId, secretKey>
+		 * @param appVersion The version
 		 */
-		void initializeWithApps(const char * in_serverURL, const char * in_defaultAppId, const std::map<std::string, std::string>& in_secretMap, const char * in_appVersion);
+		void initializeWithApps(const char * serverURL, const char * defaultAppId, const std::map<std::string, std::string>& secretMap, const char * appVersion);
 
 		/**
 		 * Method initializes the BrainCloudClient with multiple app/secret.
 		 * Used when needed to switch between child and parent apps. Automatically passes in 
 		 * current serverURL which is https://api.braincloudservers.com/dispatcherv2
 		 *
-		 * @param in_defaultAppId The default app id that we start with
-		 * @param in_secretMap A map of <appId, secretKey>
-		 * @param in_appVersion The version
+		 * @param defaultAppId The default app id that we start with
+		 * @param secretMap A map of <appId, secretKey>
+		 * @param appVersion The version
 		 */
-		void initializeWithApps(const char * in_defaultAppId, const std::map<std::string, std::string>& in_secretMap, const char * in_appVersion);
+		void initializeWithApps(const char * defaultAppId, const std::map<std::string, std::string>& secretMap, const char * appVersion);
 
 		/**
 		* Initialize - initializes the identity service with the saved
 		* anonymous installation id and most recently used profile id
 		*
-		* @param in_profileId The id of the profile id that was most recently used by the app (on this device)
-		* @param in_anonymousId  The anonymous installation id that was generated for this device
+		* @param profileId The id of the profile id that was most recently used by the app (on this device)
+		* @param anonymousId  The anonymous installation id that was generated for this device
 		*/
-		void initializeIdentity(const char * in_profileId, const char * in_anonymousId);
+		void initializeIdentity(const char * profileId, const char * anonymousId);
 
 		/**
 		 * Return a reference to the game client manager.
@@ -208,7 +229,7 @@ namespace BrainCloud
 		 * Sets a callback handler for any out of band event messages that come from
 		 * brainCloud.
 		 *
-		 * @param in_eventCallback A function which takes a json string as it's only parameter.
+		 * @param eventCallback A function which takes a json string as it's only parameter.
 		 * The json format looks like the following:
 		 * {
 		 *   "events": [{
@@ -223,7 +244,7 @@ namespace BrainCloud
 		 *    ]
 		 *  }
 		 */
-		void registerEventCallback(IEventCallback *in_eventCallback);
+		void registerEventCallback(IEventCallback *eventCallback);
 
 		/**
 		 * Deregisters the event callback
@@ -231,12 +252,24 @@ namespace BrainCloud
 		void deregisterEventCallback();
 
 		/**
+		* Registers a callback that is invoked when long sessions are enabled and a re-authentication has just happened
+		* 
+		* @param autoReconnectCallback The auto reconnect callback handler
+		*/
+		void registerAutoReconnectCallback(IAutoReconnectCallback* autoReconnectCallback);
+
+		/**
+		 * Deregisters the auto reconnect callback
+		 */
+		void deregisterAutoReconnectCallback();
+
+		/**
 		 * Sets a reward handler for any api call results that return rewards.
 		 *
-		 * @param in_rewardCallback The reward callback handler.
+		 * @param rewardCallback The reward callback handler.
 		 * @see The brainCloud apidocs site for more information on the return JSON
 		 */
-		void registerRewardCallback(IRewardCallback * in_rewardCallback);
+		void registerRewardCallback(IRewardCallback * rewardCallback);
 
 		/**
 		 * Deregisters the reward callback
@@ -246,9 +279,9 @@ namespace BrainCloud
 		/**
 		 * Registers a file upload callback handler to listen for status updates on uploads
 		 *
-		 * @param in_fileUploadCallback The file upload callback handler.
+		 * @param fileUploadCallback The file upload callback handler.
 		 */
-		void registerFileUploadCallback(IFileUploadCallback * in_fileUploadCallback);
+		void registerFileUploadCallback(IFileUploadCallback * fileUploadCallback);
 
 		/**
 		 * Deregisters the file upload callback
@@ -258,9 +291,9 @@ namespace BrainCloud
 		/**
 		 * Registers a callback that is invoked for all errors generated
 		 *
-		 * @param in_globalErrorCallback The global error callback handler.
+		 * @param globalErrorCallback The global error callback handler.
 		 */
-		void registerGlobalErrorCallback(IGlobalErrorCallback * in_globalErrorCallback);
+		void registerGlobalErrorCallback(IGlobalErrorCallback * globalErrorCallback);
 
 		/**
 		 * Deregisters the global error callback
@@ -272,14 +305,21 @@ namespace BrainCloud
 		 * Note this is only called if enableNetworkErrorMessageCaching
 		 * has been set to true.
 		 *
-		 * @param in_networkErrorCallback The network error callback handler.
+		 * @param networkErrorCallback The network error callback handler.
 		 */
-		void registerNetworkErrorCallback(INetworkErrorCallback * in_networkErrorCallback);
+		void registerNetworkErrorCallback(INetworkErrorCallback * networkErrorCallback);
 
 		/**
 		 * Deregisters the network error callback
 		 */
 		void deregisterNetworkErrorCallback();
+
+		/**
+		 * When enabled, automatically attempt to reconnect and retry server calls in the event of an expired session.
+		 * 
+		 * @param shouldEnable Determines if Auto Reconnect should be enabled or not
+		 */
+		void enableAutoReconnect(bool shouldEnable);
 
 		/**
 		 * Set to true to enable logging packets to std::out
@@ -296,9 +336,9 @@ namespace BrainCloud
 		 * Sends a service request message to the server. This will most likely be placed
 		 * in a queue...
 		 *
-		 * @param in_serviceMessage
+		 * @param serviceMessage
 		 */
-		void sendRequest(ServerCall * in_serviceMessage);
+		void sendRequest(ServerCall * serviceMessage);
 
 		/**
 		 * Clears any pending messages from communication library.
@@ -321,6 +361,10 @@ namespace BrainCloud
 		 * @return True if initialized, false otherwise.
 		 */
 		bool isInitialized();
+
+		/// Returns if killswitch was activated.
+		/// @return true if killswitch is activated.
+		bool isKillswitchEngaged();
 
 		/**
 		 * If true, tells the comms library to immediately retry a packet
@@ -430,7 +474,7 @@ namespace BrainCloud
 		*
 		* @param intervalInMilliseconds The time between heartbeats in milliseconds
 		*/
-		void setHeartbeatInterval(int in_intervalInMilliseconds);
+		void setHeartbeatInterval(int intervalInMilliseconds);
 
 		/**
 		 * Returns the list of packet timeouts.
@@ -451,9 +495,9 @@ namespace BrainCloud
 		 * Note that this method does not change the timeout for authentication
 		 * packets (use setAuthenticationPacketTimeout method).
 		 *
-		 * @param in_timeouts A vector of packet timeouts.
+		 * @param timeouts A vector of packet timeouts.
 		 */
-		void setPacketTimeouts(const std::vector<int> & in_packetTimeouts);
+		void setPacketTimeouts(const std::vector<int> & packetTimeouts);
 
 		/**
 		 * Sets the packet timeouts back to the default ie {10, 10, 10}
@@ -478,27 +522,27 @@ namespace BrainCloud
 		 * wait to receive a reply to an authentication api call. By default
 		 * this timeout is set to 15 seconds.
 		 *
-		 * @param in_timeoutSecs The timeout in seconds
+		 * @param timeoutSecs The timeout in seconds
 		 */
-		void setAuthenticationPacketTimeout(int in_timeoutSecs);
+		void setAuthenticationPacketTimeout(int timeoutSecs);
 
 		/**
 		 * Sets the error callback to return the status message instead of the
 		 * error json string. This flag is used to conform to pre-2.17 client
 		 * behaviour.
 		 *
-		 * @param in_enabled If set to true, enable
+		 * @param enabled If set to true, enable
 		 */
-		void setOldStyleStatusMessageErrorCallback(bool in_enabled);
+		void setOldStyleStatusMessageErrorCallback(bool enabled);
 
 		/**
 		* Sets whether the error callback is triggered when a 202 status
 		* is received from the server. By default this is true and should
 		* only be set to false for backward compatibility.
 		*
-		* @param in_isError If set to true, 202 is treated as an error
+		* @param isError If set to true, 202 is treated as an error
 		*/
-		void setErrorCallbackOn202Status(bool in_isError);
+		void setErrorCallbackOn202Status(bool isError);
 
 		/**
 		 * Returns the low transfer rate timeout in secs
@@ -513,9 +557,9 @@ namespace BrainCloud
 		 * By default this is set to 120 secs. Setting this value to 0 will
 		 * turn off the timeout.
 		 *
-		 * @param in_timeoutSecs The timeout in secs
+		 * @param timeoutSecs The timeout in secs
 		 */
-		void setUploadLowTransferRateTimeout(int in_timeoutSecs);
+		void setUploadLowTransferRateTimeout(int timeoutSecs);
 
 		/**
 		 * Returns the low transfer rate threshold in bytes/sec
@@ -532,9 +576,9 @@ namespace BrainCloud
 		 * only works on platforms that use libcurl (non-windows and win32 but
 		 * not windows store or phone apps).
 		 *
-		 * @param in_bytesPerSec The low transfer rate threshold in bytes/sec
+		 * @param bytesPerSec The low transfer rate threshold in bytes/sec
 		 */
-		void setUploadLowTransferRateThreshold(int in_bytesPerSec);
+		void setUploadLowTransferRateThreshold(int bytesPerSec);
 
 		/**
 		 * Enables the message caching upon network error, which is disabled by default.
@@ -561,9 +605,9 @@ namespace BrainCloud
 		 * for the brainCloud SDK to resume sending messages.
 		 * resetCommunication() will also clear the message cache.
 		 *
-		 * @param in_enabled True if message should be cached on timeout
+		 * @param enabled True if message should be cached on timeout
 		 */
-		void enableNetworkErrorMessageCaching(bool in_enabled);
+		void enableNetworkErrorMessageCaching(bool enabled);
 
 		/** Attempts to resend any cached messages. If no messages are in the cache,
 		 * this method does nothing.
@@ -574,11 +618,11 @@ namespace BrainCloud
 		 * Flushes the cached messages to resume api call processing. This will dump
 		 * all of the cached messages in the queue.
 		 *
-		 * @param in_sendApiErrorCallbacks If set to true API error callbacks will
+		 * @param sendApiErrorCallbacks If set to true API error callbacks will
 		 * be called for every cached message with statusCode CLIENT_NETWORK_ERROR
 		 * and reasonCode CLIENT_NETWORK_ERROR_TIMEOUT.
 		 */
-		void flushCachedMessages(bool in_sendApiErrorCallbacks);
+		void flushCachedMessages(bool sendApiErrorCallbacks);
 
 		/**
 		 * Inserts a marker which will tell the brainCloud comms layer
@@ -599,22 +643,22 @@ namespace BrainCloud
 		/**
 		* Sets the country code sent to brainCloud when a user authenticates.
 		* Will override any auto detected country.
-		* @param in_countryCode ISO 3166-1 two-letter country code
+		* @param countryCode ISO 3166-1 two-letter country code
 		*/
-		void overrideCountryCode(const char * in_countryCode) { _countryCode = in_countryCode; }
+		void overrideCountryCode(const char * countryCode) { _countryCode = countryCode; }
 
 		/**
 		* Sets the language code sent to brainCloud when a user authenticates.
 		* If the language is set to a non-ISO 639-1 standard value the game default will be used instead.
 		* Will override any auto detected language.
-		* @param in_languageCode ISO 639-1 two-letter language code
+		* @param languageCode ISO 639-1 two-letter language code
 		*/
-		void overrideLanguageCode(const char * in_languageCode) { _languageCode = in_languageCode; }
+		void overrideLanguageCode(const char * languageCode) { _languageCode = languageCode; }
 
 		const char * getRttConnectionId() const;
 
 	protected:
-		void initializeComms(const char * in_serverURL, const char * in_appId, const std::map<std::string, std::string>& in_secretMap);
+		void initializeComms(const char * serverURL, const char * appId, const std::map<std::string, std::string>& secretMap);
 
 		static BrainCloudClient * _instance;
 

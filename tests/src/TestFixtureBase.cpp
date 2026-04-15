@@ -52,16 +52,24 @@ void TestFixtureBase::SetUp()
 
 	m_bc->enableLogging(ENABLE_SETUP_TEARDOWN_LOGGING);
 
+	bool useCompression = false;
+	const char* envCompressionVar = std::getenv("USE_COMPRESSION");
+	useCompression = envCompressionVar && std::string(envCompressionVar) == "true";
+
+	m_bc->enableCompression(useCompression);
+	std::string enabledText = useCompression ? "enabled" : "disabled";
+	printf("\n [Compression %s] \n", enabledText.c_str());
+
+
 	Init(); //init, only run once
 
 	if (!ShouldSkipAuthenticate())
 	{
 		TestResult tr;
+		printf("\n [SkipAuthenticate is false, logging in with userA] \n");
 		m_bcWrapper->authenticateUniversal(GetUser(UserA)->m_id, GetUser(UserA)->m_password, true, &tr);
 		tr.run(m_bc);
 	}
-
-	m_bc->enableLogging(true);
 }
 
 void TestFixtureBase::TearDown()
@@ -71,6 +79,7 @@ void TestFixtureBase::TearDown()
 	if (!ShouldSkipAuthenticate())
 	{
 		TestResult tr;
+		printf("\n [SkipAuthenticate is false, logging out userA] \n");
 		m_bcWrapper->logout(true, &tr); // clears profile id
 		tr.run(m_bc);
 	}
@@ -78,8 +87,7 @@ void TestFixtureBase::TearDown()
 
 	m_bc->deregisterEventCallback();
 	m_bc->deregisterRewardCallback();
-
-	m_bc->enableLogging(true);
+	m_bcWrapper->resetStoredAnonymousId();
 
 	delete m_bcWrapper;
 }

@@ -1,4 +1,4 @@
-// Copyright 2022 bitHeads, Inc. All Rights Reserved.
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 
 #pragma once
 #if defined(__clang__)
@@ -19,17 +19,17 @@ namespace BrainCloud {
     class BrainCloudBlockchain
     {
     public:
-        BrainCloudBlockchain(BrainCloudClient* in_client);
+        BrainCloudBlockchain(BrainCloudClient* client);
 
 
         /**
          * @brief Retrieves the blockchain items owned by the caller.
          */
-        void GetBlockchainItems(const std::string& in_integrationID ,const std::string& in_contextJson, IServerCallback * in_callback = NULL);
+        void GetBlockchainItems(const std::string& integrationID ,const std::string& contextJson, IServerCallback * callback = NULL);
         /**
          * @brief Retrieves the uniqs owned by the caller.
          */
-        void GetUniqs(const std::string& in_integrationID, const std::string& in_contextJson, IServerCallback * in_callback = NULL);
+        void GetUniqs(const std::string& integrationID, const std::string& contextJson, IServerCallback * callback = NULL);
 
         
     private:

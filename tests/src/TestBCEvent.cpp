@@ -18,6 +18,27 @@ TEST_F(TestBCEvent, Send)
 	m_bc->deregisterEventCallback();
 }
 
+TEST_F(TestBCEvent, SendEventToProfiles)
+{
+	m_didCallback = false;
+	m_bc->registerEventCallback(this);
+
+	std::vector<std::string> toIds;
+	toIds.push_back(GetUser(UserA)->m_profileId);
+
+	TestResult tr;
+	Json::FastWriter fw;
+	Json::Value eventData;
+	eventData[m_eventDataKey] = "testEventValue";
+
+	m_bc->getEventService()->sendEventToProfiles(toIds, m_eventType, fw.write(eventData).c_str(), &tr);
+	tr.run(m_bc);
+	m_eventId = tr.m_response["data"]["evId"].asString();
+
+	DeleteIncomingMessage();
+	m_bc->deregisterEventCallback();
+}
+
 TEST_F(TestBCEvent, DeleteIncoming)
 {
 	SendDefaultMessage();
@@ -129,6 +150,33 @@ TEST_F(TestBCEvent, UpdateIncoming)
 	eventData[m_eventDataKey] = "testEventValue";
 
 	m_bc->getEventService()->updateIncomingEventData(m_eventId.c_str(), fw.write(eventData).c_str(), &tr);
+	tr.run(m_bc);
+
+	DeleteIncomingMessage();
+}
+
+TEST_F(TestBCEvent, UpdateIncomingIfExistsTrue){
+	SendDefaultMessage();
+
+	TestResult tr;
+	Json::FastWriter fw;
+	Json::Value eventData;
+	eventData[m_eventDataKey] = "testEventValue1";
+
+	m_bc->getEventService()->updateIncomingEventDataIfExists(m_eventId.c_str(), fw.write(eventData).c_str(), &tr);
+	tr.run(m_bc);
+
+	DeleteIncomingMessage();
+}
+
+TEST_F(TestBCEvent, UpdateIncomingIfExistsFalse){
+	std::string m_nonExistentEventId = "66ba5285d9002730d8f707a0";
+	TestResult tr;
+	Json::FastWriter fw;
+	Json::Value eventData;
+	eventData[m_eventDataKey] = "testEventValue2";
+
+	m_bc->getEventService()->updateIncomingEventDataIfExists(m_nonExistentEventId.c_str(), fw.write(eventData).c_str(), &tr);
 	tr.run(m_bc);
 
 	DeleteIncomingMessage();

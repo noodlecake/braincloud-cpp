@@ -1,3 +1,4 @@
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 #pragma once
 
 #include <string>
@@ -7,8 +8,6 @@ namespace BrainCloud {
 	class OperationParam
 	{
 	public:
-		static const OperationParam Authenticate;
-
 		//Push Notification Service - Send Params
 		static const OperationParam PushNotificationSendParamToPlayerId;
 		static const OperationParam PushNotificationSendParamNotificationTemplateId;
@@ -71,6 +70,7 @@ namespace BrainCloud {
 		static const OperationParam AuthenticateServiceAuthenticateAnonymousId;
 		static const OperationParam AuthenticateServiceAuthenticateProfileId;
 		static const OperationParam AuthenticateServiceAuthenticateForceCreate;
+		static const OperationParam AuthenticateServiceAuthenticateCompressResponses;
 		static const OperationParam AuthenticateServiceAuthenticateExternalAuthName;
 		static const OperationParam AuthenticateServiceAuthenticateRegion;
 		static const OperationParam AuthenticateServiceAuthenticateCountryCode;
@@ -125,6 +125,7 @@ namespace BrainCloud {
 
 		// Event Service - Send Params
 		static const OperationParam EventServiceSendToId;
+		static const OperationParam EventServiceToIds;
 		static const OperationParam EventServiceSendEventType;
 		static const OperationParam EventServiceSendEventId;
 		static const OperationParam EventServiceSendEventData;
@@ -213,6 +214,8 @@ namespace BrainCloud {
 		static const OperationParam SocialLeaderboardServiceLeaderboardIds;
 		static const OperationParam SocialLeaderboardServiceReplaceName;
 		static const OperationParam SocialLeaderboardServiceScore;
+		static const OperationParam SocialLeaderboardServiceScoreData;
+		static const OperationParam SocialLeaderboardServiceConfigJson;
 		static const OperationParam SocialLeaderboardServiceData;
 		static const OperationParam SocialLeaderboardServiceEventName;
 		static const OperationParam SocialLeaderboardServiceEventMultiplier;
@@ -297,6 +300,7 @@ namespace BrainCloud {
 		static const OperationParam PlaybackStreamServiceIncludeSharedData;
 		static const OperationParam PlaybackStreamServiceEventData;
 		static const OperationParam PlaybackStreamServiceSummary;
+		static const OperationParam PlaybackStreamServiceNumDays;
 
 		static const OperationParam ProductServiceTransId;
 		static const OperationParam ProductServiceLanguage;
@@ -401,6 +405,7 @@ namespace BrainCloud {
 		static const OperationParam FieldAuthenticationToken;
 
 		static const OperationParam EmailAddress;
+		static const OperationParam EmailAddresses;
 		static const OperationParam Subject;
 		static const OperationParam Body;
 		static const OperationParam ServiceParams;
@@ -446,6 +451,7 @@ namespace BrainCloud {
 		static const OperationParam Text;
 
 		//lobby
+		static const OperationParam EntryId;
 		static const OperationParam LobbyType;
 		static const OperationParam LobbyTypes;
 		static const OperationParam Rating;
@@ -486,6 +492,7 @@ namespace BrainCloud {
 
         //appstore
 		static const OperationParam AppStoreStoreId;
+		static const OperationParam AppStoreStoreIAPId;
 		static const OperationParam AppStoreReceiptData;
 		static const OperationParam AppStorePriceInfoCriteria;
 		static const OperationParam AppStoreUserCurrency;
@@ -493,6 +500,8 @@ namespace BrainCloud {
 		static const OperationParam AppStorePurchaseData;
 		static const OperationParam AppStoreTransactionId;
 		static const OperationParam AppStoreTransactionData;
+		static const OperationParam AppStorePayload;
+
 
 		//item catalog
 		static const OperationParam ItemCatalogServiceDefId;
@@ -512,6 +521,8 @@ namespace BrainCloud {
 		static const OperationParam UserItemsServiceProfileId;
 		static const OperationParam UserItemsServiceShopId;
 		static const OperationParam UserItemsServiceNewItemData;
+		static const OperationParam UserItemsServiceOptionsJson;
+		static const OperationParam UserItemsServiceIncludePromotionDetails;
 
 		//Datastream
 		static const OperationParam DataStreamCrashType;
@@ -534,6 +545,7 @@ namespace BrainCloud {
 		std::string getValue() const { return _value; }
 
 		bool operator== (const OperationParam& s) const;
+		bool operator!= (const OperationParam& s) const;
 		void operator= (const OperationParam& s);
 
 	private:

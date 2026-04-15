@@ -20,6 +20,13 @@ else()
     cmake_minimum_required(VERSION 3.0.0)
 endif()
 
+if(COMMAND cmake_policy)
+    cmake_policy(SET CMP0022 NEW)
+    cmake_policy(SET CMP0079 NEW)
+    cmake_policy(SET CMP0003 NEW)
+endif()
+
+
 # Setup modules path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
         "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
@@ -98,6 +105,7 @@ endif()
 set (BC_DIR "${PROJECT_SOURCE_DIR}")
 set (OS_SPECIFIC_SRCS "")
 set (OS_SPECIFIC_INCS "")
+set (ZLIB_INCLUDE_DIR "${BC_DIR}/include/zlib")
 
 file(GLOB_RECURSE JSONCPP_INCS_FILES "${BC_DIR}/lib/jsoncpp-1.0.0/*.h")
 file(GLOB_RECURSE JSONCPP_SRCS_FILES "${BC_DIR}/lib/jsoncpp-1.0.0/*.cpp")
@@ -137,8 +145,12 @@ endif()
 # Sockets
 if (USE_LIBWEBSOCKETS)
     list(APPEND OS_SPECIFIC_INCS
-            "include/braincloud/internal/DefaultWebSocket.h")
-    list(APPEND OS_SPECIFIC_SRCS "src/DefaultWebSocket.cpp")
+            "include/braincloud/internal/DefaultWebSocket.h"
+            "include/braincloud/internal/IRelayWSSocket.h"
+            "include/braincloud/internal/DefaultRelayWSSocket.h")
+    list(APPEND OS_SPECIFIC_SRCS
+            "src/DefaultWebSocket.cpp"
+            "src/DefaultRelayWSSocket.cpp")
 endif()
 if (WIN32)
     list(APPEND OS_SPECIFIC_SRCS "src/win/Win32TCPSocket.cpp")
@@ -201,17 +213,17 @@ endif()
 # other platform specific srcs/includes
 if (APPLE)
     list(APPEND OS_SPECIFIC_SRCS
-            "lib/apple/sskeychain/SSKeychain/SSKeychain.m"
-            "lib/apple/sskeychain/SSKeychain/SSKeychainQuery.m")
+            "lib/apple/SAMKeychain/SAMKeychain.m"
+            "lib/apple/SAMKeychain/SAMKeychainQuery.m")
     list(APPEND OS_SPECIFIC_INCS
-            "lib/apple/sskeychain/SSKeychain/SSKeychain.h"
-            "lib/apple/sskeychain/SSKeychain/SSKeychainQuery.h")
+            "lib/apple/SAMKeychain/SAMKeychain.h"
+            "lib/apple/SAMKeychain/SAMKeychainQuery.h")
     # for memory management in obj-c files
     set_source_files_properties(
-            "lib/apple/sskeychain/SSKeychain/SSKeychain.m"
-            "lib/apple/sskeychain/SSKeychain/SSKeychainQuery.m"
+            "lib/apple/SAMKeychain/SAMKeychain.m"
+            "lib/apple/SAMKeychain/SAMKeychainQuery.m"
             PROPERTIES COMPILE_FLAGS "-fobjc-arc")
-    list(APPEND includes PUBLIC "lib/apple/sskeychain")
+    list(APPEND includes PUBLIC "lib/apple")
 elseif (WIN32)
     if (UWP)
         list(APPEND OS_SPECIFIC_INCS
@@ -286,8 +298,10 @@ add_library(brainCloud STATIC
         include/braincloud/IEventCallback.h
         include/braincloud/IFileUploadCallback.h
         include/braincloud/IGlobalErrorCallback.h
+        include/braincloud/IAutoReconnectCallback.h
         include/braincloud/INetworkErrorCallback.h
         include/braincloud/IRewardCallback.h
+        include/braincloud/IRelayConnectCallback.h
         include/braincloud/IServerCallback.h
         include/braincloud/OperationParam.h
         include/braincloud/Platform.h
@@ -298,6 +312,7 @@ add_library(brainCloud STATIC
         include/braincloud/reason_codes.h
 
         # private headers
+        include/braincloud/internal/DataUtilities.h
         include/braincloud/internal/DefaultBrainCloudComms.h
         include/braincloud/internal/DefaultPinger.h
         include/braincloud/internal/DefaultRelayTCPSocket.h
@@ -312,6 +327,7 @@ add_library(brainCloud STATIC
         include/braincloud/internal/IRelaySocket.h
         include/braincloud/internal/IRelayTCPSocket.h
         include/braincloud/internal/IRelayUDPSocket.h
+        include/braincloud/internal/IRelayWSSocket.h
         include/braincloud/internal/ITCPSocket.h
         include/braincloud/internal/JsonUtil.h
         include/braincloud/internal/Mutex.h
@@ -376,6 +392,7 @@ add_library(brainCloud STATIC
         src/BrainCloudVirtualCurrency.cpp
         src/BrainCloudWrapper.cpp
         src/DefaultBrainCloudComms.cpp
+        src/DataUtilities.cpp
         src/FriendPlatform.cpp
         src/GUID.cpp
         src/IBrainCloudComms.cpp
@@ -421,22 +438,30 @@ if (APPLE)
     find_library(BC_FOUNDATION_LIB Foundation)
     find_library(BC_SYSCONFIG_LIB SystemConfiguration)
     find_library(BC_SECURITY_LIB Security)
+	find_library(BC_Z_LIB z)
+				
     list(APPEND libs
             ${BC_GAMEKIT_LIB}
             ${BC_COREFOUNDATION_LIB}
             ${BC_FOUNDATION_LIB}
             ${BC_SYSCONFIG_LIB}
-            ${BC_SECURITY_LIB})
+            ${BC_SECURITY_LIB}
+			${BC_Z_LIB})
 elseif (LINUX)
     find_package(CURL REQUIRED)
-    list(APPEND includes PUBLIC ${CURL_INCLUDE_DIRS})
 
     find_package(UUID REQUIRED)
     list(APPEND includes PUBLIC ${UUID_INCLUDE_DIRS})
+	
+	find_package(ZLIB REQUIRED)
+    include_directories(${ZLIB_INCLUDE_DIR}) 
 
     list(APPEND libs
             ${CURL_LIBRARIES}
-            ${UUID_LIBRARIES})
+            ${UUID_LIBRARIES}
+			${ZLIB_LIBRARIES}
+			CURL::libcurl)
+			
 elseif (ANDROID)
     list(APPEND includes PUBLIC "lib/android/include/")
 
@@ -460,6 +485,21 @@ elseif (ANDROID)
             )
 
 elseif (WIN32)
+
+	find_library(BC_ZLIB zlib
+			"${BC_DIR}/lib/zlib")
+	
+	include_directories(${ZLIB_INCLUDE_DIR})  # Ensure the headers are found
+	
+	if(NOT BC_ZLIB)
+		message(FATAL_ERROR "ZLIB NOT FOUND IN ${BC_DIR}/lib/zlib")
+	else()
+		message(STATUS "FOUND ZLIB: ${BC_ZLIB}")
+	endif()
+	
+	list(APPEND libs 
+				${BC_ZLIB})
+	
     if (USE_CURL_WIN)
         # pthread
         include_directories(
@@ -475,6 +515,7 @@ elseif (WIN32)
                 "${BC_DIR}/lib/win32/curl-7.44.0/lib")
         find_library(BC_CURL_LIB_DEBUG libcurl_a_debug.lib
                 "${BC_DIR}/lib/win32/curl-7.44.0/lib")
+		
 
         list(APPEND libs general
                 ${Socket_LIBRARIES}
@@ -490,9 +531,14 @@ endif()
 
 # android uses openssl instead of tls (pre-built libwebsockets.a is linked above)
 if (USE_LIBWEBSOCKETS)
+    set(LWS_WITH_SSL ON CACHE BOOL "Enable SSL abstraction" FORCE)
     # TLS
     option(ENABLE_TESTING "" OFF)
     option(ENABLE_PROGRAMS "" OFF)
+
+    add_compile_definitions(CACERTS_FILE_PATH="${CMAKE_SOURCE_DIR}/resources/cacerts.pem")
+    message("CMAKE_TOOLCHAIN_FILE: ${CMAKE_TOOLCHAIN_FILE}")
+
 	if (BC_USE_OPENSSL)
 
         if(ANDROID)
@@ -503,16 +549,22 @@ if (USE_LIBWEBSOCKETS)
             set(OPENSSL_FOUND 1)
             option(LWS_SSL_CLIENT_USE_OS_CA_CERTS "SSL support should make use of the OS-installed CA root certs" OFF)
         else()
-            set(OPENSSL_USE_STATIC_LIBS TRUE)
+            # Point CMake to vcpkg for OpenSSL only
             find_package(OpenSSL REQUIRED)
-            set(OPENSSL_FOUND 1)
-            set(BC_OPENSSL_INCLUDE_DIRS "${OPENSSL_INCLUDE_DIR}")
-            set(OPENSSL_INCLUDE_DIRS "${OPENSSL_INCLUDE_DIR}")
-            include_directories("${BC_OPENSSL_INCLUDE_DIRS}")
-            option(LWS_SSL_CLIENT_USE_OS_CA_CERTS "SSL support should make use of the OS-installed CA root certs" ON)
+
+            # Include dirs and libraries from vcpkg
+            set(LWS_OPENSSL_LIBRARIES $<BUILD_INTERFACE:${OPENSSL_LIBRARIES}>)
+            set(LWS_OPENSSL_INCLUDE_DIRS $<BUILD_INTERFACE:${OPENSSL_INCLUDE_DIR}>)
+            
+            include_directories($<BUILD_INTERFACE:${LWS_OPENSSL_INCLUDE_DIRS}>)
+            
+            # Force LWS to use OpenSSL
+            set(LWS_WITH_SSL ON CACHE BOOL "Use OpenSSL" FORCE)
+            set(LWS_WITH_MBEDTLS OFF CACHE BOOL "Disable MbedTLS" FORCE)
         endif()
 
         option(LWS_WITH_SSL "Include SSL support (defaults to OpenSSL)" ON)
+        option(LWS_WITH_MBEDTLS "Disable MbedTLS" OFF)
 
 	else()
 		# TLS
@@ -525,29 +577,30 @@ if (USE_LIBWEBSOCKETS)
 		add_subdirectory("${BC_MBEDTLS_DIR}")
 
 		list(APPEND libs PUBLIC mbedtls mbedx509 mbedcrypto)
-		list(APPEND includes
-				PUBLIC ${BC_MBEDTLS_DIR}/include/)
-		option(LWS_WITH_MBEDTLS "" ON)
+		list(APPEND includes PUBLIC ${BC_MBEDTLS_DIR}/include/)
+				
+		set(LWS_WITH_MBEDTLS ON CACHE BOOL "Use MbedTLS" FORCE)
+		
 		set(LWS_MBEDTLS_INCLUDE_DIRS "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${BC_MBEDTLS_DIR}/include>")
         if(WIN32)
-            set(LWS_MBEDTLS_LIBRARIES "${CMAKE_CURRENT_BINARY_DIR}/${BC_MBEDTLS_DIR}/library/${CMAKE_BUILD_TYPE}/mbedtls.lib;${CMAKE_CURRENT_BINARY_DIR}/${BC_MBEDTLS_DIR}/library/${CMAKE_BUILD_TYPE}/mbedcrypto.lib;${CMAKE_CURRENT_BINARY_DIR}/${BC_MBEDTLS_DIR}/library/${CMAKE_BUILD_TYPE}/mbedx509.lib")
+            set(LWS_MBEDTLS_LIBRARIES
+                    "${CMAKE_CURRENT_BINARY_DIR}/${BC_MBEDTLS_DIR}/library/$<CONFIG>/mbedtls.lib"
+                    "${CMAKE_CURRENT_BINARY_DIR}/${BC_MBEDTLS_DIR}/library/$<CONFIG>/mbedcrypto.lib"
+                    "${CMAKE_CURRENT_BINARY_DIR}/${BC_MBEDTLS_DIR}/library/$<CONFIG>/mbedx509.lib"
+                    CACHE STRING "MbedTLS libraries" FORCE
+                )
         elseif(XCODE)
             set(LWS_MBEDTLS_LIBRARIES "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>/${BC_MBEDTLS_DIR}/library/$CONFIGURATION$EFFECTIVE_PLATFORM_NAME/libmbedtls.a;$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>/${BC_MBEDTLS_DIR}/library/$CONFIGURATION$EFFECTIVE_PLATFORM_NAME/libmbedcrypto.a;$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>/${BC_MBEDTLS_DIR}/library/$CONFIGURATION$EFFECTIVE_PLATFORM_NAME/libmbedx509.a")
         else()
             set(LWS_MBEDTLS_LIBRARIES "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>/${BC_MBEDTLS_DIR}/library/libmbedtls.a;$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>/${BC_MBEDTLS_DIR}/library/libmbedcrypto.a;$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>/${BC_MBEDTLS_DIR}/library/libmbedx509.a")
         endif()
+		
+		message("LWS Configured with MBEDTLS")
 	endif()
 
     # LibWebSockets
-    if(WIN32)
-        # v3.0 (on fork SHA1 is eaa935a8)
-         set(BC_LWS_DIR lib/lwsv3/libwebsockets)
-         set(BC_LWS_INC "${CMAKE_CURRENT_BINARY_DIR}/${BC_LWS_DIR}/include")
-    else()
-         # v4.3-stable (SHA1 is 58af7b44)
-         set(BC_LWS_DIR lib/libwebsockets)
-         set(BC_LWS_INC ${BC_LWS_DIR}/include)
-    endif()
+	set(BC_LWS_DIR lib/libwebsockets)
+	set(BC_LWS_INC ${BC_LWS_DIR}/include)
 
     option(LWS_WITHOUT_SERVER
             "Don't build the server part of the library" ON)
@@ -585,6 +638,7 @@ if (USE_LIBWEBSOCKETS)
         target_compile_options(websockets PRIVATE -Wno-typedef-redefinition)
     endif()
 
+
     list(APPEND libs websockets)
     list(APPEND includes
             PUBLIC
@@ -596,6 +650,7 @@ endif()
 # Setup includes and linked libraries
 target_include_directories(brainCloud PUBLIC "include" ${includes})
 target_link_libraries(brainCloud PUBLIC ${libs})
+
 
 # Compile flags
 if (WIN32 AND NOT UWP)
