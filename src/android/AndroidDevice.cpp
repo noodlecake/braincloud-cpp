@@ -70,15 +70,7 @@ namespace BrainCloud
 
         const std::string& getPlatformName()
         {
-            static std::string platformName;
-            static bool initialized = false;
-
-            if (!initialized)
-            {
-                initialized = true;
-                platformName = detectOculusDevice() ? "OCULUS" : "ANG";
-            }
-
+            static const std::string platformName("ANG");
             return platformName;
         }
 

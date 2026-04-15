@@ -80,7 +80,7 @@ namespace BrainCloud
             LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE, NULL);
 
         InitializeSSLCertificates();
-        
+
         // Split address into host/addr/origin/protocol
         std::string protocol = uriCopy.substr(0, std::min<size_t>(uriCopy.size(), uriCopy.find_first_of(':')));
         size_t protocolSize = protocol.size() + 3;
