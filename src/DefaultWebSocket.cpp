@@ -81,8 +81,6 @@ namespace BrainCloud
 
         InitializeSSLCertificates();
 
-        std::string uriCopy = uri;
-        
         // Split address into host/addr/origin/protocol
         std::string protocol = uriCopy.substr(0, std::min<size_t>(uriCopy.size(), uriCopy.find_first_of(':')));
         size_t protocolSize = protocol.size() + 3;

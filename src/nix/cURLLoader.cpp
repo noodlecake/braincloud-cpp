@@ -415,6 +415,9 @@ namespace BrainCloud
 			if(caPath) {
 				curl_easy_setopt(curl, CURLOPT_CAINFO, caPath);
 				std::cout << "set CA info to : " << caPath << std::endl;
+			} else {
+				curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, (long)0);
+				curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, (long)0);
 			}
 #endif
 			const char* disableSSL = std::getenv("SSL_DISABLED");
