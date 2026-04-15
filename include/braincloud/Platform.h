@@ -1,3 +1,4 @@
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 //
 //  Platform.h
 //  BrainCloud
@@ -38,10 +39,10 @@ namespace BrainCloud
         static const Platform & Unknown;
 
         const std::string & toString() const;
-        static const Platform & fromString(const std::string & in_platform);
+        static const Platform & fromString(const std::string & platform);
 
     private:
-        Platform(const std::string & in_platform);
+        Platform(const std::string & platform);
         std::string m_value;
     };
 

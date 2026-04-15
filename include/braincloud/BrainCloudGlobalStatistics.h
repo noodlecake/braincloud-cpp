@@ -1,6 +1,11 @@
-// Copyright 2016 bitHeads, Inc. All Rights Reserved.
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 
 #pragma once
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
+
 
 #include <string>
 #include <vector>
@@ -14,7 +19,7 @@ namespace BrainCloud
     class BrainCloudGlobalStatistics
     {
     public:
-        BrainCloudGlobalStatistics(BrainCloudClient* in_client);
+        BrainCloudGlobalStatistics(BrainCloudClient* client);
 
         /**
          * Method returns all of the global statistics.
@@ -22,9 +27,9 @@ namespace BrainCloud
          * Service Name - GlobalStatistics
          * Service Operation - Read
          *
-         * @param in_callback Method to be invoked when the server response is received.
+         * @param callback Method to be invoked when the server response is received.
          */
-        void readAllGlobalStats(IServerCallback * in_callback = NULL);
+        void readAllGlobalStats(IServerCallback * callback = NULL);
 
         /**
          * Reads a subset of global statistics as defined by the input collection.
@@ -32,14 +37,14 @@ namespace BrainCloud
          * Service Name - GlobalStatistics
          * Service Operation - ReadSubset
          *
-         * @param in_statistics A collection containing the statistics to read:
+         * @param statistics A collection containing the statistics to read:
          * [
          *   "Level01_TimesBeaten",
          *   "Level02_TimesBeaten"
          * ]
-         * @param in_callback Method to be invoked when the server response is received.
+         * @param callback Method to be invoked when the server response is received.
          */
-        void readGlobalStatsSubset(const std::vector<std::string> & in_statistics, IServerCallback * in_callback = NULL);
+        void readGlobalStatsSubset(const std::vector<std::string> & statistics, IServerCallback * callback = NULL);
 
         /**
          * Method retrieves the global statistics for the given category.
@@ -47,10 +52,10 @@ namespace BrainCloud
          * Service Name - GlobalStatistics
          * Service Operation - READ_FOR_CATEGORY
          *
-         * @param in_category The global statistics category
-         * @param in_callback Method to be invoked when the server response is received.
+         * @param category The global statistics category
+         * @param callback Method to be invoked when the server response is received.
          */
-        void readGlobalStatsForCategory(const char * in_category, IServerCallback * in_callback = NULL);
+        void readGlobalStatsForCategory(const char * category, IServerCallback * callback = NULL);
 
         /**
          * Atomically increment (or decrement) global statistics.
@@ -59,7 +64,7 @@ namespace BrainCloud
          * Service Name - GlobalStatistics
          * Service Operation - UpdateIncrement
          *
-         * @param in_jsonData The JSON encoded data to be sent to the server as follows:
+         * @param jsonData The JSON encoded data to be sent to the server as follows:
          * {
          *   stat1: 10,
          *   stat2: -5.5,
@@ -72,9 +77,9 @@ namespace BrainCloud
          * }
          * which increments stat1 by 9 up to a limit of 30.
          *
-         * @param in_callback Method to be invoked when the server response is received.
+         * @param callback Method to be invoked when the server response is received.
          */
-        void incrementGlobalGameStat(const std::string& in_jsonData, IServerCallback * in_callback = NULL);
+        void incrementGlobalGameStat(const std::string& jsonData, IServerCallback * callback = NULL);
 
 		/**
 		* Apply statistics grammar to a partial set of statistics.
@@ -82,7 +87,7 @@ namespace BrainCloud
 		* Service Name - GlobalStatistics
 		* Service Operation - PROCESS_STATISTICS
 		*
-		* @param in_jsonData The JSON format is as follows:
+		* @param jsonData The JSON format is as follows:
 		* {
 		*     "DEAD_CATS": "RESET",
 		*     "LIVES_LEFT": "SET#9",
@@ -90,11 +95,14 @@ namespace BrainCloud
 		*     "DOG_SCARE_BONUS_POINTS": "INC#10",
 		*     "TREES_CLIMBED": 1
 		* }
-		* @param in_callback Method to be invoked when the server response is received.
+		* @param callback Method to be invoked when the server response is received.
 		*/
-		void processStatistics(const std::string& in_jsonData, IServerCallback * in_callback = NULL);
+		void processStatistics(const std::string& jsonData, IServerCallback * callback = NULL);
 
     private:
         BrainCloudClient * m_client;
     };
 }
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif

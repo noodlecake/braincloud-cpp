@@ -1,7 +1,11 @@
-// Copyright 2018 bitHeads, Inc. All Rights Reserved.
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 
-#ifndef _BRAINCLOUDCHAT_H_
-#define _BRAINCLOUDCHAT_H_
+#pragma once
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
+
 
 #include "braincloud/BrainCloudTypes.h"
 
@@ -15,7 +19,7 @@ namespace BrainCloud
 	class BrainCloudChat
 	{
 	public:
-		BrainCloudChat(BrainCloudClient* in_client);
+		BrainCloudChat(BrainCloudClient* client);
 
 		/**
 		 * Registers a listener for incoming events from <channelId>.
@@ -28,7 +32,7 @@ namespace BrainCloud
 		 * @param maxReturn Maximum number of messages to return.
 		 * @param callback The method to be invoked when the server response is received
 		 */
-		void channelConnect(const std::string& in_channelId, int in_maxReturn, IServerCallback* in_callback = NULL);
+		void channelConnect(const std::string& channelId, int maxReturn, IServerCallback* callback = NULL);
 
 		/**
 		 * Unregisters a listener for incoming events from <channelId>.
@@ -39,7 +43,7 @@ namespace BrainCloud
 		 * @param channelId The id of the chat channel to unsubscribed from.
 		 * @param callback The method to be invoked when the server response is received
 		 */
-		void channelDisconnect(const std::string& in_channelId, IServerCallback* in_callback = NULL);
+		void channelDisconnect(const std::string& channelId, IServerCallback* callback = NULL);
 
 		/**
 		 * Delete a chat message. <version> must match the latest or pass -1 to bypass version check.
@@ -52,7 +56,7 @@ namespace BrainCloud
 		 * @param version Version of the message to delete. Must match latest or pass -1 to bypass version check.
 		 * @param callback The method to be invoked when the server response is received
 		 */
-		void deleteChatMessage(const std::string& in_channelId, const std::string& in_msgId, int version, IServerCallback* in_callback = NULL);
+		void deleteChatMessage(const std::string& channelId, const std::string& msgId, int version, IServerCallback* callback = NULL);
 
 		/**
 		 * Gets the channelId for the given <channelType> and <channelSubId>. Channel type must be one of "gl" or "gr".
@@ -64,7 +68,7 @@ namespace BrainCloud
 		 * @param channelSubId The sub id of the channel.
 		 * @param callback The method to be invoked when the server response is received
 		 */
-		void getChannelId(const std::string& in_channelType, const std::string& in_channelSubId, IServerCallback* in_callback = NULL);
+		void getChannelId(const std::string& channelType, const std::string& channelSubId, IServerCallback* callback = NULL);
 
 		/**
 		 * Gets description info and activity stats for channel <channelId>.
@@ -77,7 +81,7 @@ namespace BrainCloud
 		 * @param channelId Id of the channel to receive the info from.
 		 * @param callback The method to be invoked when the server response is received.
 		 */
-		void getChannelInfo(const std::string& in_channelId, IServerCallback* in_callback = NULL);
+		void getChannelInfo(const std::string& channelId, IServerCallback* callback = NULL);
 
 		/**
 		 * Gets a populated chat object (normally for editing).
@@ -89,7 +93,7 @@ namespace BrainCloud
 		 * @param msgId Id of the message to read.
 		 * @param callback The method to be invoked when the server response is received.
 		 */
-		void getChatMessage(const std::string& in_channelId, const std::string& in_msgId, IServerCallback* in_callback = NULL);
+		void getChatMessage(const std::string& channelId, const std::string& msgId, IServerCallback* callback = NULL);
 
 		/**
 		 * Get a list of <maxReturn> messages from history of channel <channelId>.
@@ -101,7 +105,7 @@ namespace BrainCloud
 		 * @param maxReturn Maximum message count to return.
 		 * @param callback The method to be invoked when the server response is received.
 		 */
-		void getRecentChatMessages(const std::string& in_channelId, int in_maxReturn, IServerCallback* in_callback = NULL);
+		void getRecentChatMessages(const std::string& channelId, int maxReturn, IServerCallback* callback = NULL);
 
 		/**
 		 * Gets a list of the channels of type <channelType> that the user has access to.
@@ -113,7 +117,7 @@ namespace BrainCloud
 		 * @param channelType Type of channels to get back. "gl" for global, "gr" for group or "all" for both.
 		 * @param callback The method to be invoked when the server response is received.
 		 */
-		void getSubscribedChannels(const std::string& in_channelType, IServerCallback* in_callback = NULL);
+		void getSubscribedChannels(const std::string& channelType, IServerCallback* callback = NULL);
 
 		/**
 		 * Send a potentially rich chat message.
@@ -126,7 +130,7 @@ namespace BrainCloud
 		 * @param content Object containing "text" for the text message. Can also has rich content for custom data.
 		 * @param callback The method to be invoked when the server response is received.
 		 */
-		void postChatMessage(const std::string& in_channelId, const std::string& in_jsonContent, bool in_recordInHistory, IServerCallback* in_callback = NULL);
+		void postChatMessage(const std::string& channelId, const std::string& jsonContent, bool recordInHistory, IServerCallback* callback = NULL);
 
 		/**
 		 * Send a chat message with text only
@@ -138,7 +142,7 @@ namespace BrainCloud
 		 * @param text The text message.
 		 * @param callback The method to be invoked when the server response is received.
 		 */
-		void postChatMessageSimple(const std::string& in_channelId, const std::string& in_text, bool in_recordInHistory, IServerCallback* in_callback = NULL);
+		void postChatMessageSimple(const std::string& channelId, const std::string& text, bool recordInHistory, IServerCallback* callback = NULL);
 
 		/**
 		 * Update a chat message.
@@ -154,11 +158,13 @@ namespace BrainCloud
 		 * @param content Data to update. Object containing "text" for the text message. Can also has rich content for custom data.
 		 * @param callback The method to be invoked when the server response is received.
 		 */
-		void updateChatMessage(const std::string& in_channelId, const std::string& in_msgId, int version, const std::string& in_jsonContent, IServerCallback* in_callback = NULL);
+		void updateChatMessage(const std::string& channelId, const std::string& msgId, int version, const std::string& jsonContent, IServerCallback* callback = NULL);
 
 	private:
 		BrainCloudClient* m_client;
 	};
 };
 
-#endif /* _BRAINCLOUDCHAT_H_ */
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif

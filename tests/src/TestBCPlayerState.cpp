@@ -17,7 +17,7 @@ TEST_F(TestBCPlayerState, DeleteUser)
     // in the cached array. So we fix it here...
     Authenticate();
     std::string profileId = m_bc->getAuthenticationService()->getProfileId();
-    sprintf(GetUser(UserA)->m_profileId, "%s", profileId.c_str());
+    std::strcpy(GetUser(UserA)->m_profileId, profileId.c_str());
 }
 
 TEST_F(TestBCPlayerState, GetAttributes)
@@ -166,7 +166,7 @@ TEST_F(TestBCPlayerState, SetUserStatus)
 void TestBCPlayerState::Authenticate()
 {
     TestResult tr;
-    m_bc->getAuthenticationService()->authenticateUniversal(GetUser(UserA)->m_id, GetUser(UserA)->m_password, true, &tr);
+    m_bcWrapper->authenticateUniversal(GetUser(UserA)->m_id, GetUser(UserA)->m_password, true, &tr);
     tr.run(m_bc);
 }
 

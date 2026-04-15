@@ -1,3 +1,4 @@
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 #include "braincloud/internal/DefaultRelayTCPSocket.h"
 
 #include <iostream>
@@ -160,7 +161,7 @@ namespace BrainCloud
             return;
         }
 
-        int ret = 0;
+        size_t ret = 0;
         while (ret >= 0 && ret < (int)size)
         {
             ret = ::send(m_socket, (const char*)pData, size, 0);
@@ -316,7 +317,7 @@ namespace BrainCloud
         {
 
             // Read packet
-            int received = ::recv(m_socket, (char*)(m_buffer + m_read), m_maxPacketSize - m_read, 0);
+            size_t received = ::recv(m_socket, (char*)(m_buffer + m_read), m_maxPacketSize - m_read, 0);
             if (received <= 0)
             {
                 FD_CLR(m_socket, &m_fdsSet);

@@ -22,6 +22,15 @@ TEST_F(TestBCFriend, GetProfileInfoForCredential)
 	tr.run(m_bc);
 }
 
+TEST_F(TestBCFriend, GetProfileInfoForCredentialIfExists)
+{
+	TestResult tr;
+
+	m_bc->getFriendService()->getProfileInfoForCredentialIfExists(GetUser(UserA)->m_id, AuthenticationType::Universal, &tr);
+
+	tr.run(m_bc);
+}
+
 TEST_F(TestBCFriend, GetProfileInfoForExternalAuthId)
 {
 	TestResult tr;
@@ -29,10 +38,18 @@ TEST_F(TestBCFriend, GetProfileInfoForExternalAuthId)
 	tr.runExpectFail(m_bc, 400, INVALID_EXT_AUTH_TYPE);
 }
 
+TEST_F(TestBCFriend, GetProfileInfoForExternalAuthIdIfExists)
+{
+	TestResult tr;
+	m_bc->getFriendService()->getProfileInfoForExternalAuthIdIfExists(GetUser(UserA)->m_id, "testExternal", &tr);
+	tr.run(m_bc);
+}
+
 TEST_F(TestBCFriend, GetExternalIdForProfileId)
 {
 	TestResult tr;
 	m_bc->getFriendService()->getExternalIdForProfileId(GetUser(UserA)->m_profileId, "Facebook", &tr);
+
 	tr.run(m_bc);
 }
 

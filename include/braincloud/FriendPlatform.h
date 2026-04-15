@@ -1,3 +1,4 @@
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 //
 //  FriendPlatform.h
 //  BrainCloud
@@ -21,10 +22,10 @@ namespace BrainCloud
         static const FriendPlatform & Unknown;
 
         const std::string & toString() const;
-        static const FriendPlatform & fromString(const std::string & in_friendPlatform);
+        static const FriendPlatform & fromString(const std::string & friendPlatform);
 
     private:
-        FriendPlatform(const std::string & in_friendPlatform);
+        FriendPlatform(const std::string & friendPlatform);
         std::string m_value;
     };
 

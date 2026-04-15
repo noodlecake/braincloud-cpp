@@ -22,12 +22,12 @@
 #include <string.h>
 #import <Foundation/Foundation.h>
 
-@interface URLSessionDelegate () {
+@interface BCURLSessionDelegate () {
     BrainCloud::nsURLLoader* _urlLoader;
     NSURLSession *_session;
 }
 @end
-@implementation URLSessionDelegate
+@implementation BCURLSessionDelegate
 - (instancetype)initWithLoader:(BrainCloud::nsURLLoader*) loader
 {
     self = [super init];
@@ -192,14 +192,14 @@
     if (error) {
         // Here additional error could be trapped, but to keep parity with cURLLoader only these where added.
         if (error.code == NSURLErrorTimedOut) {
-            _urlLoader->getResponse().setStatusCode(HTTP_CLIENT_NETWORK_ERROR/*408*/);
+			_urlLoader->getResponse().setStatusCode(BrainCloud::HTTP_CLIENT_NETWORK_ERROR/*408*/);
             _urlLoader->getResponse().setReasonPhrase("Operation timed out");
         } else if (error.code == NSURLErrorCancelled) {
             // aborted by caller.
-            _urlLoader->getResponse().setStatusCode(HTTP_CLIENT_NETWORK_ERROR);
+			_urlLoader->getResponse().setStatusCode(BrainCloud::HTTP_CLIENT_NETWORK_ERROR);
             _urlLoader->getResponse().setReasonPhrase(std::string([error.localizedDescription cStringUsingEncoding:NSUTF8StringEncoding]));
         } else {
-            _urlLoader->getResponse().setStatusCode(HTTP_CLIENT_NETWORK_ERROR);
+			_urlLoader->getResponse().setStatusCode(BrainCloud::HTTP_CLIENT_NETWORK_ERROR);
             _urlLoader->getResponse().setReasonPhrase(std::string([error.localizedDescription cStringUsingEncoding:NSUTF8StringEncoding]));
         }
         
@@ -213,7 +213,7 @@
         }
         else
         {
-            _urlLoader->getResponse().setStatusCode(HTTP_CLIENT_NETWORK_ERROR);
+			_urlLoader->getResponse().setStatusCode(BrainCloud::HTTP_CLIENT_NETWORK_ERROR);
             _urlLoader->getResponse().setReasonPhrase(std::string([task.error.localizedDescription cStringUsingEncoding:NSUTF8StringEncoding]));
         }
         
@@ -285,7 +285,7 @@ namespace BrainCloud
 		// Assume the specified URL in the request is valid.
 		setRequest(urlRequest);
     
-		_sessionDelegate = [[URLSessionDelegate alloc] initWithLoader:this];
+		_sessionDelegate = [[BCURLSessionDelegate alloc] initWithLoader:this];
 		if (_sessionDelegate) {
 			[_sessionDelegate start];
 			_initialized = true;

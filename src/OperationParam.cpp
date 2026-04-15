@@ -1,3 +1,4 @@
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 #include "braincloud/OperationParam.h"
 
 namespace BrainCloud
@@ -62,6 +63,7 @@ namespace BrainCloud
 	const OperationParam OperationParam::AuthenticateServiceAuthenticateAnonymousId = OperationParam("anonymousId");
 	const OperationParam OperationParam::AuthenticateServiceAuthenticateProfileId = OperationParam("profileId");
 	const OperationParam OperationParam::AuthenticateServiceAuthenticateForceCreate = OperationParam("forceCreate");
+	const OperationParam OperationParam::AuthenticateServiceAuthenticateCompressResponses = OperationParam("compressResponses");
 	const OperationParam OperationParam::AuthenticateServiceAuthenticateExternalAuthName = OperationParam("externalAuthName");
 	const OperationParam OperationParam::AuthenticateServiceAuthenticateRegion = OperationParam("region");
 	const OperationParam OperationParam::AuthenticateServiceAuthenticateCountryCode = OperationParam("countryCode");
@@ -116,6 +118,7 @@ namespace BrainCloud
 
 	// Event Service - Send Params
 	const OperationParam OperationParam::EventServiceSendToId = OperationParam("toId");
+	const OperationParam OperationParam::EventServiceToIds = OperationParam("toIds");
 	const OperationParam OperationParam::EventServiceSendEventType = OperationParam("eventType");
 	const OperationParam OperationParam::EventServiceSendEventId = OperationParam("eventId");
 	const OperationParam OperationParam::EventServiceSendEventData = OperationParam("eventData");
@@ -204,6 +207,8 @@ namespace BrainCloud
 	const OperationParam OperationParam::SocialLeaderboardServiceLeaderboardIds = OperationParam("leaderboardIds");
 	const OperationParam OperationParam::SocialLeaderboardServiceReplaceName = OperationParam("replaceName");
 	const OperationParam OperationParam::SocialLeaderboardServiceScore = OperationParam("score");
+	const OperationParam OperationParam::SocialLeaderboardServiceScoreData = OperationParam("scoreData");
+	const OperationParam OperationParam::SocialLeaderboardServiceConfigJson = OperationParam("configJson");
 	const OperationParam OperationParam::SocialLeaderboardServiceData = OperationParam("data");
 	const OperationParam OperationParam::SocialLeaderboardServiceEventName = OperationParam("eventName");
 	const OperationParam OperationParam::SocialLeaderboardServiceEventMultiplier = OperationParam("eventMultiplier");
@@ -289,6 +294,7 @@ namespace BrainCloud
 	const OperationParam OperationParam::PlaybackStreamServiceIncludeSharedData = OperationParam("includeSharedData");
 	const OperationParam OperationParam::PlaybackStreamServiceEventData = OperationParam("eventData");
 	const OperationParam OperationParam::PlaybackStreamServiceSummary = OperationParam("summary");
+	const OperationParam OperationParam::PlaybackStreamServiceNumDays = OperationParam("numDays");
 
 	const OperationParam OperationParam::ProductServiceTransId = OperationParam("transId");
 	const OperationParam OperationParam::ProductServiceLanguage = OperationParam("language");
@@ -303,7 +309,25 @@ namespace BrainCloud
 	const OperationParam OperationParam::S3HandlingServiceFileDetails = OperationParam("fileDetails");
 	const OperationParam OperationParam::S3HandlingServiceFileId = OperationParam("fileId");
 
-	// globalFileV3
+    // group file
+    const OperationParam OperationParam::FolderPath = OperationParam("folderPath");
+    const OperationParam OperationParam::FileName = OperationParam("filename");
+    const OperationParam OperationParam::FullPathFilename = OperationParam("fullPathFilename");
+    const OperationParam OperationParam::FileId = OperationParam("fileId");
+    const OperationParam OperationParam::GroupFileVersion = OperationParam("version");
+    const OperationParam OperationParam::NewTreeId = OperationParam("newTreeId");
+    const OperationParam OperationParam::TreeVersion = OperationParam("treeVersion");
+    const OperationParam OperationParam::NewFilename = OperationParam("newFilename");
+    const OperationParam OperationParam::OverwriteIfPresent = OperationParam("overwriteIfPresent");
+    const OperationParam OperationParam::Recurse = OperationParam("recurse");
+    const OperationParam OperationParam::UserCloudPath = OperationParam("userCloudPath");
+    const OperationParam OperationParam::UserCloudFilename = OperationParam("userCloudFilename");
+    const OperationParam OperationParam::GroupTreeId = OperationParam("groupTreeId");
+    const OperationParam OperationParam::GroupFilename = OperationParam("groupFilename");
+    const OperationParam OperationParam::GroupFileACL = OperationParam("groupFileAcl");
+    const OperationParam OperationParam::NewACL = OperationParam("newAcl");
+
+    // globalFileV3
 	const OperationParam OperationParam::GlobalFileV3ServiceFileId = OperationParam("fileId");
 	const OperationParam OperationParam::GlobalFileV3ServiceFolderPath = OperationParam("folderPath");
 	const OperationParam OperationParam::GlobalFileV3ServiceFileName = OperationParam("filename");
@@ -377,6 +401,7 @@ namespace BrainCloud
 
 	//mail
 	const OperationParam OperationParam::EmailAddress = OperationParam("emailAddress");
+	const OperationParam OperationParam::EmailAddresses = OperationParam("emailAddresses");
 	const OperationParam OperationParam::Subject = OperationParam("subject");
 	const OperationParam OperationParam::Body = OperationParam("body");
 	const OperationParam OperationParam::ServiceParams = OperationParam("serviceParams");
@@ -421,6 +446,7 @@ namespace BrainCloud
 	const OperationParam OperationParam::Text = OperationParam("text");
 
 	//lobby
+	const OperationParam OperationParam::EntryId = OperationParam("entryId");
 	const OperationParam OperationParam::LobbyType = OperationParam("lobbyType");
 	const OperationParam OperationParam::LobbyTypes = OperationParam("lobbyTypes");
 	const OperationParam OperationParam::Rating = OperationParam("rating");
@@ -461,6 +487,7 @@ namespace BrainCloud
 
 	//appstore
 	const OperationParam OperationParam::AppStoreStoreId = OperationParam("storeId");
+	const OperationParam OperationParam::AppStoreStoreIAPId = OperationParam("iapId");
 	const OperationParam OperationParam::AppStoreReceiptData = OperationParam("receiptData");
 	const OperationParam OperationParam::AppStorePriceInfoCriteria = OperationParam("priceInfoCriteria");
 	const OperationParam OperationParam::AppStoreUserCurrency = OperationParam("userCurrency");
@@ -468,6 +495,7 @@ namespace BrainCloud
 	const OperationParam OperationParam::AppStorePurchaseData = OperationParam("purchaseData");
 	const OperationParam OperationParam::AppStoreTransactionId = OperationParam("transactionId");
 	const OperationParam OperationParam::AppStoreTransactionData = OperationParam("transactionData");
+	const OperationParam OperationParam::AppStorePayload = OperationParam("payload");
 
 	//item catalog
 	const OperationParam OperationParam::ItemCatalogServiceDefId = OperationParam("defId");
@@ -487,6 +515,8 @@ namespace BrainCloud
 	const OperationParam OperationParam::UserItemsServiceProfileId = OperationParam("profileId");
 	const OperationParam OperationParam::UserItemsServiceShopId = OperationParam("shopId");
 	const OperationParam OperationParam::UserItemsServiceNewItemData = OperationParam("newItemData");
+	const OperationParam OperationParam::UserItemsServiceOptionsJson = OperationParam("optionsJson");
+	const OperationParam OperationParam::UserItemsServiceIncludePromotionDetails = OperationParam("includePromotionDetails");
 
 	//Datastream
 	const OperationParam OperationParam::DataStreamCrashType = OperationParam("crashType");
@@ -503,6 +533,10 @@ namespace BrainCloud
 	const OperationParam OperationParam::PlayerStateServiceDetails = OperationParam("details");
 	const OperationParam OperationParam::PlayerStateServiceDurationSecs = OperationParam("durationSecs");
 
+    // Blockchain Service
+    const OperationParam OperationParam::BlockChainIntegrationId = OperationParam("integrationId");
+    const OperationParam OperationParam::BlockChainContext = OperationParam("contextJson");
+
 	const OperationParam OperationParam::IdentityServiceBlockchainConfig = OperationParam("blockchainConfig");
 	const OperationParam OperationParam::IdentityServicePublicKey = OperationParam("publicKey");
 
@@ -514,6 +548,10 @@ namespace BrainCloud
 	bool OperationParam::operator== (const OperationParam& s) const
 	{
 		return _value == s.getValue();
+	}
+	bool OperationParam::operator!=(const OperationParam& s) const
+	{
+		return _value != s.getValue();
 	}
 	void OperationParam::operator= (const OperationParam& s)
 	{

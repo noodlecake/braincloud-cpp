@@ -1,4 +1,5 @@
-#if (TARGET_OS_WATCH != 1)
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
+#if (!defined(TARGET_OS_WATCH) || TARGET_OS_WATCH == 0)
 
 #include "braincloud/internal/DefaultWebSocket.h"
 
@@ -12,6 +13,9 @@ static std::mutex lwsContextMutex;
 
 namespace BrainCloud
 {
+    // logging options include: LLL_DEBUG | LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE
+    // call lws_set_log_level from main
+
     static struct lws_protocols protocols[] = {
         {
             "brainCloud",
@@ -37,6 +41,9 @@ namespace BrainCloud
         { NULL, NULL, NULL /* terminator */ }
     };
 
+    static std::vector<std::string> full_certs;
+    static bool added = false;
+
     IWebSocket* IWebSocket::create(const std::string& address, int port, const std::map<std::string, std::string>& headers)
     {
         return new DefaultWebSocket(address, port, headers);
@@ -56,8 +63,23 @@ namespace BrainCloud
         , _isConnecting(true)
         , _authHeaders(headers)
     {
+
+#if defined(LWS_OPENSSL_SUPPORT)
+#if defined(LWS_WITH_MBEDTLS)
+        printf("Using MbedTLS\n");
+#else
+        printf("Using OpenSSL\n");
+#endif
+#endif
+
+
+#if !defined(BC_SSL_ALLOW_SELFSIGNED)
+        std::cout<<"Using packaged cacerts.pem file."<<std::endl;
+#else
+        std::cout<<"RTT using self-signed certificate."<<std::endl;
+#endif
         std::string uriCopy = uri;
-        
+
         // Split address into host/addr/origin/protocol
         std::string protocol = uriCopy.substr(0, std::min<size_t>(uriCopy.size(), uriCopy.find_first_of(':')));
         size_t protocolSize = protocol.size() + 3;
@@ -96,9 +118,12 @@ namespace BrainCloud
             info.protocols = protocols;
             info.gid = -1;
             info.uid = -1;
-            info.extensions = exts;
+            //info.extensions = exts;
             info.options = LWS_SERVER_OPTION_VALIDATE_UTF8;
             info.options |= LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;
+            #if(LWS_LIBRARY_VERSION_MAJOR >= 4) && !defined(BC_SSL_ALLOW_SELFSIGNED) && defined(LWS_WITH_MBEDTLS)
+                info.client_ssl_ca_filepath = CACERTS_FILE_PATH;
+            #endif
 
             std::unique_lock<std::mutex> lock(lwsContextMutex);
             _pLwsContext = lws_create_context(&info);
@@ -108,20 +133,6 @@ namespace BrainCloud
                 return;
             }
         }
-
-        // Start update thread
-        _updateThread = std::thread([this]()
-        {
-            _mutex.lock();
-            while (_isConnecting || _isValid)
-            {
-                _mutex.unlock();
-                lws_callback_on_writable_all_protocol(_pLwsContext, &protocols[0]);
-                lws_service(_pLwsContext, 100);
-                _mutex.lock();
-            }
-            _mutex.unlock();
-        });
 
         // Create connection
         {
@@ -154,11 +165,26 @@ namespace BrainCloud
             connectInfo.userdata = this;
 
             _pLws = lws_client_connect_via_info(&connectInfo);
+
             if (!_pLws)
             {
                 std::cout << "Failed to create websocket client" << std::endl;
                 return;
             }
+
+            // Start update thread
+            _updateThread = std::thread([this]()
+                {
+                    _mutex.lock();
+                    while (_isConnecting || _isValid)
+                    {
+                        _mutex.unlock();
+                        lws_service(_pLwsContext, 0);
+                        lws_callback_on_writable_all_protocol(_pLwsContext, &protocols[0]);
+                        _mutex.lock();
+                    }
+                    _mutex.unlock();
+                });
         }
     }
 
@@ -171,6 +197,7 @@ namespace BrainCloud
             case LWS_CALLBACK_WSI_DESTROY:
             case LWS_CALLBACK_CLOSED_CLIENT_HTTP:
             case LWS_CALLBACK_CLOSED:
+            case LWS_CALLBACK_CLIENT_CLOSED:
             {
                 if (!pWebSocket)
                 {
@@ -230,12 +257,66 @@ namespace BrainCloud
                 pWebSocket->processSendQueue();
                 break;
             }
+#if defined(BC_MBEDTLS_OFF) && !defined(BC_SSL_ALLOW_SELFSIGNED)
+            case LWS_CALLBACK_OPENSSL_LOAD_EXTRA_CLIENT_VERIFY_CERTS:
+            {
+                if(!added)
+                    pWebSocket->addExtraRootCerts((SSL_CTX *)user);
+                added = true;
+
+                break;
+            }
+#endif
             default:
                 break;
         }
 
         return 0;
     }
+
+#if defined(BC_MBEDTLS_OFF) && !defined(BC_SSL_ALLOW_SELFSIGNED)
+
+    void DefaultWebSocket::addExtraRootCerts(SSL_CTX *ssl_ctx) {
+        for (std::vector<std::string>::iterator cert = full_certs.begin();
+             cert < full_certs.end(); ++cert){
+            addCertString(*cert, ssl_ctx);
+        }
+    }
+
+    void DefaultWebSocket::addCertString(std::string certString, SSL_CTX *ssl_ctx) {
+
+        lws_filepos_t amount = 0;
+        const uint8_t *up;
+        uint8_t *up1;
+        uint8_t *pem;
+        size_t decodedlen;
+
+        std::string stripped_cert = certString.replace(0, strlen("-----BEGIN CERTIFICATE-----\n"), "");
+
+        size_t npos = stripped_cert.find("-----END CERTIFICATE-----");
+
+        stripped_cert = stripped_cert.replace(npos, strlen("-----END CERTIFICATE-----"), "");
+
+        const char *cacert = stripped_cert.c_str();
+        size_t calen = stripped_cert.length();
+        decodedlen = (calen * 3) / 4;
+        pem = (uint8_t*)malloc(decodedlen);
+
+        amount = lws_b64_decode_string_len((char *) cacert, calen,
+                                           (char *) pem, (int) (long long) decodedlen);
+
+        X509* client_CA = d2i_X509(NULL, (const unsigned char **)(&pem), (long)amount);
+
+        if(client_CA != NULL){
+            X509_STORE* x509_store = SSL_CTX_get_cert_store(ssl_ctx);
+            X509_STORE_add_cert(x509_store, client_CA);
+            X509_free(client_CA);
+        }
+        else{
+            free(pem);
+        }
+    }
+#endif
 
     bool DefaultWebSocket::isValid()
     {

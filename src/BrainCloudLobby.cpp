@@ -1,4 +1,4 @@
-// Copyright 2018 bitHeads, Inc. All Rights Reserved.
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 
 #include "braincloud/BrainCloudLobby.h"
 #include "braincloud/BrainCloudClient.h"
@@ -17,7 +17,7 @@
 #include <memory>
 
 static const int MAX_PING_CALLS = 4;
-static const int MAX_PING_CALLS_IN_PARRALLEL = 2;
+static const int MAX_PING_CALLS_PARRALLEL = 2;
 
 static Json::Value serializePingData(const std::map<std::string, int>& pingData)
 {
@@ -37,9 +37,9 @@ namespace BrainCloud
 	{
 	}
 
-	void BrainCloudLobby::GetRegionsForLobbiesCallback::setExternalCallback(IServerCallback* in_callback)
+	void BrainCloudLobby::GetRegionsForLobbiesCallback::setExternalCallback(IServerCallback* callback)
 	{
-		m_pExternalCallback = in_callback;
+		m_pExternalCallback = callback;
 	}
 
 	void BrainCloudLobby::GetRegionsForLobbiesCallback::serverCallback(ServiceName serviceName, ServiceOperation serviceOperation, std::string const& jsonData)
@@ -182,7 +182,7 @@ namespace BrainCloud
 			while (m_isRunning)
 			{
 				// Make sure we have the desired active pings count in parrallel
-				while (!regionsToPing.empty() && activePings.size() < MAX_PING_CALLS_IN_PARRALLEL)
+				while (!regionsToPing.empty() && activePings.size() < MAX_PING_CALLS_PARRALLEL)
 				{
 					auto it = regionsToPing.begin();
 					auto regionName = it->first;
@@ -225,8 +225,8 @@ namespace BrainCloud
 		}, pingRegions);
 	}
 
-	BrainCloudLobby::BrainCloudLobby(BrainCloudClient* in_client)
-		: m_client(in_client)
+	BrainCloudLobby::BrainCloudLobby(BrainCloudClient* client)
+		: m_client(client)
 		, m_getRegionsForLobbiesCallback(this)
 		, m_pingRegionsThread(this)
 		, m_pingCallback(nullptr)
@@ -239,35 +239,35 @@ namespace BrainCloud
 		_loggingEnabled = shouldEnable;
 	}
 
-	void BrainCloudLobby::getRegionsForLobbies(const std::vector<std::string>& in_roomTypes, IServerCallback* in_callback)
+	void BrainCloudLobby::getRegionsForLobbies(const std::vector<std::string>& roomTypes, IServerCallback* callback)
 	{
 		Json::Value message;
-		message[OperationParam::LobbyTypes.getValue()] = JsonUtil::stringVectorToJson(in_roomTypes);
+		message[OperationParam::LobbyTypes.getValue()] = JsonUtil::stringVectorToJson(roomTypes);
 
-		m_getRegionsForLobbiesCallback.setExternalCallback(in_callback);
+		m_getRegionsForLobbiesCallback.setExternalCallback(callback);
 		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::GetRegionsForLobbies, message, &m_getRegionsForLobbiesCallback);
 		m_client->sendRequest(sc);
 	}
 
-	void BrainCloudLobby::pingRegions(IServerCallback* in_callback)
+	void BrainCloudLobby::pingRegions(IServerCallback* callback)
 	{
 		if (m_pingRegions.empty())
 		{
-			if (in_callback)
+			if (callback)
 			{
-				m_errorCallbackQueue.push_back({ in_callback, ServiceName::Lobby, ServiceOperation::PingRegions, HTTP_BAD_REQUEST, MISSING_REQUIRED_PARAMETER, "Required message parameter 'pingData' is missing. Please ensure PingData exists by first calling GetRegionsForLobbies and PingRegions, and waiting for response before proceeding." });
+				m_errorCallbackQueue.push_back({ callback, ServiceName::Lobby, ServiceOperation::PingRegions, HTTP_BAD_REQUEST, MISSING_REQUIRED_PARAMETER, "Required message parameter 'pingData' is missing. Please ensure PingData exists by first calling GetRegionsForLobbies and PingRegions, and waiting for response before proceeding." });
 			}
 			return;
 		}
 		if (!m_pingRegionsThread.isRunning())
 		{
-			m_pingCallback = in_callback;
+			m_pingCallback = callback;
 			m_pingRegionsThread.stop();
 			m_pingRegionsThread.start(m_pingRegions);
 		}
-		else if (in_callback)
+		else if (callback)
 		{
-			m_errorCallbackQueue.push_back({ in_callback, ServiceName::Lobby, ServiceOperation::PingRegions, HTTP_BAD_REQUEST, MISSING_REQUIRED_PARAMETER, "'pingRegions' is already running. Please wait for callback before calling this again." });
+			m_errorCallbackQueue.push_back({ callback, ServiceName::Lobby, ServiceOperation::PingRegions, HTTP_BAD_REQUEST, MISSING_REQUIRED_PARAMETER, "'pingRegions' is already running. Please wait for callback before calling this again." });
 		}
 	}
 
@@ -300,66 +300,66 @@ namespace BrainCloud
 		return m_pingData;
 	}
 
-	void BrainCloudLobby::createLobby(const std::string& in_lobbyType, int in_rating, const std::vector<std::string>& in_otherUserCxIds, bool in_isReady, const std::string& in_extraJson, const std::string& in_teamCode, const std::string& in_jsonSettings, IServerCallback* in_callback)
+	void BrainCloudLobby::createLobby(const std::string& lobbyType, int rating, const std::vector<std::string>& otherUserCxIds, bool isReady, const std::string& extraJson, const std::string& teamCode, const std::string& jsonSettings, IServerCallback* callback)
 	{
 		Json::Value message;
-		message[OperationParam::LobbyType.getValue()] = in_lobbyType;
-		message[OperationParam::Rating.getValue()] = in_rating;
-		message[OperationParam::OtherUserCxIds.getValue()] = JsonUtil::stringVectorToJson(in_otherUserCxIds);
-		message[OperationParam::IsReady.getValue()] = in_isReady;
-		message[OperationParam::ExtraJson.getValue()] = JsonUtil::jsonStringToValue(in_extraJson.c_str());
-		message[OperationParam::TeamCode.getValue()] = in_teamCode;
-		message[OperationParam::Settings.getValue()] = JsonUtil::jsonStringToValue(in_jsonSettings.c_str());
+		message[OperationParam::LobbyType.getValue()] = lobbyType;
+		message[OperationParam::Rating.getValue()] = rating;
+		message[OperationParam::OtherUserCxIds.getValue()] = JsonUtil::stringVectorToJson(otherUserCxIds);
+		message[OperationParam::IsReady.getValue()] = isReady;
+		message[OperationParam::ExtraJson.getValue()] = JsonUtil::jsonStringToValue(extraJson.c_str());
+		message[OperationParam::TeamCode.getValue()] = teamCode;
+		message[OperationParam::Settings.getValue()] = JsonUtil::jsonStringToValue(jsonSettings.c_str());
 
-		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::CreateLobby, message, in_callback);
+		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::CreateLobby, message, callback);
 		m_client->sendRequest(sc);
 	}
 
-	void BrainCloudLobby::createLobbyWithPingData(const std::string& in_lobbyType, int in_rating, const std::vector<std::string>& in_otherUserCxIds, bool in_isReady, const std::string& in_extraJson, const std::string& in_teamCode, const std::string& in_jsonSettings, IServerCallback* in_callback)
+	void BrainCloudLobby::createLobbyWithPingData(const std::string& lobbyType, int rating, const std::vector<std::string>& otherUserCxIds, bool isReady, const std::string& extraJson, const std::string& teamCode, const std::string& jsonSettings, IServerCallback* callback)
 	{
 		Json::Value message;
-		message[OperationParam::LobbyType.getValue()] = in_lobbyType;
-		message[OperationParam::Rating.getValue()] = in_rating;
-		message[OperationParam::OtherUserCxIds.getValue()] = JsonUtil::stringVectorToJson(in_otherUserCxIds);
-		message[OperationParam::IsReady.getValue()] = in_isReady;
-		message[OperationParam::ExtraJson.getValue()] = JsonUtil::jsonStringToValue(in_extraJson.c_str());
-		message[OperationParam::TeamCode.getValue()] = in_teamCode;
-		message[OperationParam::Settings.getValue()] = JsonUtil::jsonStringToValue(in_jsonSettings.c_str());
+		message[OperationParam::LobbyType.getValue()] = lobbyType;
+		message[OperationParam::Rating.getValue()] = rating;
+		message[OperationParam::OtherUserCxIds.getValue()] = JsonUtil::stringVectorToJson(otherUserCxIds);
+		message[OperationParam::IsReady.getValue()] = isReady;
+		message[OperationParam::ExtraJson.getValue()] = JsonUtil::jsonStringToValue(extraJson.c_str());
+		message[OperationParam::TeamCode.getValue()] = teamCode;
+		message[OperationParam::Settings.getValue()] = JsonUtil::jsonStringToValue(jsonSettings.c_str());
 
-		attachPingDataAndSend(ServiceName::Lobby, ServiceOperation::CreateLobbyWithPingData, message, in_callback);
+		attachPingDataAndSend(ServiceName::Lobby, ServiceOperation::CreateLobbyWithPingData, message, callback);
 	}
 
-	void BrainCloudLobby::findLobby(const std::string& in_lobbyType, int in_rating, int in_maxSteps, const std::string& in_jsonAlgo, const std::string& in_jsonFilter, const std::vector<std::string>& in_otherUserCxIds, bool in_isReady, const std::string& in_extraJson, const std::string& in_teamCode, IServerCallback* in_callback)
+	void BrainCloudLobby::findLobby(const std::string& lobbyType, int rating, int maxSteps, const std::string& jsonAlgo, const std::string& jsonFilter, const std::vector<std::string>& otherUserCxIds, bool isReady, const std::string& extraJson, const std::string& teamCode, IServerCallback* callback)
 	{
 		Json::Value message;
-		message[OperationParam::LobbyType.getValue()] = in_lobbyType;
-		message[OperationParam::Rating.getValue()] = in_rating;
-		message[OperationParam::MaxSteps.getValue()] = in_maxSteps;
-		message[OperationParam::Algo.getValue()] = JsonUtil::jsonStringToValue(in_jsonAlgo.c_str());
-		message[OperationParam::Filter.getValue()] = JsonUtil::jsonStringToValue(in_jsonFilter.c_str());
-		message[OperationParam::OtherUserCxIds.getValue()] = JsonUtil::stringVectorToJson(in_otherUserCxIds);
-		message[OperationParam::IsReady.getValue()] = in_isReady;
-		message[OperationParam::ExtraJson.getValue()] = JsonUtil::jsonStringToValue(in_extraJson.c_str());
-		message[OperationParam::TeamCode.getValue()] = in_teamCode;
+		message[OperationParam::LobbyType.getValue()] = lobbyType;
+		message[OperationParam::Rating.getValue()] = rating;
+		message[OperationParam::MaxSteps.getValue()] = maxSteps;
+		message[OperationParam::Algo.getValue()] = JsonUtil::jsonStringToValue(jsonAlgo.c_str());
+		message[OperationParam::Filter.getValue()] = JsonUtil::jsonStringToValue(jsonFilter.c_str());
+		message[OperationParam::OtherUserCxIds.getValue()] = JsonUtil::stringVectorToJson(otherUserCxIds);
+		message[OperationParam::IsReady.getValue()] = isReady;
+		message[OperationParam::ExtraJson.getValue()] = JsonUtil::jsonStringToValue(extraJson.c_str());
+		message[OperationParam::TeamCode.getValue()] = teamCode;
 
-		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::FindLobby, message, in_callback);
+		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::FindLobby, message, callback);
 		m_client->sendRequest(sc);
 	}
 
-	void BrainCloudLobby::findLobbyWithPingData(const std::string& in_lobbyType, int in_rating, int in_maxSteps, const std::string& in_jsonAlgo, const std::string& in_jsonFilter, const std::vector<std::string>& in_otherUserCxIds, bool in_isReady, const std::string& in_extraJson, const std::string& in_teamCode, IServerCallback* in_callback)
+	void BrainCloudLobby::findLobbyWithPingData(const std::string& lobbyType, int rating, int maxSteps, const std::string& jsonAlgo, const std::string& jsonFilter, const std::vector<std::string>& otherUserCxIds, bool isReady, const std::string& extraJson, const std::string& teamCode, IServerCallback* callback)
 	{
 		Json::Value message;
-		message[OperationParam::LobbyType.getValue()] = in_lobbyType;
-		message[OperationParam::Rating.getValue()] = in_rating;
-		message[OperationParam::MaxSteps.getValue()] = in_maxSteps;
-		message[OperationParam::Algo.getValue()] = JsonUtil::jsonStringToValue(in_jsonAlgo.c_str());
-		message[OperationParam::Filter.getValue()] = JsonUtil::jsonStringToValue(in_jsonFilter.c_str());
-		message[OperationParam::OtherUserCxIds.getValue()] = JsonUtil::stringVectorToJson(in_otherUserCxIds);
-		message[OperationParam::IsReady.getValue()] = in_isReady;
-		message[OperationParam::ExtraJson.getValue()] = JsonUtil::jsonStringToValue(in_extraJson.c_str());
-		message[OperationParam::TeamCode.getValue()] = in_teamCode;
+		message[OperationParam::LobbyType.getValue()] = lobbyType;
+		message[OperationParam::Rating.getValue()] = rating;
+		message[OperationParam::MaxSteps.getValue()] = maxSteps;
+		message[OperationParam::Algo.getValue()] = JsonUtil::jsonStringToValue(jsonAlgo.c_str());
+		message[OperationParam::Filter.getValue()] = JsonUtil::jsonStringToValue(jsonFilter.c_str());
+		message[OperationParam::OtherUserCxIds.getValue()] = JsonUtil::stringVectorToJson(otherUserCxIds);
+		message[OperationParam::IsReady.getValue()] = isReady;
+		message[OperationParam::ExtraJson.getValue()] = JsonUtil::jsonStringToValue(extraJson.c_str());
+		message[OperationParam::TeamCode.getValue()] = teamCode;
 
-		attachPingDataAndSend(ServiceName::Lobby, ServiceOperation::FindLobbyWithPingData, message, in_callback);
+		attachPingDataAndSend(ServiceName::Lobby, ServiceOperation::FindLobbyWithPingData, message, callback);
 	}
 
 	void BrainCloudLobby::attachPingDataAndSend(ServiceName serviceName, ServiceOperation serviceOperation, Json::Value& data, IServerCallback* callback)
@@ -379,166 +379,166 @@ namespace BrainCloud
 		m_client->sendRequest(sc);
 	}
 
-	void BrainCloudLobby::findOrCreateLobby(const std::string& in_lobbyType, int in_rating, int in_maxSteps, const std::string& in_jsonAlgo, const std::string& in_jsonFilter, const std::vector<std::string>& in_otherUserCxIds, const std::string& in_jsonSettings, bool in_isReady, const std::string& in_extraJson, const std::string& in_teamCode, IServerCallback* in_callback)
+	void BrainCloudLobby::findOrCreateLobby(const std::string& lobbyType, int rating, int maxSteps, const std::string& jsonAlgo, const std::string& jsonFilter, const std::vector<std::string>& otherUserCxIds, const std::string& jsonSettings, bool isReady, const std::string& extraJson, const std::string& teamCode, IServerCallback* callback)
 	{
 		Json::Value message;
-		message[OperationParam::LobbyType.getValue()] = in_lobbyType;
-		message[OperationParam::Rating.getValue()] = in_rating;
-		message[OperationParam::MaxSteps.getValue()] = in_maxSteps;
-		message[OperationParam::Algo.getValue()] = JsonUtil::jsonStringToValue(in_jsonAlgo.c_str());
-		message[OperationParam::Filter.getValue()] = JsonUtil::jsonStringToValue(in_jsonFilter.c_str());
-		message[OperationParam::OtherUserCxIds.getValue()] = JsonUtil::stringVectorToJson(in_otherUserCxIds);
-		message[OperationParam::Settings.getValue()] = JsonUtil::jsonStringToValue(in_jsonSettings.c_str());
-		message[OperationParam::IsReady.getValue()] = in_isReady;
-		message[OperationParam::ExtraJson.getValue()] = JsonUtil::jsonStringToValue(in_extraJson.c_str());
-		message[OperationParam::TeamCode.getValue()] = in_teamCode;
+		message[OperationParam::LobbyType.getValue()] = lobbyType;
+		message[OperationParam::Rating.getValue()] = rating;
+		message[OperationParam::MaxSteps.getValue()] = maxSteps;
+		message[OperationParam::Algo.getValue()] = JsonUtil::jsonStringToValue(jsonAlgo.c_str());
+		message[OperationParam::Filter.getValue()] = JsonUtil::jsonStringToValue(jsonFilter.c_str());
+		message[OperationParam::OtherUserCxIds.getValue()] = JsonUtil::stringVectorToJson(otherUserCxIds);
+		message[OperationParam::Settings.getValue()] = JsonUtil::jsonStringToValue(jsonSettings.c_str());
+		message[OperationParam::IsReady.getValue()] = isReady;
+		message[OperationParam::ExtraJson.getValue()] = JsonUtil::jsonStringToValue(extraJson.c_str());
+		message[OperationParam::TeamCode.getValue()] = teamCode;
 
-		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::FindOrCreateLobby, message, in_callback);
+		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::FindOrCreateLobby, message, callback);
 		m_client->sendRequest(sc);
 	}
 
-	void BrainCloudLobby::findOrCreateLobbyWithPingData(const std::string& in_lobbyType, int in_rating, int in_maxSteps, const std::string& in_jsonAlgo, const std::string& in_jsonFilter, const std::vector<std::string>& in_otherUserCxIds, const std::string& in_jsonSettings, bool in_isReady, const std::string& in_extraJson, const std::string& in_teamCode, IServerCallback* in_callback)
+	void BrainCloudLobby::findOrCreateLobbyWithPingData(const std::string& lobbyType, int rating, int maxSteps, const std::string& jsonAlgo, const std::string& jsonFilter, const std::vector<std::string>& otherUserCxIds, const std::string& jsonSettings, bool isReady, const std::string& extraJson, const std::string& teamCode, IServerCallback* callback)
 	{
 		Json::Value message;
-		message[OperationParam::LobbyType.getValue()] = in_lobbyType;
-		message[OperationParam::Rating.getValue()] = in_rating;
-		message[OperationParam::MaxSteps.getValue()] = in_maxSteps;
-		message[OperationParam::Algo.getValue()] = JsonUtil::jsonStringToValue(in_jsonAlgo.c_str());
-		message[OperationParam::Filter.getValue()] = JsonUtil::jsonStringToValue(in_jsonFilter.c_str());
-		message[OperationParam::OtherUserCxIds.getValue()] = JsonUtil::stringVectorToJson(in_otherUserCxIds);
-		message[OperationParam::Settings.getValue()] = JsonUtil::jsonStringToValue(in_jsonSettings.c_str());
-		message[OperationParam::IsReady.getValue()] = in_isReady;
-		message[OperationParam::ExtraJson.getValue()] = JsonUtil::jsonStringToValue(in_extraJson.c_str());
-		message[OperationParam::TeamCode.getValue()] = in_teamCode;
+		message[OperationParam::LobbyType.getValue()] = lobbyType;
+		message[OperationParam::Rating.getValue()] = rating;
+		message[OperationParam::MaxSteps.getValue()] = maxSteps;
+		message[OperationParam::Algo.getValue()] = JsonUtil::jsonStringToValue(jsonAlgo.c_str());
+		message[OperationParam::Filter.getValue()] = JsonUtil::jsonStringToValue(jsonFilter.c_str());
+		message[OperationParam::OtherUserCxIds.getValue()] = JsonUtil::stringVectorToJson(otherUserCxIds);
+		message[OperationParam::Settings.getValue()] = JsonUtil::jsonStringToValue(jsonSettings.c_str());
+		message[OperationParam::IsReady.getValue()] = isReady;
+		message[OperationParam::ExtraJson.getValue()] = JsonUtil::jsonStringToValue(extraJson.c_str());
+		message[OperationParam::TeamCode.getValue()] = teamCode;
 
-		attachPingDataAndSend(ServiceName::Lobby, ServiceOperation::FindOrCreateLobbyWithPingData, message, in_callback);
+		attachPingDataAndSend(ServiceName::Lobby, ServiceOperation::FindOrCreateLobbyWithPingData, message, callback);
 	}
 
-	void BrainCloudLobby::getLobbyData(const std::string& in_lobbyId, IServerCallback* in_callback)
+	void BrainCloudLobby::getLobbyData(const std::string& lobbyId, IServerCallback* callback)
 	{
 		Json::Value message;
-		message[OperationParam::LobbyId.getValue()] = in_lobbyId;
+		message[OperationParam::LobbyId.getValue()] = lobbyId;
 
-		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::GetLobbyData, message, in_callback);
+		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::GetLobbyData, message, callback);
 		m_client->sendRequest(sc);
 	}
 
-	void BrainCloudLobby::getLobbyInstances(const std::string &in_lobbyType, const std::string &in_criteriaJson, IServerCallback* in_callback)
+	void BrainCloudLobby::getLobbyInstances(const std::string &lobbyType, const std::string &criteriaJson, IServerCallback* callback)
 	{
 		Json::Value message;
-		message[OperationParam::LobbyType.getValue()] = in_lobbyType;
-		message[OperationParam::LobbyCriteria.getValue()] = JsonUtil::jsonStringToValue(in_criteriaJson.c_str());;
+		message[OperationParam::LobbyType.getValue()] = lobbyType;
+		message[OperationParam::LobbyCriteria.getValue()] = JsonUtil::jsonStringToValue(criteriaJson.c_str());;
 
-		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::GetLobbyInstances, message, in_callback);
+		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::GetLobbyInstances, message, callback);
 		m_client->sendRequest(sc);
 	}
 
-	void BrainCloudLobby::getLobbyInstancesWithPingData(const std::string &in_lobbyType, const std::string &in_criteriaJson, IServerCallback* in_callback)
+	void BrainCloudLobby::getLobbyInstancesWithPingData(const std::string &lobbyType, const std::string &criteriaJson, IServerCallback* callback)
 	{
 		Json::Value message;
-		message[OperationParam::LobbyType.getValue()] = in_lobbyType;
-		message[OperationParam::LobbyCriteria.getValue()] = JsonUtil::jsonStringToValue(in_criteriaJson.c_str());;
+		message[OperationParam::LobbyType.getValue()] = lobbyType;
+		message[OperationParam::LobbyCriteria.getValue()] = JsonUtil::jsonStringToValue(criteriaJson.c_str());;
 
-		attachPingDataAndSend(ServiceName::Lobby, ServiceOperation::GetLobbyInstancesWithPingData, message, in_callback);
+		attachPingDataAndSend(ServiceName::Lobby, ServiceOperation::GetLobbyInstancesWithPingData, message, callback);
 	}
 
-	void BrainCloudLobby::joinLobby(const std::string in_lobbyId, bool in_isReady, const std::string& in_extraJson, std::string in_teamCode, 
-			const std::vector<std::string>& in_otherUserCxIds, IServerCallback* in_callback)
+	void BrainCloudLobby::joinLobby(const std::string lobbyId, bool isReady, const std::string& extraJson, std::string teamCode, 
+			const std::vector<std::string>& otherUserCxIds, IServerCallback* callback)
 	{
 		Json::Value message;
-		message[OperationParam::LobbyId.getValue()] = in_lobbyId;
-		message[OperationParam::IsReady.getValue()] = in_isReady;
-		message[OperationParam::ExtraJson.getValue()] = JsonUtil::jsonStringToValue(in_extraJson);
-		message[OperationParam::TeamCode.getValue()] = in_teamCode;
-		message[OperationParam::OtherUserCxIds.getValue()] = JsonUtil::stringVectorToJson(in_otherUserCxIds);
+		message[OperationParam::LobbyId.getValue()] = lobbyId;
+		message[OperationParam::IsReady.getValue()] = isReady;
+		message[OperationParam::ExtraJson.getValue()] = JsonUtil::jsonStringToValue(extraJson);
+		message[OperationParam::TeamCode.getValue()] = teamCode;
+		message[OperationParam::OtherUserCxIds.getValue()] = JsonUtil::stringVectorToJson(otherUserCxIds);
 
-		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::JoinLobby, message, in_callback);
+		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::JoinLobby, message, callback);
 		m_client->sendRequest(sc);
 	}
 
-	void BrainCloudLobby::joinLobbyWithPingData(const std::string in_lobbyId, bool in_isReady, const std::string& in_extraJson, std::string in_teamCode, 
-			const std::vector<std::string>& in_otherUserCxIds, IServerCallback* in_callback)
+	void BrainCloudLobby::joinLobbyWithPingData(const std::string lobbyId, bool isReady, const std::string& extraJson, std::string teamCode, 
+			const std::vector<std::string>& otherUserCxIds, IServerCallback* callback)
 	{
 		Json::Value message;
-		message[OperationParam::LobbyId.getValue()] = in_lobbyId;
-		message[OperationParam::IsReady.getValue()] = in_isReady;
-		message[OperationParam::ExtraJson.getValue()] = JsonUtil::jsonStringToValue(in_extraJson);
-		message[OperationParam::TeamCode.getValue()] = in_teamCode;
-		message[OperationParam::OtherUserCxIds.getValue()] = JsonUtil::stringVectorToJson(in_otherUserCxIds);
+		message[OperationParam::LobbyId.getValue()] = lobbyId;
+		message[OperationParam::IsReady.getValue()] = isReady;
+		message[OperationParam::ExtraJson.getValue()] = JsonUtil::jsonStringToValue(extraJson);
+		message[OperationParam::TeamCode.getValue()] = teamCode;
+		message[OperationParam::OtherUserCxIds.getValue()] = JsonUtil::stringVectorToJson(otherUserCxIds);
 
-		attachPingDataAndSend(ServiceName::Lobby, ServiceOperation::JoinLobbyWithPingData, message, in_callback);
+		attachPingDataAndSend(ServiceName::Lobby, ServiceOperation::JoinLobbyWithPingData, message, callback);
 	}
 
-	void BrainCloudLobby::leaveLobby(const std::string& in_lobbyId, IServerCallback* in_callback)
+	void BrainCloudLobby::leaveLobby(const std::string& lobbyId, IServerCallback* callback)
 	{
 		Json::Value message;
-		message[OperationParam::LobbyId.getValue()] = in_lobbyId;
+		message[OperationParam::LobbyId.getValue()] = lobbyId;
 
-		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::LeaveLobby, message, in_callback);
+		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::LeaveLobby, message, callback);
 		m_client->sendRequest(sc);
 	}
 
-	void BrainCloudLobby::removeMember(const std::string& in_lobbyId, const std::string& in_cxId, IServerCallback* in_callback)
+	void BrainCloudLobby::removeMember(const std::string& lobbyId, const std::string& cxId, IServerCallback* callback)
 	{
 		Json::Value message;
-		message[OperationParam::LobbyId.getValue()] = in_lobbyId;
-		message[OperationParam::CxId.getValue()] = in_cxId;
+		message[OperationParam::LobbyId.getValue()] = lobbyId;
+		message[OperationParam::CxId.getValue()] = cxId;
 
-		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::RemoveMember, message, in_callback);
+		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::RemoveMember, message, callback);
 		m_client->sendRequest(sc);
 	}
 
-	void BrainCloudLobby::sendSignal(const std::string& in_lobbyId, const std::string& in_jsonSignalData, IServerCallback* in_callback)
+	void BrainCloudLobby::sendSignal(const std::string& lobbyId, const std::string& jsonSignalData, IServerCallback* callback)
 	{
 		Json::Value message;
-		message[OperationParam::LobbyId.getValue()] = in_lobbyId;
-		message[OperationParam::SignalData.getValue()] = JsonUtil::jsonStringToValue(in_jsonSignalData.c_str());
+		message[OperationParam::LobbyId.getValue()] = lobbyId;
+		message[OperationParam::SignalData.getValue()] = JsonUtil::jsonStringToValue(jsonSignalData.c_str());
 
-		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::SendSignal, message, in_callback);
+		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::SendSignal, message, callback);
 		m_client->sendRequest(sc);
 	}
 
-	void BrainCloudLobby::switchTeam(const std::string& in_lobbyId, const std::string& in_toTeamCode, IServerCallback* in_callback)
+	void BrainCloudLobby::switchTeam(const std::string& lobbyId, const std::string& toTeamCode, IServerCallback* callback)
 	{
 		Json::Value message;
-		message[OperationParam::LobbyId.getValue()] = in_lobbyId;
-		message[OperationParam::ToTeamCode.getValue()] = in_toTeamCode;
+		message[OperationParam::LobbyId.getValue()] = lobbyId;
+		message[OperationParam::ToTeamCode.getValue()] = toTeamCode;
 
-		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::SwitchTeam, message, in_callback);
+		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::SwitchTeam, message, callback);
 		m_client->sendRequest(sc);
 	}
 
-	void BrainCloudLobby::updateReady(const std::string& in_lobbyId, bool in_isReady, const std::string& in_extraJson, IServerCallback* in_callback)
+	void BrainCloudLobby::updateReady(const std::string& lobbyId, bool isReady, const std::string& extraJson, IServerCallback* callback)
 	{
 		Json::Value message;
-		message[OperationParam::LobbyId.getValue()] = in_lobbyId;
-		message[OperationParam::IsReady.getValue()] = in_isReady;
-		message[OperationParam::ExtraJson.getValue()] = JsonUtil::jsonStringToValue(in_extraJson.c_str());
+		message[OperationParam::LobbyId.getValue()] = lobbyId;
+		message[OperationParam::IsReady.getValue()] = isReady;
+		message[OperationParam::ExtraJson.getValue()] = JsonUtil::jsonStringToValue(extraJson.c_str());
 
-		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::UpdateReady, message, in_callback);
+		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::UpdateReady, message, callback);
 		m_client->sendRequest(sc);
 	}
 
-	void BrainCloudLobby::updateSettings(const std::string& in_lobbyId, const std::string& in_jsonSettings, IServerCallback* in_callback)
+	void BrainCloudLobby::updateSettings(const std::string& lobbyId, const std::string& jsonSettings, IServerCallback* callback)
 	{
 		Json::Value message;
-		message[OperationParam::LobbyId.getValue()] = in_lobbyId;
-		message[OperationParam::Settings.getValue()] = JsonUtil::jsonStringToValue(in_jsonSettings.c_str());
+		message[OperationParam::LobbyId.getValue()] = lobbyId;
+		message[OperationParam::Settings.getValue()] = JsonUtil::jsonStringToValue(jsonSettings.c_str());
 
-		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::UpdateSettings, message, in_callback);
+		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::UpdateSettings, message, callback);
 		m_client->sendRequest(sc);
 	}
 	
 	/// <summary>
 	/// Cancel this members Find, Join and Searching of Lobbies
 	/// </summary>
-	void BrainCloudLobby::cancelFindRequest(const std::string& in_lobbyType, const std::string& in_cxId, IServerCallback* in_callback)
+	void BrainCloudLobby::cancelFindRequest(const std::string& lobbyType, std::string entryId, IServerCallback* callback)
 	{
 		Json::Value message;
-		message[OperationParam::LobbyType.getValue()] = in_lobbyType;
-		message[OperationParam::CxId.getValue()] = in_cxId;
+		message[OperationParam::LobbyType.getValue()] = lobbyType;
+		message[OperationParam::EntryId.getValue()] = entryId;
 
-		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::CancelFindRequest, message, in_callback);
+		ServerCall* sc = new ServerCall(ServiceName::Lobby, ServiceOperation::CancelFindRequest, message, callback);
 		m_client->sendRequest(sc);
 	}
 };

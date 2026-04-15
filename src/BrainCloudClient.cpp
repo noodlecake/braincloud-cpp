@@ -1,6 +1,6 @@
 // BrainCloudClient.cpp
 // BrainCloudLib
-// Copyright 2016 bitHeads, Inc. All Rights Reserved.
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 
 #include <cstring>
 #include <iomanip>
@@ -27,7 +27,7 @@ namespace BrainCloud
             "Singleton usage is disabled. If called by mistake, use your own variable that holds an instance of the bcWrapper/bcClient.";
 
     BrainCloudClient * BrainCloudClient::_instance = NULL;
-    std::string BrainCloudClient::s_brainCloudClientVersion = "4.10.0";
+    std::string BrainCloudClient::s_brainCloudClientVersion = "5.9.5";
     const char* BC_SERVER_URL = "https://api.braincloudservers.com/dispatcherv2"; 
 
     /**
@@ -39,6 +39,7 @@ namespace BrainCloud
         _relayComms(new RelayComms(this)),
         _asyncMatchService(new BrainCloudAsyncMatch(this)),
         _authenticationService(new BrainCloudAuthentication(this)),
+        _blockchainService(new BrainCloudBlockchain(this)),
         _chatService(new BrainCloudChat(this)),
         _dataStreamService(new BrainCloudDataStream(this)),
         _entityService(new BrainCloudEntity(this)),
@@ -51,6 +52,7 @@ namespace BrainCloud
         _globalEntityService(new BrainCloudGlobalEntity(this)),
         _globalStatisticsService(new BrainCloudGlobalStatistics(this)),
         _groupService(new BrainCloudGroup(this)),
+        _groupFileService(new BrainCloudGroupFile(this)),
         _identityService(new BrainCloudIdentity(this)),
         _lobbyService(new BrainCloudLobby(this)),
         _mailService(new BrainCloudMail(this)),
@@ -82,6 +84,22 @@ namespace BrainCloud
         //needed this here otherwise out of scope compiler error
         _rttService = new BrainCloudRTT(_rttComms, this);
         _relayService = new BrainCloudRelay(_relayComms, this);
+    }
+
+    void BrainCloudClient::enableCompression(bool isEnabled)
+    {
+        enableCompressedRequests(isEnabled);
+        enableCompressedResponses(isEnabled);
+    }
+
+    void BrainCloudClient::enableCompressedRequests(bool isEnabled)
+    {
+        _brainCloudComms->compressRequests = isEnabled;
+    }
+
+    void BrainCloudClient::enableCompressedResponses(bool isEnabled)
+    {
+        _authenticationService->compressResponses = isEnabled;
     }
 
     BrainCloudClient::~BrainCloudClient()
@@ -142,15 +160,15 @@ namespace BrainCloud
         return(_rttComms->getConnectionId().c_str());
     }
 
-    void BrainCloudClient::initializeComms(const char * in_serverURL, const char * in_appId, const std::map<std::string, std::string>& in_secretMap)
+    void BrainCloudClient::initializeComms(const char * serverURL, const char * appId, const std::map<std::string, std::string>& secretMap)
     {
         if (_brainCloudComms)
         {
             // automatically upgrade any older clients using "dispatcher" url
             // to "dispatcherv2" endpoint. Comms supports this now and otherwise
             // the change is transparent to the client.
-            const char * urlToUse = in_serverURL;
-            std::string url = in_serverURL;
+            const char * urlToUse = serverURL;
+            std::string url = serverURL;
             if (url.find("dispatcherv2") == std::string::npos)
             {
                 size_t index = url.find("dispatcher");
@@ -161,7 +179,7 @@ namespace BrainCloud
                     urlToUse = url.c_str();
                 }
             }
-            _brainCloudComms->initializeWithApps(urlToUse, in_appId, in_secretMap);
+            _brainCloudComms->initializeWithApps(urlToUse, appId, secretMap);
         }
 
         if (_rttComms)
@@ -175,17 +193,17 @@ namespace BrainCloud
         }
     }
 
-    void BrainCloudClient::initialize(const char * in_serverURL, const char * in_secretKey, const char * in_appId, const char * in_appVersion)
+    void BrainCloudClient::initialize(const char * serverURL, const char * secretKey, const char * appId, const char * appVersion)
     {
         resetCommunication();
         std::string error = "";
-        if (in_serverURL == NULL || strlen(in_serverURL) <= 0)
+        if (serverURL == NULL || strlen(serverURL) <= 0)
             error = "serverURL was null or empty";
-        else if (in_secretKey == NULL || strlen(in_secretKey) <= 0)
+        else if (secretKey == NULL || strlen(secretKey) <= 0)
             error = "secretKey was null or empty";
-        else if (in_appId == NULL || strlen(in_appId) <= 0)
+        else if (appId == NULL || strlen(appId) <= 0)
             error = "appId was null or empty";
-        else if (in_appVersion == NULL || strlen(in_appVersion) <= 0)
+        else if (appVersion == NULL || strlen(appVersion) <= 0)
             error = "appVersion was null or empty";
 
         if (error.length() > 0)
@@ -195,31 +213,31 @@ namespace BrainCloud
         }
 
         std::map<std::string, std::string> secretMap;
-        secretMap[in_appId] = in_secretKey;
+        secretMap[appId] = secretKey;
 
-        initializeComms(in_serverURL, in_appId, secretMap);
+        initializeComms(serverURL, appId, secretMap);
         setupOSLocaleData();
 
         _releasePlatform = Device::getPlatformName();
-        _appVersion = in_appVersion;
+        _appVersion = appVersion;
     }
 
-    void BrainCloudClient::initialize(const char * in_secretKey, const char * in_appId, const char * in_appVersion)
+    void BrainCloudClient::initialize(const char * secretKey, const char * appId, const char * appVersion)
     {
-        initialize(BC_SERVER_URL, in_secretKey, in_appId, in_appVersion);
+        initialize(BC_SERVER_URL, secretKey, appId, appVersion);
     }
 
-    void BrainCloudClient::initializeWithApps(const char * in_serverURL, const char * in_defaultAppId, const std::map<std::string, std::string>& in_secretMap, const char * in_appVersion)
+    void BrainCloudClient::initializeWithApps(const char * serverURL, const char * defaultAppId, const std::map<std::string, std::string>& secretMap, const char * appVersion)
     {
         resetCommunication();
         std::string error = "";
-        if (in_serverURL == NULL || strlen(in_serverURL) <= 0)
+        if (serverURL == NULL || strlen(serverURL) <= 0)
             error = "serverURL was null or empty";
-        else if (in_defaultAppId == NULL || strlen(in_defaultAppId) <= 0)
+        else if (defaultAppId == NULL || strlen(defaultAppId) <= 0)
             error = "appId was null or empty";
-        else if (in_appVersion == NULL || strlen(in_appVersion) <= 0)
+        else if (appVersion == NULL || strlen(appVersion) <= 0)
             error = "appVersion was null or empty";
-        else if (in_secretMap.find(in_defaultAppId) == in_secretMap.end())
+        else if (secretMap.find(defaultAppId) == secretMap.end())
             error = "not secretKey match for appid";
 
         if (error.length() > 0)
@@ -228,21 +246,21 @@ namespace BrainCloud
             return;
         }
 
-        initializeComms(in_serverURL, in_defaultAppId, in_secretMap);
+        initializeComms(serverURL, defaultAppId, secretMap);
         setupOSLocaleData();
 
         _releasePlatform = Device::getPlatformName();
-        _appVersion = in_appVersion;
+        _appVersion = appVersion;
     }
 
-    void BrainCloudClient::initializeWithApps(const char* in_defaultAppId, const std::map<std::string, std::string>& in_secretMap, const char* in_appVersion)
+    void BrainCloudClient::initializeWithApps(const char* defaultAppId, const std::map<std::string, std::string>& secretMap, const char* appVersion)
     {
-        initializeWithApps(BC_SERVER_URL, in_defaultAppId, in_secretMap, in_appVersion);
+        initializeWithApps(BC_SERVER_URL, defaultAppId, secretMap, appVersion);
     }
 
-    void BrainCloudClient::initializeIdentity(const char * in_profileId, const char * in_anonymousId)
+    void BrainCloudClient::initializeIdentity(const char * profileId, const char * anonymousId)
     {
-        _authenticationService->initialize(in_profileId, in_anonymousId);
+        _authenticationService->initialize(profileId, anonymousId);
     }
 
 
@@ -271,9 +289,9 @@ namespace BrainCloud
         }
     }
 
-    void BrainCloudClient::registerEventCallback(IEventCallback *in_eventCallback)
+    void BrainCloudClient::registerEventCallback(IEventCallback *eventCallback)
     {
-        _brainCloudComms->registerEventCallback(in_eventCallback);
+        _brainCloudComms->registerEventCallback(eventCallback);
     }
 
     void BrainCloudClient::deregisterEventCallback()
@@ -281,9 +299,20 @@ namespace BrainCloud
         _brainCloudComms->deregisterEventCallback();
     }
 
-    void BrainCloudClient::registerRewardCallback(IRewardCallback *in_rewardCallback)
+    void BrainCloudClient::registerAutoReconnectCallback(IAutoReconnectCallback* autoReconnectCallback)
     {
-        _brainCloudComms->registerRewardCallback(in_rewardCallback);
+        std::shared_ptr<IAutoReconnectCallback> sharedCallback(autoReconnectCallback);
+        _brainCloudComms->registerAutoReconnectCallback(sharedCallback);
+    }
+
+    void BrainCloudClient::deregisterAutoReconnectCallback()
+    {
+        _brainCloudComms->deregisterAutoReconnectCallback();
+    }
+
+    void BrainCloudClient::registerRewardCallback(IRewardCallback *rewardCallback)
+    {
+        _brainCloudComms->registerRewardCallback(rewardCallback);
     }
 
     void BrainCloudClient::deregisterRewardCallback()
@@ -291,9 +320,9 @@ namespace BrainCloud
         _brainCloudComms->deregisterRewardCallback();
     }
 
-    void BrainCloudClient::registerFileUploadCallback(IFileUploadCallback * in_fileUploadCallback)
+    void BrainCloudClient::registerFileUploadCallback(IFileUploadCallback * fileUploadCallback)
     {
-        _brainCloudComms->registerFileUploadCallback(in_fileUploadCallback);
+        _brainCloudComms->registerFileUploadCallback(fileUploadCallback);
     }
 
     void BrainCloudClient::deregisterFileUploadCallback()
@@ -301,9 +330,9 @@ namespace BrainCloud
         _brainCloudComms->deregisterFileUploadCallback();
     }
 
-    void BrainCloudClient::registerGlobalErrorCallback(IGlobalErrorCallback * in_globalErrorCallback)
+    void BrainCloudClient::registerGlobalErrorCallback(IGlobalErrorCallback * globalErrorCallback)
     {
-        _brainCloudComms->registerGlobalErrorCallback(in_globalErrorCallback);
+        _brainCloudComms->registerGlobalErrorCallback(globalErrorCallback);
     }
 
     void BrainCloudClient::deregisterGlobalErrorCallback()
@@ -311,14 +340,19 @@ namespace BrainCloud
         _brainCloudComms->deregisterGlobalErrorCallback();
     }
 
-    void BrainCloudClient::registerNetworkErrorCallback(INetworkErrorCallback * in_networkErrorCallback)
+    void BrainCloudClient::registerNetworkErrorCallback(INetworkErrorCallback * networkErrorCallback)
     {
-        _brainCloudComms->registerNetworkErrorCallback(in_networkErrorCallback);
+        _brainCloudComms->registerNetworkErrorCallback(networkErrorCallback);
     }
 
     void BrainCloudClient::deregisterNetworkErrorCallback()
     {
         _brainCloudComms->deregisterNetworkErrorCallback();
+    }
+
+    void BrainCloudClient::enableAutoReconnect(bool shouldEnable)
+    {
+        _brainCloudComms->setAutoReconnectEnabled(shouldEnable);
     }
 
     void BrainCloudClient::enableLogging(bool shouldEnable)
@@ -337,9 +371,9 @@ namespace BrainCloud
         _brainCloudComms->sendHeartbeat();
     }
 
-    void BrainCloudClient::sendRequest(ServerCall * in_serviceMessage)
+    void BrainCloudClient::sendRequest(ServerCall * serviceMessage)
     {
-        _brainCloudComms->addToQueue(in_serviceMessage);
+        _brainCloudComms->addToQueue(serviceMessage);
     }
 
     void BrainCloudClient::resetCommunication()
@@ -370,6 +404,11 @@ namespace BrainCloud
         return _brainCloudComms->isInitialized() && _rttComms->isInitialized() && _relayComms->isInitialized();
     }
 
+    bool BrainCloudClient::isKillswitchEngaged()
+    {
+        return _brainCloudComms->isKillswitchEngaged();
+    }
+
     void BrainCloudClient::setImmediateRetryOnError(bool value)
     {
         _brainCloudComms->setImmediateRetryOnError(value);
@@ -390,8 +429,8 @@ namespace BrainCloud
         return _instance;
     }
 
-    void BrainCloudClient::setHeartbeatInterval(int in_intervalInMilliseconds) {
-        _brainCloudComms->setHeartbeatInterval(in_intervalInMilliseconds);
+    void BrainCloudClient::setHeartbeatInterval(int intervalInMilliseconds) {
+        _brainCloudComms->setHeartbeatInterval(intervalInMilliseconds);
     }
 
     const std::vector<int> & BrainCloudClient::getPacketTimeouts()
@@ -399,9 +438,9 @@ namespace BrainCloud
         return _brainCloudComms->getPacketTimeouts();
     }
 
-    void BrainCloudClient::setPacketTimeouts(const std::vector<int> & in_packetTimeouts)
+    void BrainCloudClient::setPacketTimeouts(const std::vector<int> & packetTimeouts)
     {
-        _brainCloudComms->setPacketTimeouts(in_packetTimeouts);
+        _brainCloudComms->setPacketTimeouts(packetTimeouts);
     }
 
     void BrainCloudClient::setPacketTimeoutsToDefault()
@@ -409,9 +448,9 @@ namespace BrainCloud
         _brainCloudComms->setPacketTimeoutsToDefault();
     }
 
-    void BrainCloudClient::setAuthenticationPacketTimeout(int in_timeoutSecs)
+    void BrainCloudClient::setAuthenticationPacketTimeout(int timeoutSecs)
     {
-        _brainCloudComms->setAuthenticationPacketTimeout(in_timeoutSecs);
+        _brainCloudComms->setAuthenticationPacketTimeout(timeoutSecs);
     }
 
     int BrainCloudClient::getAuthenticationPacketTimeout()
@@ -419,14 +458,14 @@ namespace BrainCloud
         return _brainCloudComms->getAuthenticationPacketTimeout();
     }
 
-    void BrainCloudClient::setOldStyleStatusMessageErrorCallback(bool in_enabled)
+    void BrainCloudClient::setOldStyleStatusMessageErrorCallback(bool enabled)
     {
-        _brainCloudComms->setOldStyleStatusMessageErrorCallback(in_enabled);
+        _brainCloudComms->setOldStyleStatusMessageErrorCallback(enabled);
     }
 
-    void BrainCloudClient::setErrorCallbackOn202Status(bool in_isError)
+    void BrainCloudClient::setErrorCallbackOn202Status(bool isError)
     {
-        _brainCloudComms->setErrorCallbackOn202Status(in_isError);
+        _brainCloudComms->setErrorCallbackOn202Status(isError);
     }
 
     int BrainCloudClient::getUploadLowTransferRateTimeout()
@@ -434,9 +473,9 @@ namespace BrainCloud
         return _brainCloudComms->getUploadLowTransferRateTimeout();
     }
 
-    void BrainCloudClient::setUploadLowTransferRateTimeout(int in_timeoutSecs)
+    void BrainCloudClient::setUploadLowTransferRateTimeout(int timeoutSecs)
     {
-        _brainCloudComms->setUploadLowTransferRateTimeout(in_timeoutSecs);
+        _brainCloudComms->setUploadLowTransferRateTimeout(timeoutSecs);
     }
 
     int BrainCloudClient::getUploadLowTransferRateThreshold()
@@ -444,14 +483,14 @@ namespace BrainCloud
         return _brainCloudComms->getUploadLowTransferRateThreshold();
     }
 
-    void BrainCloudClient::setUploadLowTransferRateThreshold(int in_bytesPerSec)
+    void BrainCloudClient::setUploadLowTransferRateThreshold(int bytesPerSec)
     {
-        _brainCloudComms->setUploadLowTransferRateThreshold(in_bytesPerSec);
+        _brainCloudComms->setUploadLowTransferRateThreshold(bytesPerSec);
     }
 
-    void BrainCloudClient::enableNetworkErrorMessageCaching(bool in_enabled)
+    void BrainCloudClient::enableNetworkErrorMessageCaching(bool enabled)
     {
-        _brainCloudComms->enableNetworkErrorMessageCaching(in_enabled);
+        _brainCloudComms->enableNetworkErrorMessageCaching(enabled);
     }
 
     void BrainCloudClient::retryCachedMessages()
@@ -459,9 +498,9 @@ namespace BrainCloud
         _brainCloudComms->retryCachedMessages();
     }
 
-    void BrainCloudClient::flushCachedMessages(bool in_sendApiErrorCallbacks)
+    void BrainCloudClient::flushCachedMessages(bool sendApiErrorCallbacks)
     {
-        _brainCloudComms->flushCachedMessages(in_sendApiErrorCallbacks);
+        _brainCloudComms->flushCachedMessages(sendApiErrorCallbacks);
     }
 
     void BrainCloudClient::insertEndOfMessageBundleMarker()

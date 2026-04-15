@@ -6,6 +6,11 @@ endif()
 
 project (brainCloudUnitTest)
 
+# xcode generator properties
+set(CMAKE_XCODE_GENERATE_SCHEME ON)
+# visual studio generator properties
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT bctests)
+    
 if (UNIX AND NOT APPLE)
     set(LINUX 1)
     add_definitions(-DBC_TEST_LINUX)
@@ -42,6 +47,13 @@ if (APPLE)
 	find_library(FOUNDATION_LIB Foundation)
 	find_library(SECURITY_LIB Security)
 	target_link_libraries(bctests PUBLIC ${GAMEKIT_LIB} ${COREFOUNDATION_LIB} ${FOUNDATION_LIB} ${SECURITY_LIB})
+else()
+	set(ZLIB_DLL "${BC_DIR}/lib/zlib/zlib1.dll")
+	
+	add_custom_command(TARGET bctests POST_BUILD 
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+		${ZLIB_DLL} $<TARGET_FILE_DIR:bctests> 
+		COMMENT "Copying zlib1.dll to ${CMAKE_BINARY_DIR}/$<CONFIG>")
 endif()
 
 ################################

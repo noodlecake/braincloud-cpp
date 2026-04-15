@@ -1,6 +1,11 @@
-// Copyright 2016 bitHeads, Inc. All Rights Reserved.
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 
 #pragma once
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
+
 
 #include <string>
 #include "braincloud/BrainCloudTypes.h"
@@ -14,7 +19,7 @@ namespace BrainCloud
 	class BrainCloudItemCatalog
 	{
 	public:
-		BrainCloudItemCatalog(BrainCloudClient* in_client);
+		BrainCloudItemCatalog(BrainCloudClient* client);
     /**
 	 * Reads an existing item definition from the server, with language fields
 	 * limited to the current or default language
@@ -24,7 +29,7 @@ namespace BrainCloud
 	 *
 	 * @param defId
 	 */
-        void getCatalogItemDefinition(const std::string& in_defId, IServerCallback * in_callback = NULL);
+        void getCatalogItemDefinition(const std::string& defId, IServerCallback * callback = NULL);
 
 
 	/**
@@ -36,7 +41,7 @@ namespace BrainCloud
 	 *
 	 * @param context
 	 */
-        void getCatalogItemsPage(const std::string& in_context, IServerCallback * in_callback = NULL);
+        void getCatalogItemsPage(const std::string& context, IServerCallback * callback = NULL);
 
 
 	/**
@@ -50,9 +55,12 @@ namespace BrainCloud
 	 * @param context
 	 * @param pageOffset
 	 */
-        void getCatalogItemsPageOffset(const std::string& in_context, int32_t in_pageOffset, IServerCallback * in_callback = NULL);
+        void getCatalogItemsPageOffset(const std::string& context, int32_t pageOffset, IServerCallback * callback = NULL);
 
     private:
         BrainCloudClient * m_client;
     };
 }
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif

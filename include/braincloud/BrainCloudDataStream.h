@@ -1,6 +1,11 @@
-// Copyright 2016 bitHeads, Inc. All Rights Reserved.
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 
 #pragma once
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
+
 
 #include <stddef.h>
 #include <string>
@@ -13,7 +18,7 @@ namespace BrainCloud {
     class BrainCloudDataStream
     {
     public:
-        BrainCloudDataStream(BrainCloudClient* in_client);
+        BrainCloudDataStream(BrainCloudClient* client);
 
         /**
          * Creates custom data stream page event
@@ -21,7 +26,7 @@ namespace BrainCloud {
          * @param eventName Name of event
          * @param eventProperties Properties of event
          */
-        void customPageEvent(const char * in_eventName, const char * in_jsonEventProperties, IServerCallback * in_callback = NULL);
+        void customPageEvent(const char * eventName, const char * jsonEventProperties, IServerCallback * callback = NULL);
 
         /**
          * Creates custom data stream screen event
@@ -29,7 +34,7 @@ namespace BrainCloud {
          * @param eventName Name of event
          * @param eventProperties Properties of event
          */
-        void customScreenEvent(const char * in_eventName, const char * in_jsonEventProperties, IServerCallback * in_callback = NULL);
+        void customScreenEvent(const char * eventName, const char * jsonEventProperties, IServerCallback * callback = NULL);
 
         /**
          * Creates custom data stream track event
@@ -37,7 +42,7 @@ namespace BrainCloud {
          * @param eventName Name of event
          * @param eventProperties Properties of event
          */
-        void customTrackEvent(const char * in_eventName, const char * in_jsonEventProperties, IServerCallback * in_callback = NULL);
+        void customTrackEvent(const char * eventName, const char * jsonEventProperties, IServerCallback * callback = NULL);
 
         /**
          * Send crash report
@@ -51,9 +56,12 @@ namespace BrainCloud {
          * @param userNotes
          * @param userSubmitted
          */
-        void submitCrashReport(const char * in_crashType, const char * in_errorMsg, const std::string&  in_crashJson, const char * in_crashLog, const char * in_username, const char * in_userEmail, const char * in_userNotes, bool in_userSubmitted, IServerCallback * in_callback = NULL);
+        void submitCrashReport(const char * crashType, const char * errorMsg, const std::string&  crashJson, const char * crashLog, const char * username, const char * userEmail, const char * userNotes, bool userSubmitted, IServerCallback * callback = NULL);
 
     private:
         BrainCloudClient * m_client;
     };
 }
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif

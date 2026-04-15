@@ -13,7 +13,7 @@ using namespace BrainCloud;
 
 class TestFixtureBase : public testing::Test
 {
-#define ENABLE_SETUP_TEARDOWN_LOGGING false
+#define ENABLE_SETUP_TEARDOWN_LOGGING true
 
 public:
     TestFixtureBase() {}
@@ -33,6 +33,7 @@ protected:
     static std::string m_childAppId;
     static std::string m_childSecret;
 	static std::string m_peerName;
+	static std::string m_redirectAppId;
 
     static std::string getServerUrl();
 
@@ -50,7 +51,7 @@ protected:
 	bool DetachPeer();
     void Logout();
 
-    void LoadIds();
+    static void LoadIds();
     void Init();
 
 private:

@@ -1,6 +1,11 @@
-// Copyright 2016 bitHeads, Inc. All Rights Reserved.
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 
 #pragma once
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
+
 
 #include <stddef.h>
 #include <string>
@@ -13,7 +18,7 @@ namespace BrainCloud
     class BrainCloudGlobalFile
     {
     public:
-        BrainCloudGlobalFile(BrainCloudClient* in_client);
+        BrainCloudGlobalFile(BrainCloudClient* client);
 
         /**
          * Returns the complete info for the specified file given it’s fileId
@@ -21,9 +26,9 @@ namespace BrainCloud
          * Service Name - GlobalFileV3
          * Service Operation - GetFileInfo
          *
-         * @param in_callback The method to be invoked when the server response is received
+         * @param callback The method to be invoked when the server response is received
          */
-        void getFileInfo(const std::string& in_fileId, IServerCallback* in_callback = NULL);
+        void getFileInfo(const std::string& fileId, IServerCallback* callback = NULL);
 
         /**
          * Returns the complete info for the specified file, without having to look up the fileId first.
@@ -31,9 +36,9 @@ namespace BrainCloud
          * Service Name - GlobalFileV3
          * Service Operation - GetFileInfoSimple
          *
-         * @param in_callback The method to be invoked when the server response is received
+         * @param callback The method to be invoked when the server response is received
          */
-        void getFileInfoSimple(const std::string& in_folderPath, const std::string& in_filename, IServerCallback* in_callback = NULL);
+        void getFileInfoSimple(const std::string& folderPath, const std::string& filename, IServerCallback* callback = NULL);
 
         /**
          * Returns the CDN of the specified file.
@@ -41,9 +46,9 @@ namespace BrainCloud
          * Service Name - GlobalFileV3
          * Service Operation - GetGlobalCDNUrl
          *
-         * @param in_callback The method to be invoked when the server response is received
+         * @param callback The method to be invoked when the server response is received
          */
-        void getGlobalCDNUrl(const std::string& in_fileId, IServerCallback* in_callback = NULL);
+        void getGlobalCDNUrl(const std::string& fileId, IServerCallback* callback = NULL);
 
         /**
          * Returns files at the current path.
@@ -51,11 +56,14 @@ namespace BrainCloud
          * Service Name - GlobalFileV3
          * Service Operation - GetGlobalFileList
          *
-         * @param in_callback The method to be invoked when the server response is received
+         * @param callback The method to be invoked when the server response is received
          */
-        void getGlobalFileList(const std::string& in_folderPath, bool in_recurse, IServerCallback* in_callback = NULL);
+        void getGlobalFileList(const std::string& folderPath, bool recurse, IServerCallback* callback = NULL);
 
     private:
         BrainCloudClient * m_client;
     };
 }
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif

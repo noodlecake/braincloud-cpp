@@ -111,10 +111,12 @@
     }
     NSURLSession * session = [NSURLSession sessionWithConfiguration:sessionConfig];
     
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wimplicit-retain-self"
     NSURLSessionTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if (error) {
             NSLog(@"error = %@", error);
-            _httpStatus = HTTP_CLIENT_NETWORK_ERROR;
+			_httpStatus = BrainCloud::HTTP_CLIENT_NETWORK_ERROR;
             _errorReasonCode = _cancelled ? CLIENT_UPLOAD_FILE_CANCELLED : CLIENT_UPLOAD_FILE_UNKNOWN;
             return;
         }
@@ -144,6 +146,10 @@
             _httpResponse = [NSString stringWithCString:strHttpJsonResponse.c_str() encoding:NSUTF8StringEncoding];
         }
     }];
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
+
     self.task = task;
     [task resume];
 }

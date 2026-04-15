@@ -1,10 +1,11 @@
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 #include "braincloud/internal/RTTComms.h"
 
 #include "braincloud/BrainCloudClient.h"
 #include "braincloud/IRTTCallback.h"
 #include "braincloud/IRTTConnectCallback.h"
 #include "braincloud/internal/ITCPSocket.h"
-#if (TARGET_OS_WATCH != 1)
+#if (!defined(TARGET_OS_WATCH) || TARGET_OS_WATCH == 0)
 #include "braincloud/internal/IWebSocket.h"
 #endif
 #include "braincloud/internal/TimeUtil.h"
@@ -39,9 +40,9 @@ namespace BrainCloud
     {
     }
 
-    RTTComms::RTTComms(BrainCloudClient* in_client)
+    RTTComms::RTTComms(BrainCloudClient* client)
         : _isInitialized(false)
-        , _client(in_client)
+        , _client(client)
         , _loggingEnabled(false)
         , _connectCallback(NULL)
         , _socket(NULL)
@@ -135,12 +136,12 @@ namespace BrainCloud
             {
                 Json::FastWriter myWriter;
                 std::string output ="\n" + myWriter.write(_msg); 
-                printf(output.c_str());
+                printf("%s",output.c_str());
             } 
         }
     }
 
-    void RTTComms::enableRTT(IRTTConnectCallback* in_callback, bool in_useWebSocket)
+    void RTTComms::enableRTT(IRTTConnectCallback* callback, bool useWebSocket)
     {
 #if RTTCOMMS_LOG_EVERY_METHODS
         std::cout << "VERBOSE: RTTComms::enableRTT" << std::endl;
@@ -149,10 +150,17 @@ namespace BrainCloud
         {
             return;
         }
-        else
+        else if(!_client->isAuthenticated() || _client->isKillswitchEngaged())
+        {
+#if RTTCOMMS_LOG_EVERY_METHODS
+            std::cout << "VERBOSE: RTT: EnableRTT called before calling authentication request. Disabling RTT." << std::endl;
+#endif
+            callback->rttConnectFailure("RTT: EnableRTT called before calling authentication request. Disabling RTT.");
+        }
+        else 
         {               
-            _connectCallback = in_callback;
-            _useWebSocket = in_useWebSocket;
+            _connectCallback = callback;
+            _useWebSocket = useWebSocket;
 
             _appId = _client->getAppId();
             _sessionId = _client->getSessionId();
@@ -205,7 +213,9 @@ namespace BrainCloud
     void RTTComms::runCallbacks()
     {
 #if RTTCOMMS_LOG_EVERY_METHODS
-        std::cout << "VERBOSE: RTTComms::runCallbacks" << std::endl;
+        // removing this from logging every method BECAUSE it prints out too often and wipes out other useful logs
+        // keeping in code though since we may want to print this sometimes
+        // std::cout << "VERBOSE: RTTComms::runCallbacks" << std::endl;
 #endif
         _eventQueueMutex.lock();
         auto eventsCopy = _callbackEventQueue;
@@ -247,12 +257,12 @@ namespace BrainCloud
         }
     }
 
-    void RTTComms::registerRTTCallback(const ServiceName& serviceName, IRTTCallback* in_callback)
+    void RTTComms::registerRTTCallback(const ServiceName& serviceName, IRTTCallback* callback)
     {
 #if RTTCOMMS_LOG_EVERY_METHODS
         std::cout << "VERBOSE: RTTComms::registerRTTCallback" << std::endl;
 #endif
-        _callbacks[serviceName.getValue()] = in_callback;
+        _callbacks[serviceName.getValue()] = callback;
     }
 
     void RTTComms::deregisterRTTCallback(const ServiceName& serviceName)
@@ -387,7 +397,7 @@ namespace BrainCloud
         std::cout << "VERBOSE: RTTComms::connect" << std::endl;
 #endif
         _rttConnectionStatus = BrainCloudRTT::RTTConnectionStatus::Connecting;
-#if (TARGET_OS_WATCH != 1)
+#if (!defined(TARGET_OS_WATCH) || TARGET_OS_WATCH == 0)
         _disconnectedWithReason = false;
         std::thread connectionThread([this]
         {
@@ -431,15 +441,19 @@ namespace BrainCloud
                                 host += key + "=" + value;
                             }
                         }
-
+                        #ifndef LIBWEBSOCKETS_OFF
+                        // only creates this object if the required files are linked in
+                        // could arise if libwebsockets are OFF in the makefile but ON in the app
+                        // in this case, there WILL be a connection error called after enableRTT()
                         _socket = IWebSocket::create(host, port, headers);
+                        #endif
                     }
                     else
                     {
                         _socket = ITCPSocket::create(host, port);
                     }
                 }
-                if (!_socket->isValid())
+                if (!_socket || !_socket->isValid())
                 {
                     closeSocket();
                     failedToConnect();

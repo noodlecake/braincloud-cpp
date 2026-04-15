@@ -1,13 +1,19 @@
-// Copyright 2020 bitHeads, Inc. All Rights Reserved.
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 
-#ifndef _BRAINCLOUDRELAY_H_
-#define _BRAINCLOUDRELAY_H_
+#pragma once
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
+
 
 #include "braincloud/BrainCloudTypes.h"
 #include "braincloud/RelayChannel.h"
 #include "braincloud/RelayConnectionType.h"
+#include "braincloud/internal/JsonUtil.h"
 
 #include <string>
+
 
 namespace BrainCloud
 {
@@ -22,7 +28,7 @@ namespace BrainCloud
 	class BrainCloudRelay
 	{
 	public:
-		BrainCloudRelay(RelayComms* in_commsLayer, BrainCloudClient* in_client);
+		BrainCloudRelay(RelayComms* commsLayer, BrainCloudClient* client);
 
         /**
          * Start a connection, based on connection type to 
@@ -38,12 +44,17 @@ namespace BrainCloud
          *
          * @note SSL option will only work with WEBSOCKET connetion type.
          */
-        void connect(eRelayConnectionType in_connectionType, const std::string& host, int port, const std::string& passcode, const std::string& lobbyId, IRelayConnectCallback* in_callback);
+        void connect(eRelayConnectionType connectionType, const std::string& host, int port, const std::string& passcode, const std::string& lobbyId, IRelayConnectCallback* callback);
 
         /**
          * Disconnects from the relay server
          */
         void disconnect();
+
+        /**
+         * Requests to end the current match on the relay server
+         */
+        void endMatch(const std::string&  jsonPayload);
 
         /**
          * Returns whether or not we have a successful connection with
@@ -61,9 +72,9 @@ namespace BrainCloud
         /**
          * Set the ping interval. Ping allows to keep the connection
          * alive, but also inform the player of his current ping.
-         * The default is 1000 miliseconds interval. (1 seconds)
+         * The default is 1 second interval.
          */
-        void setPingInterval(int in_intervalMS);
+        void setPingInterval(int intervalSeconds);
 
         /**
          * Get the lobby's owner profile Id.
@@ -78,29 +89,29 @@ namespace BrainCloud
         /**
          * Returns the profileId associated with a netId.
          */
-        const std::string& getProfileIdForNetId(int in_netId) const;
+        const std::string& getProfileIdForNetId(int netId) const;
 
         /**
          * Returns the netId associated with a profileId.
          */
-        int getNetIdForProfileId(const std::string& in_profileId) const;
+        int getNetIdForProfileId(const std::string& profileId) const;
 
         /**
          * Returns the connection Id associated with a netId.
          */
-        const std::string& getCxIdForNetId(int in_netId) const;
+        const std::string& getCxIdForNetId(int netId) const;
 
         /**
          * Returns the netId associated with a connection Id.
          */
-        int getNetIdForCxId(const std::string& in_cxId) const;
+        int getNetIdForCxId(const std::string& cxId) const;
 
         /**
          * Register callback for relay messages coming from peers.
          *
          * @param callback Called whenever a relay message was received.
          */
-        void registerRelayCallback(IRelayCallback* in_callback);
+        void registerRelayCallback(IRelayCallback* callback);
         void deregisterRelayCallback();
 
         /**
@@ -147,7 +158,7 @@ namespace BrainCloud
          *   profileId: "..."
          * }
          */
-        void registerSystemCallback(IRelaySystemCallback* in_callback);
+        void registerSystemCallback(IRelaySystemCallback* callback);
         void deregisterSystemCallback();
 
         /**
@@ -160,7 +171,7 @@ namespace BrainCloud
          * @param ordered Receive this ordered or not.
          * @param channel One of: (CHANNEL_HIGH_PRIORITY_1, CHANNEL_HIGH_PRIORITY_2, CHANNEL_NORMAL_PRIORITY, CHANNEL_LOW_PRIORITY)
          */
-        void send(const uint8_t* in_data, int in_size, uint64_t toNetId, bool in_reliable, bool in_ordered, eRelayChannel in_channel);
+        void send(const uint8_t* data, int size, uint64_t toNetId, bool reliable, bool ordered, eRelayChannel channel);
 
         /**
          * Send a packet to any players by using a mask
@@ -172,7 +183,7 @@ namespace BrainCloud
          * @param ordered Receive this ordered or not.
          * @param channel One of: (CHANNEL_HIGH_PRIORITY_1, CHANNEL_HIGH_PRIORITY_2, CHANNEL_NORMAL_PRIORITY, CHANNEL_LOW_PRIORITY)
          */
-        void sendToPlayers(const uint8_t* in_data, int in_size, uint64_t in_playerMask, bool in_reliable, bool in_ordered, eRelayChannel in_channel);
+        void sendToPlayers(const uint8_t* data, int size, uint64_t playerMask, bool reliable, bool ordered, eRelayChannel channel);
 
         /**
          * Send a packet to all except yourself
@@ -183,7 +194,7 @@ namespace BrainCloud
          * @param ordered Receive this ordered or not.
          * @param channel One of: (CHANNEL_HIGH_PRIORITY_1, CHANNEL_HIGH_PRIORITY_2, CHANNEL_NORMAL_PRIORITY, CHANNEL_LOW_PRIORITY)
          */
-        void sendToAll(const uint8_t* in_data, int in_size, bool in_reliable, bool in_ordered, eRelayChannel in_channel);
+        void sendToAll(const uint8_t* data, int size, bool reliable, bool ordered, eRelayChannel channel);
 
 	private:
         RelayComms* m_commsLayer;
@@ -191,4 +202,6 @@ namespace BrainCloud
 	};
 };
 
-#endif /* _BRAINCLOUDCHAT_H_ */
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif

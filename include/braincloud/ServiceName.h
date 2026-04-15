@@ -1,3 +1,4 @@
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 #pragma once
 
 #include <string>
@@ -51,6 +52,7 @@ namespace BrainCloud {
         static const ServiceName File;
         static const ServiceName GlobalFileV3;
         static const ServiceName Group;
+        static const ServiceName GroupFile;
 		static const ServiceName Mail;
 		static const ServiceName Tournament;
         static const ServiceName CustomEntity;
@@ -64,6 +66,8 @@ namespace BrainCloud {
 		static const ServiceName Presence;
 
 
+        static const ServiceName Blockchain;
+        
         std::string getValue() const { return _value; }
 
         bool operator== (const ServiceName& s) const;

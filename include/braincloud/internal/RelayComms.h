@@ -1,7 +1,11 @@
 // Copyright 2020 bitHeads, Inc. All Rights Reserved.
 
-#ifndef _RELAYCOMMS_H_
-#define _RELAYCOMMS_H_
+#pragma once
+
+#if __APPLE__
+    // for deployment TARGET_OS definitions
+    #include "TargetConditionals.h"
+#endif
 
 #include "braincloud/RelayChannel.h"
 #include "braincloud/RelayConnectionType.h"
@@ -29,7 +33,7 @@ namespace BrainCloud
     class RelayComms
     {
     public:
-        RelayComms(BrainCloudClient* in_client);
+        RelayComms(BrainCloudClient* client);
         virtual ~RelayComms();
 
         void initialize();
@@ -39,22 +43,23 @@ namespace BrainCloud
         void runCallbacks();
         void enableLogging(bool shouldEnable);
 
-        void connect(eRelayConnectionType in_connectionType, const std::string& host, int port, const std::string& passcode, const std::string& lobbyId, IRelayConnectCallback* in_callback);
+        void connect(eRelayConnectionType connectionType, const std::string& host, int port, const std::string& passcode, const std::string& lobbyId, IRelayConnectCallback* callback);
+        void endMatch(const Json::Value& jsonPayload);
         void disconnect();
         bool isConnected() const;
         int getPing() const;
-        void setPingInterval(int in_intervalMS);
+        void setPingInterval(int intervalMS);
         const std::string& getOwnerProfileId() const;
-        const std::string& getProfileIdForNetId(int in_netId) const;
-        int getNetIdForProfileId(const std::string& in_profileId) const;
+        const std::string& getProfileIdForNetId(int netId) const;
+        int getNetIdForProfileId(const std::string& profileId) const;
         const std::string& getOwnerCxId() const;
-        const std::string& getCxIdForNetId(int in_netId) const;
-        int getNetIdForCxId(const std::string& in_cxId) const;
-        void registerRelayCallback(IRelayCallback* in_callback);
+        const std::string& getCxIdForNetId(int netId) const;
+        int getNetIdForCxId(const std::string& cxId) const;
+        void registerRelayCallback(IRelayCallback* callback);
         void deregisterRelayCallback();
-        void registerSystemCallback(IRelaySystemCallback* in_callback);
+        void registerSystemCallback(IRelaySystemCallback* callback);
         void deregisterSystemCallback();
-        void send(const uint8_t* in_data, int in_size, uint64_t in_playerMask, bool in_reliable, bool in_ordered, eRelayChannel in_channel);
+        void send(const uint8_t* data, int size, uint64_t playerMask, bool reliable, bool ordered, eRelayChannel channel);
 
     private:
         static const int CHANNEL_COUNT = 4;
@@ -143,6 +148,8 @@ namespace BrainCloud
             std::vector<T*> m_all;
         };
 
+        void socketCleanup();
+
         void queueConnectSuccessEvent(const std::string& jsonString);
         void queueErrorEvent(const std::string& message);
         void queueSystemEvent(const std::string& jsonString);
@@ -150,28 +157,30 @@ namespace BrainCloud
         Json::Value buildConnectionRequest();
         void sendPing();
         void sendRSMGAck(int rsmgPacketId);
-        void sendAck(const uint8_t* in_data);
-        void send(const uint8_t* in_data, int in_size);
+        void sendAck(const uint8_t* data);
+        void send(const uint8_t* data, int size);
         void send(int netId, const Json::Value& json);
         void send(int netId, const std::string& text);
 
-        void onRecv(const uint8_t* in_data, int in_size);
-        void onRSMG(const uint8_t* in_data, int in_size);
+        void onRecv(const uint8_t* data, int size);
+        void onRSMG(const uint8_t* data, int size);
         void onPONG();
-        void onRelay(const uint8_t* in_data, int in_size);
-        void onAck(const uint8_t* in_data);
+        void onRelay(const uint8_t* data, int size);
+        void onAck(const uint8_t* data);
 
         // Main objects/flags
         BrainCloudClient* m_client = nullptr;
         IRelaySocket* m_pSocket = nullptr;
         bool m_isInitialized = false;
         bool m_loggingEnabled = false;
+        bool m_loggingPackets = true;
 
         // Connection
         eRelayConnectionType m_connectionType;
         ConnectOptions m_connectOptions;
         bool m_isSocketConnected = false;
         bool m_resendConnectRequest = false;
+        bool m_endMatchRequested = false;
         std::chrono::time_point<std::chrono::system_clock> m_lastConnectResendTime;
         bool m_isConnected = false;
 
@@ -184,7 +193,7 @@ namespace BrainCloud
 
         // Ping
         int m_ping = 999;
-        std::chrono::milliseconds m_pingInterval;
+        std::chrono::seconds m_pingInterval;
         std::chrono::time_point<std::chrono::system_clock> m_lastPingTime;
         std::chrono::time_point<std::chrono::system_clock> m_lastRecvTime; // For UDP timeout
 
@@ -208,7 +217,12 @@ namespace BrainCloud
         // Memory
         Pool<Event> m_eventPool;
         Pool<Packet> m_packetPool;
+
+        // Tracking packet IDs for each player
+        // index of array represents channel ids 0 to 3
+        // TMap value has the player netId as the key
+        // And the tracked packetId as the value
+        // Data is structured this way because once it is used to update the client it will then be discarded
+        std::vector<std::map<uint8_t, int>> m_trackedPacketIds;
     };
 };
-
-#endif /* _RELAYCOMMS_H_ */

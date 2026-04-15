@@ -1,10 +1,15 @@
 #pragma once
 
+#if __APPLE__
+    // for deployment TARGET_OS definitions
+    #include "TargetConditionals.h"
+#endif
+
 #include "braincloud/IServerCallback.h"
 #include "braincloud/ServiceName.h"
 #include "braincloud/BrainCloudRTT.h"
 
-#include <json/json.h>
+#include "json/json.h"
 
 #include <atomic>
 #include <map>
@@ -20,14 +25,14 @@ namespace BrainCloud
     class IRTTConnectCallback;
     class IRTTCallback;
     class ISocket;
-#if (TARGET_OS_WATCH != 1)
+#if (!defined(TARGET_OS_WATCH) || TARGET_OS_WATCH == 0)
     class IWebSocket;
 #endif
 
     class RTTComms : public IServerCallback
     {
     public:
-        RTTComms(BrainCloudClient* in_client);
+        RTTComms(BrainCloudClient* client);
         virtual ~RTTComms();
 
         void initialize();
@@ -35,7 +40,7 @@ namespace BrainCloud
         void shutdown();
         void resetCommunication();
 
-        void enableRTT(IRTTConnectCallback* in_callback, bool in_useWebSocket);
+        void enableRTT(IRTTConnectCallback* callback, bool useWebSocket);
         void disableRTT();
         bool isRTTEnabled();
         bool getLoggingEnabled();
@@ -44,7 +49,7 @@ namespace BrainCloud
         const std::string& getConnectionId();
 
         void runCallbacks();
-        void registerRTTCallback(const ServiceName& serviceName, IRTTCallback* in_callback);
+        void registerRTTCallback(const ServiceName& serviceName, IRTTCallback* callback);
         void deregisterRTTCallback(const ServiceName& serviceName);
         void deregisterAllRTTCallbacks();
 

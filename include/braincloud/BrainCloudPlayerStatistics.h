@@ -1,6 +1,11 @@
-// Copyright 2016 bitHeads, Inc. All Rights Reserved.
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 
 #pragma once
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
+
 
 #include <string>
 #include <vector>
@@ -20,7 +25,7 @@ namespace BrainCloud
     class BrainCloudPlayerStatistics
     {
     public:
-        BrainCloudPlayerStatistics(BrainCloudClient* in_client);
+        BrainCloudPlayerStatistics(BrainCloudClient* client);
 
         /**
          * Read all available user statistics.
@@ -28,9 +33,9 @@ namespace BrainCloud
          * Service Name - PlayerStatistics
          * Service Operation - Read
          *
-         * @param in_callback The method to be invoked when the server response is received
+         * @param callback The method to be invoked when the server response is received
          */
-        void readAllUserStats(IServerCallback *in_callback = NULL);
+        void readAllUserStats(IServerCallback *callback = NULL);
 
         /**
          * Reads a subset of user statistics as defined by the input collection.
@@ -38,11 +43,11 @@ namespace BrainCloud
          * Service Name - PlayerStatistics
          * Service Operation - ReadSubset
          *
-         * @param in_statistics A collection containing the subset of statistics to read:
+         * @param statistics A collection containing the subset of statistics to read:
          * ex. [ "pantaloons", "minions" ]
-         * @param in_callback The method to be invoked when the server response is received
+         * @param callback The method to be invoked when the server response is received
          */
-        void readUserStatsSubset(const std::vector<std::string> &in_statistics, IServerCallback *in_callback = NULL);
+        void readUserStatsSubset(const std::vector<std::string> &statistics, IServerCallback *callback = NULL);
 
         /**
          * Method retrieves the user statistics for the given category.
@@ -50,10 +55,10 @@ namespace BrainCloud
          * Service Name - PlayerStatistics
          * Service Operation - READ_FOR_CATEGORY
          *
-         * @param in_category The user statistics category
-         * @param in_callback Method to be invoked when the server response is received.
+         * @param category The user statistics category
+         * @param callback Method to be invoked when the server response is received.
          */
-        void readUserStatsForCategory(const char *in_category, IServerCallback *in_callback = NULL);
+        void readUserStatsForCategory(const char *category, IServerCallback *callback = NULL);
 
         /**
          * Reset all of the statistics for this user back to their initial value.
@@ -61,9 +66,9 @@ namespace BrainCloud
          * Service Name - PlayerStatistics
          * Service Operation - Reset
          *
-         * @param in_callback The method to be invoked when the server response is received
+         * @param callback The method to be invoked when the server response is received
          */
-        void resetAllUserStats(IServerCallback *in_callback = NULL);
+        void resetAllUserStats(IServerCallback *callback = NULL);
 
         /**
          * Atomically increment (or decrement) user statistics.
@@ -75,7 +80,7 @@ namespace BrainCloud
          * Service Name - PlayerStatistics
          * Service Operation - Update
          *
-         * @param in_jsonData The JSON encoded data to be sent to the server as follows:
+         * @param jsonData The JSON encoded data to be sent to the server as follows:
          * {
          *   stat1: 10,
          *   stat2: -5.5,
@@ -88,9 +93,9 @@ namespace BrainCloud
          * }
          * which increments stat1 by 9 up to a limit of 30.
          *
-         * @param in_callback The method to be invoked when the server response is received
+         * @param callback The method to be invoked when the server response is received
          */
-        void incrementUserStats(const std::string &in_jsonData, IServerCallback *in_callback = NULL);
+        void incrementUserStats(const std::string &jsonData, IServerCallback *callback = NULL);
 
         /**
          * Returns JSON representing the next experience level for the user.
@@ -98,9 +103,9 @@ namespace BrainCloud
          * Service Name - PlayerStatistics
          * Service Operation - ReadNextXpLevel
          *
-         * @param in_callback The method to be invoked when the server response is received
+         * @param callback The method to be invoked when the server response is received
          */
-        void getNextExperienceLevel(IServerCallback* in_callback);
+        void getNextExperienceLevel(IServerCallback* callback);
 
         /**
          * Increments the user's experience. If the user goes up a level,
@@ -109,10 +114,10 @@ namespace BrainCloud
          * Service Name - PlayerStatistics
          * Service Operation - UpdateIncrement
          *
-         * @param in_xpValue The amount to increase the user's experience by
-         * @param in_callback The method to be invoked when the server response is received
+         * @param xpValue The amount to increase the user's experience by
+         * @param callback The method to be invoked when the server response is received
          */
-        void incrementExperiencePoints(int in_xpValue, IServerCallback* in_callback);
+        void incrementExperiencePoints(int xpValue, IServerCallback* callback);
 
         /**
          * Sets the user's experience to an absolute value. Note that this
@@ -122,10 +127,10 @@ namespace BrainCloud
          * Service Name - PlayerStatistics
          * Service Operation - SetXpPoints
          *
-         * @param in_xpValue The amount to set the the user's experience to
-         * @param in_callback The method to be invoked when the server response is received
+         * @param xpValue The amount to set the the user's experience to
+         * @param callback The method to be invoked when the server response is received
          */
-        void setExperiencePoints(int xpValue, IServerCallback* in_callback);
+        void setExperiencePoints(int xpValue, IServerCallback* callback);
 
 		/**
 		* Apply statistics grammar to a partial set of statistics.
@@ -133,7 +138,7 @@ namespace BrainCloud
 		* Service Name - PlayerStatistics
 		* Service Operation - PROCESS_STATISTICS
 		*
-		* @param in_jsonData The JSON format is as follows:
+		* @param jsonData The JSON format is as follows:
 		* {
 		*     "DEAD_CATS": "RESET",
 		*     "LIVES_LEFT": "SET#9",
@@ -141,11 +146,14 @@ namespace BrainCloud
 		*     "DOG_SCARE_BONUS_POINTS": "INC#10",
 		*     "TREES_CLIMBED": 1
 		* }
-		* @param in_callback Method to be invoked when the server response is received.
+		* @param callback Method to be invoked when the server response is received.
 		*/
-		void processStatistics(const std::string& in_jsonData, IServerCallback * in_callback = NULL);
+		void processStatistics(const std::string& jsonData, IServerCallback * callback = NULL);
 
     private:
         BrainCloudClient * m_client;
     };
 }
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif

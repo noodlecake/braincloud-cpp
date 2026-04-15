@@ -18,6 +18,7 @@ std::string TestFixtureBase::m_parentLevelName = "";
 std::string TestFixtureBase::m_childAppId = "";
 std::string TestFixtureBase::m_childSecret = "";
 std::string TestFixtureBase::m_peerName = "";
+std::string TestFixtureBase::m_redirectAppId = "";
 
 std::string TestFixtureBase::getServerUrl()
 {
@@ -43,20 +44,32 @@ void TestFixtureBase::SetUp()
 	secretMap[m_childAppId] = m_childSecret;
 	m_bcWrapper->initializeWithApps(m_serverUrl.c_str(), m_appId.c_str(), secretMap, m_version.c_str(), "", "");
 
-	m_bc = m_bcWrapper->client;
+    static bool firstSetup = true;
+    if(firstSetup) printf("\nClient version - %s\n", m_bcWrapper->getBCClient()->getBrainCloudClientVersion().c_str());
+    firstSetup = false;
+
+    m_bc = m_bcWrapper->client;
 
 	m_bc->enableLogging(ENABLE_SETUP_TEARDOWN_LOGGING);
+
+	bool useCompression = false;
+	const char* envCompressionVar = std::getenv("USE_COMPRESSION");
+	useCompression = envCompressionVar && std::string(envCompressionVar) == "true";
+
+	m_bc->enableCompression(useCompression);
+	std::string enabledText = useCompression ? "enabled" : "disabled";
+	printf("\n [Compression %s] \n", enabledText.c_str());
+
 
 	Init(); //init, only run once
 
 	if (!ShouldSkipAuthenticate())
 	{
 		TestResult tr;
-		m_bc->getAuthenticationService()->authenticateUniversal(GetUser(UserA)->m_id, GetUser(UserA)->m_password, true, &tr);
+		printf("\n [SkipAuthenticate is false, logging in with userA] \n");
+		m_bcWrapper->authenticateUniversal(GetUser(UserA)->m_id, GetUser(UserA)->m_password, true, &tr);
 		tr.run(m_bc);
 	}
-
-	m_bc->enableLogging(true);
 }
 
 void TestFixtureBase::TearDown()
@@ -66,15 +79,15 @@ void TestFixtureBase::TearDown()
 	if (!ShouldSkipAuthenticate())
 	{
 		TestResult tr;
-		m_bc->getPlayerStateService()->logout(&tr);
+		printf("\n [SkipAuthenticate is false, logging out userA] \n");
+		m_bcWrapper->logout(true, &tr); // clears profile id
 		tr.run(m_bc);
 	}
 	m_bc->resetCommunication();
-	m_bc->getAuthenticationService()->clearSavedProfileId();
+
 	m_bc->deregisterEventCallback();
 	m_bc->deregisterRewardCallback();
-
-	m_bc->enableLogging(true);
+	m_bcWrapper->resetStoredAnonymousId();
 
 	delete m_bcWrapper;
 }
@@ -98,12 +111,12 @@ void TestFixtureBase::Init()
 	}
 
 	//Create Users
-	srand(time(NULL));
+	srand(static_cast<int>(time(NULL)));
 
 	printf("Creating test users");
 	for (int i = 0; i < USERS_MAX; i++)
 	{
-		m_testUsers.push_back(new TestUser(Users_names[i], rand() % 100000000, m_bc));
+		m_testUsers.push_back(new TestUser(Users_names[i], rand() % 100000000, m_bcWrapper));
 		printf("..%i", i + 1);
 	}
 	printf("..completed\n\n");
@@ -175,6 +188,10 @@ void TestFixtureBase::LoadIds()
 			{
 				m_peerName = line.substr(line.find("peerName") + sizeof("peerName"), line.length() - 1);
 			}
+			else if (line.find("redirectAppId") != string::npos)
+			{
+				m_redirectAppId = line.substr(line.find("redirectAppId") + sizeof("redirectAppId"), line.length() - 1);
+			}
 		}
 		fclose(fp);
 
@@ -235,11 +252,10 @@ bool TestFixtureBase::DetachPeer()
 void TestFixtureBase::Logout()
 {
 	TestResult tr;
-	m_bc->getPlayerStateService()->logout(&tr);
+	m_bcWrapper->logout(true, &tr); // clears saved profile id
 	tr.run(m_bc, true);
 
 	m_bc->resetCommunication();
-	m_bc->getAuthenticationService()->clearSavedProfileId();
 
 	// preston - in bccomms2 (win c++) the internal thread is killed during resetCommunication.
 	// for consistency, we re-initialize the comms to re-create the thread in case any further

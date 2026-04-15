@@ -1,3 +1,4 @@
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 #include "braincloud/Platform.h"
 
 namespace BrainCloud
@@ -5,7 +6,7 @@ namespace BrainCloud
     const Platform & Platform::AppleTVOS = Platform("APPLE_TV_OS");
     const Platform & Platform::BlackBerry = Platform("BB");
     const Platform & Platform::Facebook = Platform("FB");
-    const Platform & Platform::Oculus = Platform("Oculus");
+    const Platform & Platform::Oculus = Platform("OCULUS");
     const Platform & Platform::GooglePlayAndroid = Platform("ANG");
     const Platform & Platform::iOS = Platform("IOS");
     const Platform & Platform::Linux = Platform("LINUX");
@@ -24,9 +25,9 @@ namespace BrainCloud
     const Platform & Platform::WatchOS = Platform("WATCH_OS");
     const Platform & Platform::Unknown = Platform("UNKNOWN");
 
-    Platform::Platform(const std::string & in_platform)
+    Platform::Platform(const std::string & platform)
     {
-        m_value = in_platform;
+        m_value = platform;
     }
 
     const std::string & Platform::toString() const
@@ -34,86 +35,86 @@ namespace BrainCloud
         return m_value;
     }
 
-    const Platform & Platform::fromString(const std::string &in_platform)
+    const Platform & Platform::fromString(const std::string &platform)
     {
         // this is a bit slow but not used often
-        if (in_platform == AppleTVOS)
+        if (platform == AppleTVOS)
         {
             return Platform::AppleTVOS;
         }
-        if (in_platform == BlackBerry)
+        if (platform == BlackBerry)
         {
             return Platform::BlackBerry;
         }
-        if (in_platform == Facebook)
+        if (platform == Facebook)
         {
             return Platform::Facebook;
         }
-        if (in_platform == Oculus)
+        if (platform == Oculus)
         {
             return Platform::Oculus;
         }
-        if (in_platform == GooglePlayAndroid)
+        if (platform == GooglePlayAndroid)
         {
             return Platform::GooglePlayAndroid;
         }
-        if (in_platform == iOS)
+        if (platform == iOS)
         {
             return Platform::iOS;
         }
-        if (in_platform == Linux)
+        if (platform == Linux)
         {
             return Platform::Linux;
         }
-        if (in_platform == Mac)
+        if (platform == Mac)
         {
             return Platform::Mac;
         }
-        if (in_platform == Web)
+        if (platform == Web)
         {
             return Platform::Web;
         }
-        if (in_platform == Windows)
+        if (platform == Windows)
         {
             return Platform::Windows;
         }
-        if (in_platform == WindowsPhone)
+        if (platform == WindowsPhone)
         {
             return Platform::WindowsPhone;
         }
-        if (in_platform == Xbox360)
+        if (platform == Xbox360)
         {
             return Platform::Xbox360;
         }
-        if (in_platform == PS3)
+        if (platform == PS3)
         {
             return Platform::PS3;
         }
-        if (in_platform == XboxOne)
+        if (platform == XboxOne)
         {
             return Platform::XboxOne;
         }
-        if (in_platform == PS4)
+        if (platform == PS4)
         {
             return Platform::PS4;
         }
-        if (in_platform == Wii)
+        if (platform == Wii)
         {
             return Platform::Wii;
         }
-        if (in_platform == PSVita)
+        if (platform == PSVita)
         {
             return Platform::PSVita;
         }
-        if (in_platform == Tizen)
+        if (platform == Tizen)
         {
             return Platform::Tizen;
         }
-        if (in_platform == Roku)
+        if (platform == Roku)
         {
             return Platform::Roku;
         }
-        if (in_platform == WatchOS)
+        if (platform == WatchOS)
         {
             return Platform::WatchOS;
         }

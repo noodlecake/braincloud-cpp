@@ -1,3 +1,4 @@
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 //
 //  IRewardCallback.h
 //  GameClientLib
@@ -6,8 +7,12 @@
 //
 //
 
-#ifndef _IREWARDCALLBACK_H_
-#define _IREWARDCALLBACK_H_
+#pragma once
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
+
 
 namespace BrainCloud {
     
@@ -45,4 +50,7 @@ namespace BrainCloud {
     };
     
 };
-#endif /* _IREWARDCALLBACK_H_ */
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
+

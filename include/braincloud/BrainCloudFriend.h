@@ -1,6 +1,11 @@
-// Copyright 2016 bitHeads, Inc. All Rights Reserved.
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 
 #pragma once
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#endif
+
 
 #include <string>
 #include <vector>
@@ -16,30 +21,30 @@ namespace BrainCloud
 	class BrainCloudFriend
 	{
 	public:
-		BrainCloudFriend(BrainCloudClient* in_client);
+		BrainCloudFriend(BrainCloudClient* client);
 
 		/**
 		 * Retrieves profile information of the specified universal Id.
 		 *
-		 * @param in_searchText Universal ID text on which to search.
+		 * @param searchText Universal ID text on which to search.
 		 */
-		void findUserByExactUniversalId(const char * in_searchText, IServerCallback * in_callback = NULL);
+		void findUserByExactUniversalId(const char * searchText, IServerCallback * callback = NULL);
 
 		/**
 		 * Retrieves profile information for the users whos names start with search text.
 		 *
-		 * @param in_searchText Name text on which to search.
-		 * @param in_maxResults Maximum number of results to return.
+		 * @param searchText Name text on which to search.
+		 * @param maxResults Maximum number of results to return.
 		 */
-		void findUsersByNameStartingWith(const char * in_searchText, int32_t in_maxResults, IServerCallback * in_callback = NULL);
+		void findUsersByNameStartingWith(const char * searchText, int32_t maxResults, IServerCallback * callback = NULL);
 
 		/**
 		 * Retrieves profile information for the users whos UniversalId start with search text.
 		 *
-		 * @param in_searchText Universal ID text on which to search.
-		 * @param in_maxResults Maximum number of results to return.
+		 * @param searchText Universal ID text on which to search.
+		 * @param maxResults Maximum number of results to return.
 		 */
-		void findUsersByUniversalIdStartingWith(const char * in_searchText, int32_t in_maxResults, IServerCallback * in_callback = NULL);
+		void findUsersByUniversalIdStartingWith(const char * searchText, int32_t maxResults, IServerCallback * callback = NULL);
 
 
 		/**
@@ -48,11 +53,24 @@ namespace BrainCloud
 		* Service Name - friend
 		* Service Operation - GET_PROFILE_INFO_FOR_CREDENTIAL
 		*
-		* @param in_externalId The users's external ID
-		* @param in_authenticationType The authentication type of the user ID
-		* @param in_callback Method to be invoked when the server response is received.
+		* @param externalId The users's external ID
+		* @param authenticationType The authentication type of the user ID
+		* @param callback Method to be invoked when the server response is received.
 		*/
-		void getProfileInfoForCredential(const char * in_externalId, AuthenticationType in_authenticationType, IServerCallback * in_callback = NULL);
+		void getProfileInfoForCredential(const char * externalId, AuthenticationType authenticationType, IServerCallback * callback = NULL);
+
+		/**
+		* Retrieves profile information for the specified user.
+		Silently fails, if profile does not exist, just returns null and success, instead of an error.
+		*
+		* Service Name - friend
+		* Service Operation - GET_PROFILE_INFO_FOR_CREDENTIAL_IF_EXISTS
+		*
+		* @param externalId The users's external ID
+		* @param authenticationType The authentication type of the user ID
+		* @param callback Method to be invoked when the server response is received.
+		*/
+		void getProfileInfoForCredentialIfExists(const char *externalId, AuthenticationType authenticationType, IServerCallback *callback = NULL);
 
 		/**
 		* Retrieves profile information for the specified external auth user.
@@ -60,19 +78,31 @@ namespace BrainCloud
 		* Service Name - friend
 		* Service Operation - GET_PROFILE_INFO_FOR_EXTERNAL_AUTH_ID
 		*
-		* @param in_externalId External ID of the friend to find
-		* @param in_externalAuthType The external authentication type used for this friend's external ID
-		* @param in_callback Method to be invoked when the server response is received.
+		* @param externalId External ID of the friend to find
+		* @param externalAuthType The external authentication type used for this friend's external ID
+		* @param callback Method to be invoked when the server response is received.
 		*/
-		void getProfileInfoForExternalAuthId(const char * in_externalId, const char * in_externalAuthType, IServerCallback * in_callback = NULL);
+		void getProfileInfoForExternalAuthId(const char * externalId, const char * externalAuthType, IServerCallback * callback = NULL);
+
+		/**
+		 * Retrieves profile information for the specified user. Silently fails, if profile does not exist, just returns null and success, instead of an error.
+		 *
+		 * Service Name - Friend
+		 * Service Operation - GET_PROFILE_INFO_FOR_EXTERNAL_AUTH_ID_IF_EXISTS
+		 *
+		 * @param externalId External ID of the friend to find
+		 * @param externalAuthType The external authentication type used for this friend's external ID
+		 * @param callback Method to be invoked when the server response is received.
+		 */
+		void getProfileInfoForExternalAuthIdIfExists(const char *externalId, const char *externalAuthType, IServerCallback *callback = NULL);
 
 		/**
 		 * Retrieves the external ID for the specified user profile ID on the specified social platform.
 		 *
-		 * @param in_profileId Profile (user) ID.
-		 * @param in_authenticationType Associated authentication type.
+		 * @param profileId Profile (user) ID.
+		 * @param authenticationType Associated authentication type.
 		 */
-		void getExternalIdForProfileId(const char * in_profileId, const char * in_authenticationType, IServerCallback * in_callback = NULL);
+		void getExternalIdForProfileId(const char * profileId, const char * authenticationType, IServerCallback * callback = NULL);
 
 		/**
 		* Returns a particular entity of a particular friend.
@@ -80,11 +110,11 @@ namespace BrainCloud
 		* Service Name - Friend
 		* Service Operation - ReadFriendEntity
 		*
-		* @param in_entityId Id of entity to retrieve.
-		* @param in_friendId Profile Id of friend who owns entity.
-		* @param in_callback Method to be invoked when the server response is received.
+		* @param entityId Id of entity to retrieve.
+		* @param friendId Profile Id of friend who owns entity.
+		* @param callback Method to be invoked when the server response is received.
 		*/
-		void readFriendEntity(const char* in_entityId, const char*  in_friendId, IServerCallback * in_callback = NULL);
+		void readFriendEntity(const char* entityId, const char*  friendId, IServerCallback * callback = NULL);
 
 		/**
 		* Returns entities of all friends optionally based on type.
@@ -92,10 +122,10 @@ namespace BrainCloud
 		* Service Name - Friend
 		* Service Operation - ReadFriendsEntities
 		*
-		* @param in_entityType Types of entities to retrieve.
-		* @param in_callback Method to be invoked when the server response is received.
+		* @param entityType Types of entities to retrieve.
+		* @param callback Method to be invoked when the server response is received.
 		*/
-		void readFriendsEntities(const char* in_entityType, IServerCallback * in_callback = NULL);
+		void readFriendsEntities(const char* entityType, IServerCallback * callback = NULL);
 		
 		/**
 		 * Read a friend's user state.
@@ -105,10 +135,10 @@ namespace BrainCloud
 		 * Service Name - Friend
 		 * Service Operation - ReadFriendsPlayerState
 		 *
-		 * @param in_friendId Target friend
-		 * @param in_callback Method to be invoked when the server response is received.
+		 * @param friendId Target friend
+		 * @param callback Method to be invoked when the server response is received.
 		 */
-		void readFriendUserState(const char * in_friendId, IServerCallback * in_callback = NULL);
+		void readFriendUserState(const char * friendId, IServerCallback * callback = NULL);
 
 		/**
 		* Returns user state of a particular user.
@@ -116,10 +146,10 @@ namespace BrainCloud
 		* Service Name - Friend
 		* Service Operation - GET_SUMMARY_DATA_FOR_PROFILE_ID
 		*
-		* @param in_profileId Profile Id of user to retrieve user state for.
-		* @param in_callback Method to be invoked when the server response is received.
+		* @param profileId Profile Id of user to retrieve user state for.
+		* @param callback Method to be invoked when the server response is received.
 		*/
-		void getSummaryDataForProfileId(const char * in_profileId, IServerCallback * in_callback = NULL);
+		void getSummaryDataForProfileId(const char * profileId, IServerCallback * callback = NULL);
 
 		/**
 		* Finds a list of users matching the search text by performing an exact match search
@@ -131,7 +161,7 @@ namespace BrainCloud
 		* @param maxResults  Maximum number of results to return.
 		* @param callback Method to be invoked when the server response is received.
 		*/
-		void findUsersByExactName(const char * in_searchText, int32_t in_maxResults, IServerCallback * in_callback = NULL);
+		void findUsersByExactName(const char * searchText, int32_t maxResults, IServerCallback * callback = NULL);
 
 		/**
 		* Finds a list of users matching the search text by performing a substring
@@ -144,7 +174,7 @@ namespace BrainCloud
 		* @param maxResults  Maximum number of results to return. If there are more the message
 		* @param callback Method to be invoked when the server response is received.
 		*/
-		void findUsersBySubstrName(const char * in_searchText, int32_t in_maxResults, IServerCallback * in_callback = NULL);
+		void findUsersBySubstrName(const char * searchText, int32_t maxResults, IServerCallback * callback = NULL);
 
 		/**
 		 * Retrieves a list of user and friend platform information for all friends of the current user.
@@ -152,11 +182,11 @@ namespace BrainCloud
 		 * Service Name - Friend
 		 * Service Operation - LIST_FRIENDS
 		 *
-		 * @param in_friendPlatform Friend platform to query.
-		 * @param in_includeSummaryData  True if including summary data; false otherwise.
-		 * @param in_callback Method to be invoked when the server response is received.
+		 * @param friendPlatform Friend platform to query.
+		 * @param includeSummaryData  True if including summary data; false otherwise.
+		 * @param callback Method to be invoked when the server response is received.
 		 */
-		void listFriends(const FriendPlatform& in_friendPlatform, bool in_includeSummaryData, IServerCallback * in_callback = NULL);
+		void listFriends(const FriendPlatform& friendPlatform, bool includeSummaryData, IServerCallback * callback = NULL);
 
 		/**
 		 * Links the current user and the specified users as brainCloud friends.
@@ -164,10 +194,10 @@ namespace BrainCloud
 		 * Service Name - Friend
 		 * Service Operation - ADD_FRIENDS
 		 *
-		 * @param in_profileIds Collection of profile IDs.
-		 * @param in_callback Method to be invoked when the server response is received.
+		 * @param profileIds Collection of profile IDs.
+		 * @param callback Method to be invoked when the server response is received.
 		 */
-		void addFriends(const std::vector<std::string>& in_profileIds, IServerCallback * in_callback = NULL);
+		void addFriends(const std::vector<std::string>& profileIds, IServerCallback * callback = NULL);
 
 		/**
 		 * Links the profiles for the specified externalIds for the given friend platform as internal friends.
@@ -175,15 +205,15 @@ namespace BrainCloud
 		 * Service Name - Friend
 		 * Service Operation - ADD_FRIENDS_FROM_PLATFORM
 		 *
-		 * @param in_friendPlatform Platform to add from (i.e: FriendPlatform::Facebook)
-		 * @param in_mode ADD or SYNC
-		 * @param in_externalIds Collection of external IDs from the friend platform.
-		 * @param in_callback Method to be invoked when the server response is received.
+		 * @param friendPlatform Platform to add from (i.e: FriendPlatform::Facebook)
+		 * @param mode ADD or SYNC
+		 * @param externalIds Collection of external IDs from the friend platform.
+		 * @param callback Method to be invoked when the server response is received.
 		 */
-		void addFriendsFromPlatform(const FriendPlatform &in_friendPlatform, 
-									const std::string &in_mode, 
-									const std::vector<std::string> &in_externalIds, 
-									IServerCallback *in_callback = NULL);
+		void addFriendsFromPlatform(const FriendPlatform &friendPlatform, 
+									const std::string &mode, 
+									const std::vector<std::string> &externalIds, 
+									IServerCallback *callback = NULL);
 
 		/**
 		* Unlinks the current user and the specified users as brainCloud friends.
@@ -191,10 +221,10 @@ namespace BrainCloud
 		* Service Name - Friend
 		* Service Operation - REMOVE_FRIENDS
 		*
-		* @param in_profileIds Collection of profile IDs.
-		* @param in_callback Method to be invoked when the server response is received.
+		* @param profileIds Collection of profile IDs.
+		* @param callback Method to be invoked when the server response is received.
 		*/
-		void removeFriends(const std::vector<std::string>& in_profileIds, IServerCallback * in_callback = NULL);
+		void removeFriends(const std::vector<std::string>& profileIds, IServerCallback * callback = NULL);
 
 		/**
 		* Get users online status
@@ -202,12 +232,15 @@ namespace BrainCloud
 		* Service Name - Friend
 		* Service Operation - GET_USERS_ONLINE_STATUS
 		*
-		* @param in_profileIds Collection of profile IDs.
-		* @param in_callback Method to be invoked when the server response is received.
+		* @param profileIds Collection of profile IDs.
+		* @param callback Method to be invoked when the server response is received.
 		*/
-		void getUsersOnlineStatus(const std::vector<std::string>& in_profileIds, IServerCallback * in_callback = NULL);
+		void getUsersOnlineStatus(const std::vector<std::string>& profileIds, IServerCallback * callback = NULL);
 
 	private:
 		BrainCloudClient * m_client;
 	};
 }
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif

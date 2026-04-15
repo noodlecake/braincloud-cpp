@@ -23,11 +23,43 @@ TEST_F(TestBCSocialLeaderboard, GetSocialLeaderboard)
     tr.run(m_bc);
 }
 
+TEST_F(TestBCSocialLeaderboard, GetSocialLeaderboardIfExistsTrue)
+{
+    TestResult tr;
+
+    m_bc->getLeaderboardService()->getSocialLeaderboardIfExists(LB_ID, true, &tr);
+    tr.run(m_bc);
+}
+
+TEST_F(TestBCSocialLeaderboard, GetSocialLeaderboardIfExistsFalse)
+{
+    TestResult tr;
+
+    m_bc->getLeaderboardService()->getSocialLeaderboardIfExists("nonExistentLeaderboard", true, &tr);
+    tr.run(m_bc);
+}
+
 TEST_F(TestBCSocialLeaderboard, GetSocialLeaderboardByVersion)
 {
     TestResult tr;
 
     m_bc->getLeaderboardService()->getSocialLeaderboardByVersion(LB_ID, true, 0, &tr);
+    tr.run(m_bc);
+}
+
+TEST_F(TestBCSocialLeaderboard, GetSocialLeaderboardByVersionIfExistsTrue)
+{
+    TestResult tr;
+
+    m_bc->getLeaderboardService()->getSocialLeaderboardByVersionIfExists(LB_ID, true, 0, &tr);
+    tr.run(m_bc);
+}
+
+TEST_F(TestBCSocialLeaderboard, GetSocialLeaderboardByVersionIfExistsFalse)
+{
+    TestResult tr;
+
+    m_bc->getLeaderboardService()->getSocialLeaderboardByVersionIfExists("nonExistentLeaderboard", true, 0, &tr);
     tr.run(m_bc);
 }
 
@@ -72,6 +104,20 @@ TEST_F(TestBCSocialLeaderboard, GetGlobalLeaderboardPageLow)
     tr.run(m_bc);
 }
 
+TEST_F(TestBCSocialLeaderboard, GetGlobalLeaderboardPageIfExistsTrue)
+{
+    TestResult tr;
+    m_bc->getLeaderboardService()->getGlobalLeaderboardPageIfExists(LB_ID, HIGH_TO_LOW, 0, 10, &tr);
+    tr.run(m_bc);
+}
+
+TEST_F(TestBCSocialLeaderboard, GetGlobalLeaderboardPageIfExistsFalse)
+{
+    TestResult tr;
+    m_bc->getLeaderboardService()->getGlobalLeaderboardPageIfExists("nonExistentLeaderboard", HIGH_TO_LOW, 0, 10, &tr);
+    tr.run(m_bc);
+}
+
 TEST_F(TestBCSocialLeaderboard, GetGlobalLeaderboardViewHigh)
 {
     TestResult tr;
@@ -86,11 +132,41 @@ TEST_F(TestBCSocialLeaderboard, GetGlobalLeaderboardViewLow)
     tr.run(m_bc);
 }
 
+TEST_F(TestBCSocialLeaderboard, GetGlobalLeaderboardViewIfExistsTrue)
+{
+    TestResult tr;
+    m_bc->getLeaderboardService()->getGlobalLeaderboardViewIfExists(LB_ID, HIGH_TO_LOW, 4, 5, &tr);
+    tr.run(m_bc);
+}
+
+TEST_F(TestBCSocialLeaderboard, GetGlobalLeaderboardViewIfExistsFalse)
+{
+    TestResult tr;
+    m_bc->getLeaderboardService()->getGlobalLeaderboardViewIfExists("nonExistentLeaderboard", HIGH_TO_LOW, 4, 5, &tr);
+    tr.run(m_bc);
+}
+
 TEST_F(TestBCSocialLeaderboard, GetGlobalPageByVersion)
 {
     TestResult tr;
 
     m_bc->getLeaderboardService()->getGlobalLeaderboardPageByVersion(LB_ID, HIGH_TO_LOW, 0, 10, 0, &tr);
+    tr.run(m_bc);
+}
+
+TEST_F(TestBCSocialLeaderboard, GetGlobalPageByVersionIfExistsTrue)
+{
+    TestResult tr;
+
+    m_bc->getLeaderboardService()->getGlobalLeaderboardPageByVersionIfExists(LB_ID, HIGH_TO_LOW, 0, 10, 0, &tr);
+    tr.run(m_bc);
+}
+
+TEST_F(TestBCSocialLeaderboard, GetGlobalPageByVersionIfExistsFalse)
+{
+    TestResult tr;
+
+    m_bc->getLeaderboardService()->getGlobalLeaderboardPageByVersionIfExists("nonExistentLeaderboard", HIGH_TO_LOW, 0, 10, 0, &tr);
     tr.run(m_bc);
 }
 
@@ -102,48 +178,25 @@ TEST_F(TestBCSocialLeaderboard, GetGlobalViewByVersion)
     tr.run(m_bc);
 }
 
-TEST_F(TestBCSocialLeaderboard, PostScoreToDynamic)
-{
-    PostScoreToDynamic();
-}
-
-TEST_F(TestBCSocialLeaderboard, PostScoreToDynamicNullRotationTime)
+TEST_F(TestBCSocialLeaderboard, GetGlobalViewByVersionIfExistsTrue)
 {
     TestResult tr;
-    Json::FastWriter fw;
-    Json::Value jsonData;
-    jsonData["testKey"] = "TestValue";
 
-    m_bc->getLeaderboardService()->postScoreToDynamicLeaderboard(DYNAMIC_LB_ID, 100, fw.write(jsonData), HIGH_VALUE, NEVER, NULL, 2, &tr);
+    m_bc->getLeaderboardService()->getGlobalLeaderboardViewByVersionIfExists(LB_ID, HIGH_TO_LOW, 0, 10, 0, &tr);
+    tr.run(m_bc);
+}
+
+TEST_F(TestBCSocialLeaderboard, GetGlobalViewByVersionIfExistsFalse)
+{
+    TestResult tr;
+
+    m_bc->getLeaderboardService()->getGlobalLeaderboardViewByVersionIfExists("nonExistentLeaderboard", HIGH_TO_LOW, 0, 10, 0, &tr);
     tr.run(m_bc);
 }
 
 TEST_F(TestBCSocialLeaderboard, PostScoreToDynamicUTC)
 {
-	srand(time(NULL));
-
-    TestResult tr;
-    Json::FastWriter fw;
-    Json::Value jsonData;
-    jsonData["testKey"] = "TestValue";
-
-    int64_t milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() + (2 * 60 * 1000); //add 2 minutes so its within the time 
-
-	std::string name = DYNAMIC_LB_ID + std::to_string(rand());
-
-    m_bc->getLeaderboardService()->postScoreToDynamicLeaderboardUTC(name.c_str(), 100, fw.write(jsonData), HIGH_VALUE, WEEKLY, milliseconds_since_epoch, 2, &tr);
-    tr.run(m_bc);
-}
-
-TEST_F(TestBCSocialLeaderboard, PostScoreToDynamicDays)
-{
-	TestResult tr;
-	Json::FastWriter fw;
-	Json::Value jsonData;
-	jsonData["testKey"] = "TestValue";
-
-	m_bc->getLeaderboardService()->postScoreToDynamicLeaderboardDays("TestDynamicDaysCpp", 100, fw.write(jsonData), HIGH_VALUE, NULL, 2, 3, &tr);
-	tr.run(m_bc);
+    PostScoreToDynamic();
 }
 
 TEST_F(TestBCSocialLeaderboard, PostScoreToDynamicDaysUTC)
@@ -154,6 +207,7 @@ TEST_F(TestBCSocialLeaderboard, PostScoreToDynamicDaysUTC)
 	jsonData["testKey"] = "TestValue";
 
     int64_t milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    milliseconds_since_epoch += 1000000;    //adding about 15 minutes
 
 	m_bc->getLeaderboardService()->postScoreToDynamicLeaderboardDaysUTC("TestDynamicDaysCpp", 100, fw.write(jsonData), HIGH_VALUE, milliseconds_since_epoch, 2, 3, &tr);
 	tr.run(m_bc);
@@ -201,6 +255,30 @@ TEST_F(TestBCSocialLeaderboard, GetPlayersSocialLeaderboard)
 	tr.run(m_bc);
 }
 
+TEST_F(TestBCSocialLeaderboard, GetPlayersSocialLeaderboardIfExistsTrue)
+{
+	TestResult tr;
+
+	std::vector<std::string> profileIds;
+	profileIds.push_back(GetUser(UserA)->m_profileId);
+	profileIds.push_back(GetUser(UserB)->m_profileId);
+
+	m_bc->getLeaderboardService()->getPlayersSocialLeaderboardIfExists(SOCIAL_LB_ID, profileIds, &tr);
+	tr.run(m_bc);
+}
+
+TEST_F(TestBCSocialLeaderboard, GetPlayersSocialLeaderboardIfExistsFalse)
+{
+	TestResult tr;
+
+	std::vector<std::string> profileIds;
+	profileIds.push_back(GetUser(UserA)->m_profileId);
+	profileIds.push_back(GetUser(UserB)->m_profileId);
+
+	m_bc->getLeaderboardService()->getPlayersSocialLeaderboardIfExists("nonExistentLeaderboard", profileIds, &tr);
+	tr.run(m_bc);
+}
+
 TEST_F(TestBCSocialLeaderboard, GetPlayersSocialLeaderboardByVersion)
 {
 	TestResult tr;
@@ -210,6 +288,30 @@ TEST_F(TestBCSocialLeaderboard, GetPlayersSocialLeaderboardByVersion)
 	profileIds.push_back(GetUser(UserB)->m_profileId);
 
 	m_bc->getLeaderboardService()->getPlayersSocialLeaderboardByVersion(SOCIAL_LB_ID, profileIds, 0, &tr);
+	tr.run(m_bc);
+}
+
+TEST_F(TestBCSocialLeaderboard, GetPlayersSocialLeaderboardByVersionIfExistsTrue)
+{
+	TestResult tr;
+
+	std::vector<std::string> profileIds;
+	profileIds.push_back(GetUser(UserA)->m_profileId);
+	profileIds.push_back(GetUser(UserB)->m_profileId);
+
+	m_bc->getLeaderboardService()->getPlayersSocialLeaderboardByVersionIfExists(SOCIAL_LB_ID, profileIds, 0, &tr);
+	tr.run(m_bc);
+}
+
+TEST_F(TestBCSocialLeaderboard, GetPlayersSocialLeaderboardByVersionIfExistsFalse)
+{
+	TestResult tr;
+
+	std::vector<std::string> profileIds;
+	profileIds.push_back(GetUser(UserA)->m_profileId);
+	profileIds.push_back(GetUser(UserB)->m_profileId);
+
+	m_bc->getLeaderboardService()->getPlayersSocialLeaderboardByVersionIfExists("nonExistentLeaderboard", profileIds, 0, &tr);
 	tr.run(m_bc);
 }
 
@@ -283,23 +385,40 @@ TEST_F(TestBCSocialLeaderboard, GetPlayerScoresFromLeaderboards)
 	tr.run(m_bc);
 }
 
+TEST_F(TestBCSocialLeaderboard, PostScoreToDynamicLeaderboardUsingConfig)
+{
+    TestResult tr;
+
+    int64_t milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    milliseconds_since_epoch += 1000000;    //adding about 15 minutes
+
+    Json::FastWriter fw;
+    Json::Value configJson;
+    configJson["leaderboardType"] = "HIGH_VALUE";
+    configJson["rotationType"] = "DAYS";
+    configJson["numDaysToRotate"] = 4;
+    configJson["resetAt"] = milliseconds_since_epoch;
+    configJson["retainedCount"] = 2;
+
+    m_bc->getLeaderboardService()->postScoreToDynamicLeaderboardUsingConfig(DYNAMIC_LB_ID, 10, "{\"nickname\": \"CPP-Tester\"}", fw.write(configJson), &tr);
+    tr.run(m_bc);
+    
+}
+
 void TestBCSocialLeaderboard::PostScoreToDynamic()
 {
-	srand(time(NULL));
+    srand(static_cast<unsigned int>(time(NULL)));
 
     TestResult tr;
     Json::FastWriter fw;
     Json::Value jsonData;
     jsonData["testKey"] = "TestValue";
 
-    time_t t = time(0);
-    struct tm * time = localtime(&t);
-    time->tm_mday += 1;
-    mktime(time);
+    int64_t milliseconds_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() + (2 * 60 * 1000); //add 2 minutes so its within the time
 
-	std::string name = DYNAMIC_LB_ID + std::to_string(rand());
+    std::string name = DYNAMIC_LB_ID + std::to_string(rand());
 
-    m_bc->getLeaderboardService()->postScoreToDynamicLeaderboard(name.c_str(), 100, fw.write(jsonData), HIGH_VALUE, WEEKLY, time, 2, &tr);
+    m_bc->getLeaderboardService()->postScoreToDynamicLeaderboardUTC(name.c_str(), 100, fw.write(jsonData), HIGH_VALUE, WEEKLY, milliseconds_since_epoch, 2, &tr);
     tr.run(m_bc);
 }
 
@@ -324,25 +443,6 @@ TEST_F(TestBCSocialLeaderboard, PostScoreToGroupLeaderboard)
     jsonData["testKey"] = "TestValue";
 
     m_bc->getLeaderboardService()->postScoreToGroupLeaderboard(GROUP_LB_ID, groupId.c_str(), 0, fw.write(jsonData), &tr);
-    tr.run(m_bc);
-
-    m_bc->getGroupService()->deleteGroup(groupId.c_str(), -1, &tr);
-    tr.run(m_bc);
-}
-
-TEST_F(TestBCSocialLeaderboard, PostScoreToDynamicGroupLeaderboard)
-{
-    TestResult tr; 
-    m_bc->getGroupService()->createGroup("testGroup", "test", false, "", "", "", "", &tr);
-    tr.run(m_bc);
-
-    std::string groupId = tr.m_response["data"]["groupId"].asString();
-
-    Json::FastWriter fw;
-    Json::Value jsonData;
-    jsonData["testKey"] = "TestValue";
-
-    m_bc->getLeaderboardService()->postScoreToDynamicGroupLeaderboard(GROUP_LB_ID, groupId.c_str(), 0, fw.write(jsonData), "HIGH_VALUE", "WEEKLY", 157116287, 2, &tr);
     tr.run(m_bc);
 
     m_bc->getGroupService()->deleteGroup(groupId.c_str(), -1, &tr);
@@ -388,6 +488,23 @@ TEST_F(TestBCSocialLeaderboard, PostScoreToDynamicGroupLeaderboardDaysUTC)
     tr.run(m_bc);
 
     m_bc->getGroupService()->deleteGroup(groupId.c_str(), -1, &tr);
+    tr.run(m_bc);
+}
+
+TEST_F(TestBCSocialLeaderboard, PostScoreToDynamicGroupLeaderboardUsingConfig)
+{
+    TestResult tr;
+    std::string groupId;
+    Json::FastWriter fw;
+    Json::Value jsonData;
+    jsonData["testKey"] = "TestValue";
+
+    m_bc->getGroupService()->createGroup("testGroup", "test", false, "", "", "", "", &tr);
+    tr.run(m_bc);
+
+    groupId = tr.m_response["data"]["groupId"].asString();
+
+    m_bc->getLeaderboardService()->postScoreToDynamicGroupLeaderboardUsingConfig(GROUP_LB_ID, groupId.c_str(), 99, "{\"nickname\": \"CPP-Tester\"}", fw.write(jsonData), &tr);
     tr.run(m_bc);
 }
 
@@ -440,5 +557,12 @@ TEST_F(TestBCSocialLeaderboard, GetGroupLeaderboardViewByVersion)
     tr.run(m_bc);
 
     m_bc->getGroupService()->deleteGroup(groupId.c_str(), -1, &tr);
+    tr.run(m_bc);
+}
+
+TEST_F(TestBCSocialLeaderboard, DeleteDynamicLeaderboards)
+{
+    TestResult tr;
+    m_bc->getScriptService()->runScript("CleanupLeaderboards", "", &tr);
     tr.run(m_bc);
 }

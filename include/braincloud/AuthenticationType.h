@@ -1,3 +1,4 @@
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 //
 //  AuthenticationType.h
 //  BrainCloud
@@ -35,10 +36,10 @@ namespace BrainCloud
         static const AuthenticationType & Unknown;
 
         const std::string & toString() const;
-        static const AuthenticationType & fromString(const std::string & in_AuthenticationType);
+        static const AuthenticationType & fromString(const std::string & AuthenticationType);
 
     private:
-        AuthenticationType(const std::string & in_AuthenticationType);
+        AuthenticationType(const std::string & AuthenticationType);
         std::string m_value;
     };
 

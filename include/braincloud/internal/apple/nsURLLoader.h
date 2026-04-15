@@ -20,10 +20,10 @@
 
 #if defined (__OBJC__)
 #import <Foundation/Foundation.h>
-@interface URLSessionDelegate : NSObject<NSURLSessionDataDelegate>
+@interface BCURLSessionDelegate : NSObject<NSURLSessionDataDelegate>
 @end
 #else
-class URLSessionDelegate;
+class BCURLSessionDelegate;
 #endif
 
 namespace BrainCloud
@@ -63,7 +63,7 @@ namespace BrainCloud
 
     private:
 
-        URLSessionDelegate * _sessionDelegate;
+        BCURLSessionDelegate * _sessionDelegate;
 
         static bool     _initialized;
         static long     _timeoutInterval;

@@ -20,8 +20,8 @@ namespace BrainCloud
                     return Platform::GooglePlayAndroid.toString();
                 case S3E_OS_ID_QNX: // playbook
                     return Platform::BlackBerry.toString();
-                case S3E_OS_ID_ROKU: // TODO - add Roku platform!!!
-                    return Platform::GooglePlayAndroid.toString();
+                case S3E_OS_ID_ROKU:
+                    return Platform::Roku.toString();
                 case S3E_OS_ID_WP8:
                 case S3E_OS_ID_WP81:
                     return Platform::WindowsPhone.toString();
@@ -53,6 +53,15 @@ namespace BrainCloud
             {
                 *out_languageCode = locale.substr(0, sep);
                 *out_countryCode = locale.substr(sep + 1, locale.length());
+                if (*out_countryCode == "419")
+                {
+                    *out_countryCode = "_LA_";
+                }
+
+                if (*out_countryCode == "Hans" || *out_countryCode == "Hant")
+                {
+                    *out_countryCode = "CN";
+                }
             }
 
             // the other way to get language on marmalade

@@ -1,3 +1,4 @@
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 #include "braincloud/ServiceName.h"
 
 namespace BrainCloud
@@ -46,6 +47,7 @@ namespace BrainCloud
     const ServiceName ServiceName::File = ServiceName("file");
     const ServiceName ServiceName::GlobalFileV3 = ServiceName("globalFileV3");
     const ServiceName ServiceName::Group = ServiceName("group");
+    const ServiceName ServiceName::GroupFile = ServiceName("groupFile");
 	const ServiceName ServiceName::Mail = ServiceName("mail");
 	const ServiceName ServiceName::Tournament = ServiceName("tournament");
     const ServiceName ServiceName::CustomEntity = ServiceName("customEntity");
@@ -57,6 +59,8 @@ namespace BrainCloud
 	const ServiceName ServiceName::Messaging = ServiceName("messaging");
 	const ServiceName ServiceName::Lobby = ServiceName("lobby");
 	const ServiceName ServiceName::Presence = ServiceName("presence");
+
+    const ServiceName ServiceName::Blockchain = ServiceName("blockchain");
 
     ServiceName::ServiceName(const char * value)
     {

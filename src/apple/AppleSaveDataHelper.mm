@@ -1,7 +1,6 @@
 #include "braincloud/internal/apple/AppleSaveDataHelper.h"
 
-#import "SSKeychain/SSKeychain.h"
-#import "SSKeychain/SSKeychainQuery.h"
+#import "SAMKeychain/SAMKeychain.h"
 
 namespace BrainCloud
 {
@@ -39,7 +38,7 @@ namespace BrainCloud
 		NSString * keyString = [NSString stringWithUTF8String:key];
 		NSString * dataString = [NSString stringWithUTF8String:data];
 
-		[SSKeychain deletePasswordForService:serviceString account:keyString];
+		[SAMKeychain deletePasswordForService:serviceString account:keyString];
 
 		if (dataString.length == 0)
 		{
@@ -58,17 +57,23 @@ namespace BrainCloud
 
 		NSString * serviceString = [NSString stringWithUTF8String:m_savePath.c_str()];
 		NSString * keyString = [NSString stringWithUTF8String:key];
-
-		NSString * dataString = [SSKeychain passwordForService:serviceString account:keyString];
+		NSString * dataString = [SAMKeychain passwordForService:serviceString account:keyString];
 
 		std::string data = "";
 
 		if (dataString != nil)
 		{
 			[[NSUserDefaults standardUserDefaults] setValue:dataString forKeyPath:keyString];
-			[SSKeychain deletePasswordForService:serviceString account:keyString];
+			[SAMKeychain deletePasswordForService:serviceString account:keyString];
 			data = [dataString UTF8String];
 		}
+        else
+        {
+            NSString* stringData = [[NSUserDefaults standardUserDefaults] stringForKey:keyString];
+            
+            if(stringData != nil)
+                data = [stringData UTF8String];
+        }
 
 		return data;
 	}
@@ -81,7 +86,7 @@ namespace BrainCloud
 		NSString * serviceString = [NSString stringWithUTF8String:m_savePath.c_str()];
 		NSString * keyString = [NSString stringWithUTF8String:key];
 
-		[SSKeychain deletePasswordForService:serviceString account:keyString];
+		[SAMKeychain deletePasswordForService:serviceString account:keyString];
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:keyString];
 	}
 }

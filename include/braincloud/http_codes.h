@@ -1,5 +1,8 @@
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 #ifndef _HTTPCODES_H_
 #define _HTTPCODES_H_
+
+namespace BrainCloud {
 
 static const int HTTP_ACCEPTED = 202;           // HTTP Status-Code 202: Accepted.
 static const int HTTP_BAD_GATEWAY = 502;        // HTTP Status-Code 502: Bad Gateway.
@@ -40,5 +43,5 @@ static const int HTTP_VERSION = 505;            // HTTP Status-Code 505: HTTP Ve
 
 static const int HTTP_CUSTOM = 900;
 static const int HTTP_CLIENT_NETWORK_ERROR= 900; // A custom status code raised internally by bc client
-
+}
 #endif

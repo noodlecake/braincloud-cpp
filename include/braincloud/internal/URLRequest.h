@@ -4,9 +4,7 @@
 //
 
 
-#ifndef _URLREQUEST_H_
-#define _URLREQUEST_H_
-
+#pragma once
 
 #include <string>
 #include <vector>
@@ -56,6 +54,3 @@ private:
     std::string                     _userAgent;
 
 };  // end class
-
-
-#endif  // _URLREQUEST_H_

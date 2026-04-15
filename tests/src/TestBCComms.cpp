@@ -39,7 +39,7 @@ TEST_F(TestBCComms, BadEndPoint)
 TEST_F(TestBCComms, BadSecret)
 {
 	TestResult tr;
-	m_bc->initialize("https://internal.braincloudservers.com/dispatcherv2", "fail-unit-test", "10170", "1.0.0");
+	m_bc->initialize("https://api.internal.braincloudservers.com/dispatcherv2", "fail-unit-test", "10170", "1.0.0");
 	// pj - don't use test user as auth will fail due to bogus initialize above
 	m_bc->getAuthenticationService()->authenticateUniversal("abc", "123", true, &tr);
 	tr.runExpectFail(m_bc, HTTP_FORBIDDEN, -1);
@@ -73,6 +73,8 @@ TEST_F(TestBCComms, Heartbeat)
 
 TEST_F(TestBCComms, HeartbeatStops)
 {
+	//disable auto reconnect
+	m_bc->enableAutoReconnect(false);
 	//delay heartbeat
 	m_bc->setHeartbeatInterval(1200 * 1000);
 

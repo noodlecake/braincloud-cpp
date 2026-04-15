@@ -1,4 +1,4 @@
-// Copyright 2016 bitHeads, Inc. All Rights Reserved.
+// Copyright 2026 bitHeads, Inc. All Rights Reserved.
 
 #include "braincloud/BrainCloudAuthentication.h"
 
@@ -15,8 +15,8 @@
 #include "braincloud/internal/GUID.h"
 
 namespace BrainCloud {
-    BrainCloudAuthentication::BrainCloudAuthentication(BrainCloudClient* in_client) :
-        m_client(in_client),
+    BrainCloudAuthentication::BrainCloudAuthentication(BrainCloudClient* client) :
+        m_client(client),
         _anonymousId(""),
         _profileId("") ,
 		_clientLib("cpp")
@@ -29,10 +29,10 @@ namespace BrainCloud {
 			_clientLib = lib;
 	}
 
-    void BrainCloudAuthentication::initialize(const char * in_profileId, const char * in_anonymousId)
+    void BrainCloudAuthentication::initialize(const char * profileId, const char * anonymousId)
     {
-        _profileId = in_profileId;
-        _anonymousId = in_anonymousId;
+        _profileId = profileId;
+        _anonymousId = anonymousId;
     }
 
 	std::string BrainCloudAuthentication::generateAnonymousId()
@@ -45,205 +45,235 @@ namespace BrainCloud {
         _profileId = "";
     }
 
-    void BrainCloudAuthentication::authenticateAdvanced(AuthenticationType in_authenticationType, 
-                                                        const AuthenticationIds &in_ids, 
-                                                        bool in_forceCreate, 
-                                                        const std::string &in_extraJson, 
-                                                        IServerCallback * in_callback)
+    void BrainCloudAuthentication::authenticateAdvanced(AuthenticationType authenticationType, 
+                                                        const AuthenticationIds &ids, 
+                                                        bool forceCreate, 
+                                                        const std::string &extraJson, 
+                                                        IServerCallback * callback)
     {
-        authenticate(in_ids.externalId.c_str(), in_ids.authenticationToken.c_str(), in_authenticationType, in_ids.authenticationSubType.c_str(), in_forceCreate, in_extraJson, in_callback);
+        authenticate(ids.externalId.c_str(), ids.authenticationToken.c_str(), authenticationType, ids.authenticationSubType.c_str(), forceCreate, extraJson, callback);
     }
 
-    void BrainCloudAuthentication::authenticateAnonymous(bool in_forceCreate, IServerCallback * in_callback)
+    void BrainCloudAuthentication::authenticateAnonymous(bool forceCreate, IServerCallback * callback)
     {
-        authenticate(_anonymousId.c_str(), "", AuthenticationType::Anonymous, NULL, in_forceCreate, "", in_callback);
+        authenticate(_anonymousId.c_str(), "", AuthenticationType::Anonymous, NULL, forceCreate, "", callback);
     }
 
-    void BrainCloudAuthentication::authenticateFacebook(const char * in_fbUserId, const char * in_fbAuthToken, bool in_forceCreate, IServerCallback * in_callback)
+    void BrainCloudAuthentication::authenticateFacebook(const char * fbUserId, const char * fbAuthToken, bool forceCreate, IServerCallback * callback)
     {
-        authenticate(in_fbUserId, in_fbAuthToken, AuthenticationType::Facebook, NULL, in_forceCreate, "", in_callback);
+        authenticate(fbUserId, fbAuthToken, AuthenticationType::Facebook, NULL, forceCreate, "", callback);
     }
 
-       void BrainCloudAuthentication::authenticateOculus(const char * in_oculusUserId, const char * in_oculusNonce, bool in_forceCreate, IServerCallback * in_callback)
+       void BrainCloudAuthentication::authenticateOculus(const char * oculusUserId, const char * oculusNonce, bool forceCreate, IServerCallback * callback)
     {
-        authenticate(in_oculusUserId, in_oculusNonce, AuthenticationType::Oculus, NULL, in_forceCreate, "", in_callback);
+        authenticate(oculusUserId, oculusNonce, AuthenticationType::Oculus, NULL, forceCreate, "", callback);
     }
 
-    void BrainCloudAuthentication::authenticateGameCenter(const char * in_gameCenterId, bool in_forceCreate, IServerCallback * in_callback)
+    void BrainCloudAuthentication::authenticateGameCenter(const char * gameCenterId, bool forceCreate, IServerCallback * callback)
     {
-        authenticate(in_gameCenterId, "", AuthenticationType::GameCenter, NULL, in_forceCreate, "", in_callback);
+        authenticate(gameCenterId, "", AuthenticationType::GameCenter, NULL, forceCreate, "", callback);
     }
 
-    void BrainCloudAuthentication::authenticateEmailPassword(const char * in_email, const char * in_password, bool in_forceCreate, IServerCallback * in_callback)
+    void BrainCloudAuthentication::authenticateEmailPassword(const char * email, const char * password, bool forceCreate, IServerCallback * callback)
     {
-        authenticate(in_email, in_password, AuthenticationType::Email, NULL, in_forceCreate, "", in_callback);
+        authenticate(email, password, AuthenticationType::Email, NULL, forceCreate, "", callback);
     }
 
-    void BrainCloudAuthentication::authenticateUltra(const std::string &in_ultraUsername, const std::string &in_ultraIdToken, bool in_forceCreate, IServerCallback * in_callback)
+    void BrainCloudAuthentication::authenticateUltra(const std::string &ultraUsername, const std::string &ultraIdToken, bool forceCreate, IServerCallback * callback)
     {
-        authenticate(in_ultraUsername.c_str(), in_ultraIdToken.c_str(), AuthenticationType::Ultra, NULL, in_forceCreate, "", in_callback);
+        authenticate(ultraUsername.c_str(), ultraIdToken.c_str(), AuthenticationType::Ultra, NULL, forceCreate, "", callback);
     }
 
-    void BrainCloudAuthentication::authenticateUniversal(const char * in_userid, const char * in_password, bool in_forceCreate, IServerCallback * in_callback)
+    void BrainCloudAuthentication::authenticateUniversal(const char * userid, const char * password, bool forceCreate, IServerCallback * callback)
     {
-        authenticate(in_userid, in_password, AuthenticationType::Universal, NULL, in_forceCreate, "", in_callback);
+        authenticate(userid, password, AuthenticationType::Universal, NULL, forceCreate, "", callback);
     }
 
-    void BrainCloudAuthentication::authenticateSteam(const char * in_userid, const char * in_sessionticket, bool in_forceCreate, IServerCallback * in_callback)
+    void BrainCloudAuthentication::getServerVersion(IServerCallback *callback)
     {
-        authenticate(in_userid, in_sessionticket, AuthenticationType::Steam, NULL, in_forceCreate, "", in_callback);
+        Json::Value message;
+
+        message[OperationParam::AuthenticateServiceAuthenticateGameId.getValue()] = m_client->getAppId().c_str();
+
+        ServerCall *sc = new ServerCall(ServiceName::AuthenticateV2, ServiceOperation::GetServerVersion, message, callback);
+
+        m_client->sendRequest(sc);
     }
 
-    void BrainCloudAuthentication::authenticateApple(const char * in_appleUserId, const char * in_identityToken, bool in_forceCreate, IServerCallback * in_callback)
+    void BrainCloudAuthentication::authenticateSteam(const char * userid, const char * sessionticket, bool forceCreate, IServerCallback * callback)
     {
-        authenticate(in_appleUserId, in_identityToken, AuthenticationType::Apple, NULL, in_forceCreate, "", in_callback);
+        authenticate(userid, sessionticket, AuthenticationType::Steam, NULL, forceCreate, "", callback);
     }
 
-    void BrainCloudAuthentication::authenticateGoogle(const char * in_googleUserId, const char * in_serverAuthToken, bool in_forceCreate, IServerCallback * in_callback)
+    void BrainCloudAuthentication::authenticateApple(const char * appleUserId, const char * identityToken, bool forceCreate, IServerCallback * callback)
     {
-        authenticate(in_googleUserId, in_serverAuthToken, AuthenticationType::Google, NULL, in_forceCreate, "", in_callback);
+        authenticate(appleUserId, identityToken, AuthenticationType::Apple, NULL, forceCreate, "", callback);
+    }
+
+    void BrainCloudAuthentication::authenticateGoogle(const char * googleUserId, const char * serverAuthToken, bool forceCreate, IServerCallback * callback)
+    {
+        authenticate(googleUserId, serverAuthToken, AuthenticationType::Google, NULL, forceCreate, "", callback);
     }
     
-    void BrainCloudAuthentication::authenticateGoogleOpenId(const char * in_googleUserAccountEmail, const char * in_IdToken, bool in_forceCreate, IServerCallback * in_callback)
+    void BrainCloudAuthentication::authenticateGoogleOpenId(const char * googleUserAccountEmail, const char * IdToken, bool forceCreate, IServerCallback * callback)
     {
-        authenticate(in_googleUserAccountEmail, in_IdToken, AuthenticationType::GoogleOpenId, NULL, in_forceCreate, "", in_callback);
+        authenticate(googleUserAccountEmail, IdToken, AuthenticationType::GoogleOpenId, NULL, forceCreate, "", callback);
     }
 
-    void BrainCloudAuthentication::authenticateTwitter(const char * in_userid, const char * in_token, const char * in_secret, bool in_forceCreate, IServerCallback * in_callback)
+    void BrainCloudAuthentication::authenticateTwitter(const char * userid, const char * token, const char * secret, bool forceCreate, IServerCallback * callback)
     {
-        std::string buffer(in_token);
+        std::string buffer(token);
         buffer += ":";
-        buffer += in_secret;
-        authenticate(in_userid, buffer.c_str(), AuthenticationType::Twitter, NULL, in_forceCreate, "", in_callback);
+        buffer += secret;
+        authenticate(userid, buffer.c_str(), AuthenticationType::Twitter, NULL, forceCreate, "", callback);
     }
 
-    void BrainCloudAuthentication::authenticateParse(const char * in_userid, const char * in_token, bool in_forceCreate, IServerCallback * in_callback)
+    void BrainCloudAuthentication::authenticateParse(const char * userid, const char * token, bool forceCreate, IServerCallback * callback)
     {
-        authenticate(in_userid, in_token, AuthenticationType::Parse, NULL, in_forceCreate, "", in_callback);
+        authenticate(userid, token, AuthenticationType::Parse, NULL, forceCreate, "", callback);
     }
 
-    void BrainCloudAuthentication::authenticateHandoff(const char * in_handoffId, const char * in_securityToken, IServerCallback * in_callback)
+    void BrainCloudAuthentication::authenticateHandoff(const char * handoffId, const char * securityToken, IServerCallback * callback)
     {
-        authenticate(in_handoffId, in_securityToken, AuthenticationType::Handoff, NULL, false, "", in_callback);
+        authenticate(handoffId, securityToken, AuthenticationType::Handoff, NULL, false, "", callback);
     }
 
-	void BrainCloudAuthentication::authenticateSettopHandoff(const char * in_handoffCode, IServerCallback * in_callback)
+	void BrainCloudAuthentication::authenticateSettopHandoff(const char * handoffCode, IServerCallback * callback)
     {
-        authenticate(in_handoffCode, "", AuthenticationType::SettopHandoff, NULL, false, "", in_callback);
+        authenticate(handoffCode, "", AuthenticationType::SettopHandoff, NULL, false, "", callback);
     }
 
     void BrainCloudAuthentication::authenticateExternal(
-        const char * in_userid,
-        const char * in_token,
-        const char * in_externalAuthName,
-        bool in_forceCreate,
-        IServerCallback * in_callback)
+        const char * userid,
+        const char * token,
+        const char * externalAuthName,
+        bool forceCreate,
+        IServerCallback * callback)
     {
-        authenticate(in_userid, in_token, AuthenticationType::External, in_externalAuthName, in_forceCreate, "", in_callback);
+        authenticate(userid, token, AuthenticationType::External, externalAuthName, forceCreate, "", callback);
     }
 
-    void BrainCloudAuthentication::resetEmailPassword(const char * in_externalId, IServerCallback * in_callback)
+    void BrainCloudAuthentication::resetEmailPassword(const char * externalId, IServerCallback * callback)
     {
         Json::Value message;
-        message[OperationParam::AuthenticateServiceAuthenticateExternalId.getValue()] = in_externalId;
+        message[OperationParam::AuthenticateServiceAuthenticateExternalId.getValue()] = externalId;
         message[OperationParam::AuthenticateServiceAuthenticateGameId.getValue()] = m_client->getAppId().c_str();
 
-        ServerCall * sc = new ServerCall(ServiceName::AuthenticateV2, ServiceOperation::ResetEmailPassword, message, in_callback);
+        ServerCall * sc = new ServerCall(ServiceName::AuthenticateV2, ServiceOperation::ResetEmailPassword, message, callback);
         m_client->sendRequest(sc);
     }
 
-    void BrainCloudAuthentication::resetEmailPasswordAdvanced(const char * in_emailAddress, std::string in_serviceParams, IServerCallback * in_callback)
+    void BrainCloudAuthentication::resetEmailPasswordAdvanced(const char * emailAddress, std::string serviceParams, IServerCallback * callback)
     {
         Json::Value message;
         message[OperationParam::AuthenticateServiceAuthenticateGameId.getValue()] = m_client->getAppId().c_str();
-        message[OperationParam::AuthenticateServiceAuthenticateEmailAddress.getValue()] = in_emailAddress;
-        message[OperationParam::AuthenticateServiceAuthenticateServiceParams.getValue()] = JsonUtil::jsonStringToValue(in_serviceParams);
+        message[OperationParam::AuthenticateServiceAuthenticateEmailAddress.getValue()] = emailAddress;
+        message[OperationParam::AuthenticateServiceAuthenticateServiceParams.getValue()] = JsonUtil::jsonStringToValue(serviceParams);
 
-        ServerCall * sc = new ServerCall(ServiceName::AuthenticateV2, ServiceOperation::ResetEmailPasswordAdvanced, message, in_callback);
+        ServerCall * sc = new ServerCall(ServiceName::AuthenticateV2, ServiceOperation::ResetEmailPasswordAdvanced, message, callback);
         m_client->sendRequest(sc);
     }
 
-        void BrainCloudAuthentication::resetEmailPasswordWithExpiry(const char * in_externalId, int in_tokenTtlInMinutes, IServerCallback * in_callback)
+        void BrainCloudAuthentication::resetEmailPasswordWithExpiry(const char * externalId, int tokenTtlInMinutes, IServerCallback * callback)
     {
         Json::Value message;
-        message[OperationParam::AuthenticateServiceAuthenticateExternalId.getValue()] = in_externalId;
+        message[OperationParam::AuthenticateServiceAuthenticateExternalId.getValue()] = externalId;
         message[OperationParam::AuthenticateServiceAuthenticateGameId.getValue()] = m_client->getAppId().c_str();
-        message[OperationParam::AuthenticateServiceAuthenticateTokenTtlInMinutes.getValue()] = in_tokenTtlInMinutes;
+        message[OperationParam::AuthenticateServiceAuthenticateTokenTtlInMinutes.getValue()] = tokenTtlInMinutes;
 
-        ServerCall * sc = new ServerCall(ServiceName::AuthenticateV2, ServiceOperation::ResetEmailPasswordWithExpiry, message, in_callback);
+        ServerCall * sc = new ServerCall(ServiceName::AuthenticateV2, ServiceOperation::ResetEmailPasswordWithExpiry, message, callback);
         m_client->sendRequest(sc);
     }
 
-    void BrainCloudAuthentication::resetEmailPasswordAdvancedWithExpiry(const char * in_emailAddress, std::string in_serviceParams, int in_tokenTtlInMinutes, IServerCallback * in_callback)
+    void BrainCloudAuthentication::resetEmailPasswordAdvancedWithExpiry(const char * emailAddress, std::string serviceParams, int tokenTtlInMinutes, IServerCallback * callback)
     {
         Json::Value message;
         message[OperationParam::AuthenticateServiceAuthenticateGameId.getValue()] = m_client->getAppId().c_str();
-        message[OperationParam::AuthenticateServiceAuthenticateEmailAddress.getValue()] = in_emailAddress;
-        message[OperationParam::AuthenticateServiceAuthenticateServiceParams.getValue()] = JsonUtil::jsonStringToValue(in_serviceParams);;
-        message[OperationParam::AuthenticateServiceAuthenticateTokenTtlInMinutes.getValue()] = in_tokenTtlInMinutes;
+        message[OperationParam::AuthenticateServiceAuthenticateEmailAddress.getValue()] = emailAddress;
+        message[OperationParam::AuthenticateServiceAuthenticateServiceParams.getValue()] = JsonUtil::jsonStringToValue(serviceParams);;
+        message[OperationParam::AuthenticateServiceAuthenticateTokenTtlInMinutes.getValue()] = tokenTtlInMinutes;
 
-        ServerCall * sc = new ServerCall(ServiceName::AuthenticateV2, ServiceOperation::ResetEmailPasswordAdvancedWithExpiry, message, in_callback);
+        ServerCall * sc = new ServerCall(ServiceName::AuthenticateV2, ServiceOperation::ResetEmailPasswordAdvancedWithExpiry, message, callback);
         m_client->sendRequest(sc);
     }
 
-	void BrainCloudAuthentication::resetUniversalIdPassword(const char * in_universalId, IServerCallback * in_callback)
+	void BrainCloudAuthentication::resetUniversalIdPassword(const char * universalId, IServerCallback * callback)
     {
         Json::Value message;
         message[OperationParam::AuthenticateServiceAuthenticateGameId.getValue()] = m_client->getAppId().c_str();
-        message[OperationParam::AuthenticateServiceAuthenticateUniversalId.getValue()] = in_universalId;
+        message[OperationParam::AuthenticateServiceAuthenticateUniversalId.getValue()] = universalId;
 
-        ServerCall * sc = new ServerCall(ServiceName::AuthenticateV2, ServiceOperation::ResetUniversalIdPassword, message, in_callback);
+        ServerCall * sc = new ServerCall(ServiceName::AuthenticateV2, ServiceOperation::ResetUniversalIdPassword, message, callback);
         m_client->sendRequest(sc);
     }
 
-	void BrainCloudAuthentication::resetUniversalIdPasswordAdvanced(const char * in_universalId, std::string in_serviceParams, IServerCallback * in_callback)
+	void BrainCloudAuthentication::resetUniversalIdPasswordAdvanced(const char * universalId, std::string serviceParams, IServerCallback * callback)
     {
         Json::Value message;
         message[OperationParam::AuthenticateServiceAuthenticateGameId.getValue()] = m_client->getAppId().c_str();
-        message[OperationParam::AuthenticateServiceAuthenticateUniversalId.getValue()] = in_universalId;
-        message[OperationParam::AuthenticateServiceAuthenticateServiceParams.getValue()] = JsonUtil::jsonStringToValue(in_serviceParams);;
+        message[OperationParam::AuthenticateServiceAuthenticateUniversalId.getValue()] = universalId;
+        message[OperationParam::AuthenticateServiceAuthenticateServiceParams.getValue()] = JsonUtil::jsonStringToValue(serviceParams);;
 
-        ServerCall * sc = new ServerCall(ServiceName::AuthenticateV2, ServiceOperation::ResetUniversalIdPasswordAdvanced, message, in_callback);
+        ServerCall * sc = new ServerCall(ServiceName::AuthenticateV2, ServiceOperation::ResetUniversalIdPasswordAdvanced, message, callback);
         m_client->sendRequest(sc);
     }
 
-    void BrainCloudAuthentication::resetUniversalIdPasswordWithExpiry(const char * in_universalId, int in_tokenTtlInMinutes, IServerCallback * in_callback)
+    void BrainCloudAuthentication::resetUniversalIdPasswordWithExpiry(const char * universalId, int tokenTtlInMinutes, IServerCallback * callback)
     {
         Json::Value message;
         message[OperationParam::AuthenticateServiceAuthenticateGameId.getValue()] = m_client->getAppId().c_str();
-        message[OperationParam::AuthenticateServiceAuthenticateUniversalId.getValue()] = in_universalId;
-        message[OperationParam::AuthenticateServiceAuthenticateTokenTtlInMinutes.getValue()] = in_tokenTtlInMinutes;
+        message[OperationParam::AuthenticateServiceAuthenticateUniversalId.getValue()] = universalId;
+        message[OperationParam::AuthenticateServiceAuthenticateTokenTtlInMinutes.getValue()] = tokenTtlInMinutes;
 
-        ServerCall * sc = new ServerCall(ServiceName::AuthenticateV2, ServiceOperation::ResetUniversalIdPasswordWithExpiry, message, in_callback);
+        ServerCall * sc = new ServerCall(ServiceName::AuthenticateV2, ServiceOperation::ResetUniversalIdPasswordWithExpiry, message, callback);
         m_client->sendRequest(sc);
     }
 
-	void BrainCloudAuthentication::resetUniversalIdPasswordAdvancedWithExpiry(const char * in_universalId, std::string in_serviceParams, int in_tokenTtlInMinutes, IServerCallback * in_callback)
+	void BrainCloudAuthentication::resetUniversalIdPasswordAdvancedWithExpiry(const char * universalId, std::string serviceParams, int tokenTtlInMinutes, IServerCallback * callback)
     {
         Json::Value message;
         message[OperationParam::AuthenticateServiceAuthenticateGameId.getValue()] = m_client->getAppId().c_str();
-        message[OperationParam::AuthenticateServiceAuthenticateUniversalId.getValue()] = in_universalId;
-        message[OperationParam::AuthenticateServiceAuthenticateServiceParams.getValue()] = JsonUtil::jsonStringToValue(in_serviceParams);;
-        message[OperationParam::AuthenticateServiceAuthenticateTokenTtlInMinutes.getValue()] = in_tokenTtlInMinutes;
+        message[OperationParam::AuthenticateServiceAuthenticateUniversalId.getValue()] = universalId;
+        message[OperationParam::AuthenticateServiceAuthenticateServiceParams.getValue()] = JsonUtil::jsonStringToValue(serviceParams);;
+        message[OperationParam::AuthenticateServiceAuthenticateTokenTtlInMinutes.getValue()] = tokenTtlInMinutes;
 
-        ServerCall * sc = new ServerCall(ServiceName::AuthenticateV2, ServiceOperation::ResetUniversalIdPasswordAdvancedWithExpiry, message, in_callback);
+        ServerCall * sc = new ServerCall(ServiceName::AuthenticateV2, ServiceOperation::ResetUniversalIdPasswordAdvancedWithExpiry, message, callback);
         m_client->sendRequest(sc);
+    }
+
+    void BrainCloudAuthentication::retryPreviousAuthenticate(IServerCallback * callback)
+    {
+        authenticate(m_previousAuthParams.externalId.c_str(),
+                     m_previousAuthParams.authenticationToken.c_str(),
+                     m_previousAuthParams.authenticationType,
+                     m_previousAuthParams.externalAuthName.c_str(),
+                     m_previousAuthParams.forceCreate,
+                     m_previousAuthParams.extraJson.c_str(),
+                     callback);
     }
 
     void BrainCloudAuthentication::authenticate(
-        const char * in_externalId,
-        const char * in_authenticationToken,
-        AuthenticationType in_authenticationType,
-        const char * in_externalAuthName,
-        bool in_forceCreate, 
-        const std::string &in_extraJson,
-        IServerCallback * in_callback)
+        const char * externalId,
+        const char * authenticationToken,
+        AuthenticationType authenticationType,
+        const char * externalAuthName,
+        bool forceCreate, 
+        const std::string &extraJson,
+        IServerCallback * callback)
     {
+        m_previousAuthParams.externalId = externalId ? externalId : "";
+        m_previousAuthParams.authenticationToken = authenticationToken ? authenticationToken : "";
+        m_previousAuthParams.authenticationType = authenticationType;
+        m_previousAuthParams.externalAuthName = externalAuthName ? externalAuthName : "";
+        m_previousAuthParams.forceCreate = forceCreate;
+        m_previousAuthParams.extraJson = extraJson;
+
         Json::Value message;
-        message[OperationParam::AuthenticateServiceAuthenticateExternalId.getValue()] = in_externalId;
-        message[OperationParam::AuthenticateServiceAuthenticateAuthenticationToken.getValue()] = in_authenticationToken;
-        message[OperationParam::AuthenticateServiceAuthenticateAuthenticationType.getValue()] = in_authenticationType.toString();
-        message[OperationParam::AuthenticateServiceAuthenticateForceCreate.getValue()] = in_forceCreate;
+        message[OperationParam::AuthenticateServiceAuthenticateExternalId.getValue()] = externalId;
+        message[OperationParam::AuthenticateServiceAuthenticateAuthenticationToken.getValue()] = authenticationToken;
+        message[OperationParam::AuthenticateServiceAuthenticateAuthenticationType.getValue()] = authenticationType.toString();
+        message[OperationParam::AuthenticateServiceAuthenticateForceCreate.getValue()] = forceCreate;
+        message[OperationParam::AuthenticateServiceAuthenticateCompressResponses.getValue()] = compressResponses;
 
         message[OperationParam::AuthenticateServiceAuthenticateProfileId.getValue()] = _profileId;
         message[OperationParam::AuthenticateServiceAuthenticateAnonymousId.getValue()] = _anonymousId;
@@ -251,9 +281,9 @@ namespace BrainCloud {
         message[OperationParam::AuthenticateServiceAuthenticateReleasePlatform.getValue()] = m_client->getReleasePlatform().c_str();
         message[OperationParam::AuthenticateServiceAuthenticateGameVersion.getValue()] = m_client->getAppVersion().c_str();
         message[OperationParam::AuthenticateServiceAuthenticateBrainCloudVersion.getValue()] = m_client->getBrainCloudClientVersion().c_str();
-        if (StringUtil::IsOptionalParameterValid(in_externalAuthName))
+        if (StringUtil::IsOptionalParameterValid(externalAuthName))
         {
-            message[OperationParam::AuthenticateServiceAuthenticateExternalAuthName.getValue()] = in_externalAuthName;
+            message[OperationParam::AuthenticateServiceAuthenticateExternalAuthName.getValue()] = externalAuthName;
         }
 
         message[OperationParam::AuthenticateServiceAuthenticateCountryCode.getValue()] = m_client->getCountryCode().c_str();
@@ -261,12 +291,12 @@ namespace BrainCloud {
         message[OperationParam::AuthenticateServiceAuthenticateTimeZoneOffset.getValue()] = m_client->getTimezoneOffset();
         message["clientLib"] = _clientLib;
 
-        if (StringUtil::IsOptionalParameterValid(in_extraJson))
+        if (StringUtil::IsOptionalParameterValid(extraJson))
         {
-            message[OperationParam::AuthenticateServiceAuthenticateExtraJson.getValue()] = JsonUtil::jsonStringToValue(in_extraJson);
+            message[OperationParam::AuthenticateServiceAuthenticateExtraJson.getValue()] = JsonUtil::jsonStringToValue(extraJson);
         }
 
-        ServerCall * sc = new ServerCall(ServiceName::AuthenticateV2, ServiceOperation::Authenticate, message, in_callback);
+        ServerCall * sc = new ServerCall(ServiceName::AuthenticateV2, ServiceOperation::Authenticate, message, callback);
         m_client->sendRequest(sc);
     }
 }

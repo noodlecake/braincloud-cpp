@@ -119,8 +119,13 @@ TEST_F(TestBCLobbyNoAuth, CreateAndJoinLobby)
 		}
 
 		// TearDown
-		bc->getPlayerStateService()->logout(&tr);
-		tr.run(bc);
+		TestResult tr2;
+		wrapper->logout(true, &tr2);
+
+		tr2.run(bc, true);
+
+		bc->resetCommunication();
+
 		delete wrapper;
 	});
 
@@ -189,8 +194,14 @@ TEST_F(TestBCLobbyNoAuth, CreateAndJoinLobby)
 		}
 
 		// TearDown
-		bc->getPlayerStateService()->logout(&tr);
-		tr.run(bc);
+		TestResult tr2;
+		wrapper->logout(true, &tr2);
+
+		tr2.run(bc, true);
+
+		bc->resetCommunication();
+
+		delete wrapper;
 	});
 
 	// Join threads
@@ -303,14 +314,14 @@ TEST_F(TestBCLobby, CancelFindRequest)
 {
 	TestResult tr;
 
-	//m_bc->getLobbyService()->cancelFindRequest("MATCH_UNRANKED", m_bc->getRttConnectionId(), &tr);
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//need to come back to this test. When I send a bad cxId, it actually sends the parameter cxId to the server. But when I send a proper 
-	//cxId, it only sends the lobbyType and no cxId parameter, so it always says that the cxId parameter is missing. 
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	m_bc->getLobbyService()->cancelFindRequest("MATCH_UNRANKED", "badcxId", &tr);
-	//40653 is cxId must belong to caller
-	tr.runExpectFail(m_bc, HTTP_BAD_REQUEST, 40653);
+	std::vector<std::string> otherUserCxIds;
+	m_bc->getLobbyService()->findOrCreateLobby("MATCH_UNRANKED", 0, 1, "{\"strategy\":\"ranged-absolute\",\"alignment\":\"center\",\"ranges\":[1000]}", "{}", otherUserCxIds, "{}", true, "{}", "all", &tr);
+	tr.run(m_bc);
+
+	std::string in_entryId = tr.m_response["data"]["entryId"].asString();
+
+	m_bc->getLobbyService()->cancelFindRequest("MATCH_UNRANKED", in_entryId, &tr);
+	tr.run(m_bc);
 }
 
 // We include all tests regarding pings in there
@@ -373,9 +384,15 @@ TEST_F(TestBCLobby, GetLobbyInstancesWithPingData)
     // Fetch pings
     m_bc->getLobbyService()->getRegionsForLobbies({ "MATCH_UNRANKED" }, & tr);
     tr.run(m_bc);
-	
+
     m_bc->getLobbyService()->pingRegions(&tr);
     tr.run(m_bc);
+
+    if(!tr.m_result){
+        // ping error
+        GTEST_FATAL_FAILURE_("test failure with pingRegions - bailing out before completion\n");
+        return;
+    }
 
     m_bc->getLobbyService()->getLobbyInstancesWithPingData("MATCH_UNRANKED", "{\"rating\":{\"min\":1,\"max\":1000},\"ping\":{\"max\":100}}", &tr);
     tr.run(m_bc);

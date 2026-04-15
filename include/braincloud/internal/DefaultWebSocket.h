@@ -1,11 +1,20 @@
-#if (TARGET_OS_WATCH != 1)
+#pragma once
 
-#ifndef _DEFAULTWEBSOCKER_H_
-#define _DEFAULTWEBSOCKER_H_
+#if __APPLE__
+    // for deployment TARGET_OS definitions
+    #include "TargetConditionals.h"
+#endif
+
+#if (!defined(TARGET_OS_WATCH) || TARGET_OS_WATCH == 0)
 
 #include "braincloud/internal/IWebSocket.h"
 
 #include <libwebsockets.h>
+#include <lws_config.h>
+
+#if defined(BC_MBEDTLS_OFF)
+#include <openssl/x509.h>
+#endif
 
 #include <atomic>
 #include <condition_variable>
@@ -33,7 +42,10 @@ namespace BrainCloud
         virtual std::string recv();
 
         virtual void close();
-
+#if defined(BC_MBEDTLS_OFF) && !defined(BC_SSL_ALLOW_SELFSIGNED)
+        void addExtraRootCerts(SSL_CTX *);
+        void addCertString(std::string certString, SSL_CTX *ssl_ctx);
+#endif
     protected:
         friend class IWebSocket;
 
@@ -71,7 +83,5 @@ namespace BrainCloud
         std::map<std::string, std::string> _authHeaders;
     };
 };
-
-#endif /* _DEFAULTTCPSOCKER_H_ */
 
 #endif
