@@ -131,6 +131,7 @@ namespace BrainCloud
                 info.client_ssl_ca_mem_len = static_cast<unsigned int>(full_certs.front().length());
 
             #endif
+
             std::unique_lock<std::mutex> lock(lwsContextMutex);
             _pLwsContext = lws_create_context(&info);
             if (!_pLwsContext)
