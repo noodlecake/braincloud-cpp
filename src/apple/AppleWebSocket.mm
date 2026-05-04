@@ -41,16 +41,23 @@
 
 - (void)send:(const std::string&)message
 {
-    [_webSocket sendString:[NSString stringWithUTF8String:message.c_str()] error:NULL];
+    SRWebSocket* ws;
+    @synchronized(self) {
+        ws = _webSocket;
+    }
+    if (ws) {
+        [ws sendString:[NSString stringWithUTF8String:message.c_str()] error:NULL];
+    }
 }
 
 - (void)close
 {
-    if (_webSocket)
-    {
-        [_webSocket close];
+    SRWebSocket* ws;
+    @synchronized(self) {
+        ws = _webSocket;
         _webSocket = nil;
     }
+    [ws close];
 }
 
 ///--------------------------------------
@@ -66,7 +73,9 @@
 - (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
     NSLog(@":( Websocket Failed With Error %@", error);
-    _webSocket = nil;
+    @synchronized(self) {
+        _webSocket = nil;
+    }
     _callback->onError();
 }
 
@@ -79,7 +88,9 @@
 - (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean
 {
     NSLog(@"WebSocket closed");
-    _webSocket = nil;
+    @synchronized(self) {
+        _webSocket = nil;
+    }
     _callback->onClose();
 }
 
